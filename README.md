@@ -29,5 +29,5 @@ unzip Downloads/Models.zip -d /Machine\ Learning
 
 5. Run the following command:
 ```
-python Machine\ Learning/src/cli.py
+python3 Machine\ Learning/src/cli.py
 ```
