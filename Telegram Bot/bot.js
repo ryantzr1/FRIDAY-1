@@ -1,6 +1,6 @@
 const token = process.env.TOKEN;
 
-const { response } = require('express');
+const { spawn } = require("child_process"); 
 const Bot = require('node-telegram-bot-api');
 let bot;
 
@@ -18,13 +18,15 @@ bot.on('message', async (msg) => {
   console.log(msg);
   try {
     const name = msg.from.first_name;
-    const text = msg.from.text;
+    const text = msg.text;
     bot.sendMessage(msg.chat.id, 'Hello, ' + name + '!').then(() => {
       // reply sent!
     });
+    console.log(text);
     const response = await runMLScript(text);
-    await bot.sendMessage(response);
-  } catch {
+    console.log(response);
+    // await bot.sendMessage(response);
+  } catch (e) {
     console.log("Failed");
   }
   
