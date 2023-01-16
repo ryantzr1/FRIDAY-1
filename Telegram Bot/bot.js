@@ -1,4 +1,5 @@
 const token = process.env.TOKEN;
+const {spawn} = require('child_process')
 
 const { spawn } = require("child_process"); 
 const Bot = require('node-telegram-bot-api');
@@ -45,7 +46,7 @@ async function runMLScript(parameter) {
     });
 
     python.stderr.on("data", (data) => {
-      // console.log(`stderr: ${data}`);
+      console.log(`stderr: ${data}`);
     });
 
     python.on("close", (code) => {
