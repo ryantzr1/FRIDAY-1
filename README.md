@@ -1,6 +1,18 @@
-# FRIDAY
+# F.R.I.D.A.Y
 
-TODO
+The purpose of our project is to create a self-learning API tool that allows small businesses to get on-demand AI customer service anytime, anywhere. This tool will be able to handle all types of customer questions through on-the-job training and learning from customer-seller conversations. By providing 24/7 support, continuously improving and adapting over time, and freeing up valuable time and resources for small businesses, our solution aims to improve customer satisfaction and loyalty, and help small businesses grow and become more profitable.
+
+## Video Demo
+-----
+
+
+https://user-images.githubusercontent.com/81154837/212688498-3e8431ff-83a4-44d5-aeb4-90a6b908590b.mp4
+
+
+
+Here we connect a Telegram channel to our API which allows a customer to interact with a drone company and find out more about their [product](https://www.amazon.com/DJI-Hasselblad-Professionals-Omnidirectional-Transmission/dp/B0BGMJN6MD/ref=sr_1_2?keywords=dji+mavic&qid=1673873146&sprefix=dji+mavi%2Caps%2C413&sr=8-2).
+
+
 
 ## Question - Answering Pipeline 
 -----
