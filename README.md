@@ -5,8 +5,8 @@ TODO
 ## Question - Answering Pipeline 
 -----
 
-<img width="865" alt="image" src="https://user-images.githubusercontent.com/81154837/212583228-318e0d73-5b75-471e-a0aa-825a1475a715.png">
-Our model is a T5 Transformer fine tuned for product question and answering. We first store all of the information regarding the product in a vector database. This is done via the use of Sentence Transformers in `Machine \ Learning/src/Embeddings.py` which converts all the information into vectors. 
+<img width="838" alt="image" src="https://user-images.githubusercontent.com/81154837/212588549-9b318392-5476-419d-a616-c2ce95f7c691.png">
+Our model is a T5 Transformer fine tuned for product question and answering. We first store all of the information regarding the product in a vector database. This is done via the use of Sentence Transformers which converts all the information into vectors. 
 
 When we receive our customer query we embed it into a vector in a similar manner. We then compute the dot product of this query vector with all our information vectors to find the most appropriate context. Next, we feed this context and query pair into the model to generate an answer. 
 
@@ -75,4 +75,4 @@ Raffel, C., Shazeer, N., Roberts, A., Lee, K., Narang, S., Matena, M., Zhou, Y.,
 
 Romero, M. (2021). T5 (base) fine-tuned on SQUAD for QG via AP. mrm8488/t5-base-finetuned-question-generation-ap · Hugging Face. Retrieved January 16,      2023, from https://huggingface.co/mrm8488/t5-base-finetuned-question-generation-ap 
 
-Further, we would like to thank [Amazon Web Services (AWS)](https://aws.amazon.com/) and [HuggingFace 🤗](https://huggingface.co/) for providing the infrastructure that made this project possible
+Further, we would like to thank [Amazon Web Services (AWS)](https://aws.amazon.com/) and [HuggingFace 🤗](https://huggingface.co/) for providing the infrastructure that made this project possible.
