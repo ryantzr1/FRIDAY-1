@@ -5,6 +5,13 @@ import numpy as np
 MODEL_PATH = "Machine Learning/Models/SentenceTransformer"
 
 class EmbeddingModel():
+    '''
+    This is an implementation of the EmbeddingModel class where we map the context provided into 
+    word vectors using a Sentence Transformer
+
+    This class also contains a method to get the closest chunk of text to a query
+    '''
+
     def __init__(self,path):
         self.model = SentenceTransformer(MODEL_PATH)
         nltk.download('punkt',quiet = True)
