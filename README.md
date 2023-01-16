@@ -6,7 +6,7 @@ TODO
 -----
 
 <img width="865" alt="image" src="https://user-images.githubusercontent.com/81154837/212583228-318e0d73-5b75-471e-a0aa-825a1475a715.png">
-Our model is a [T5](https://ai.googleblog.com/2020/02/exploring-transfer-learning-with-t5.html) fine tuned for product question and answering. We first store all of the information regarding the product in a vector database. This is done via the use of Sentence Transformers in `Machine \ Learning/src/Embeddings.py` which converts all the information into vectors. 
+Our model is a T5 Transformer fine tuned for product question and answering. We first store all of the information regarding the product in a vector database. This is done via the use of Sentence Transformers in `Machine \ Learning/src/Embeddings.py` which converts all the information into vectors. 
 
 When we receive our customer query we embed it into a vector in a similar manner. We then compute the dot product of this query vector with all our information vectors to find the most appropriate context. Next, we feed this context and query pair into the model to generate an answer. 
 
