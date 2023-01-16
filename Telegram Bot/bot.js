@@ -18,14 +18,15 @@ console.log('Bot server started in the ' + process.env.NODE_ENV + ' mode');
 bot.on('message', async (msg) => {
   console.log(msg);
   try {
-    const name = msg.from.first_name;
-    const text = msg.text;
-    bot.sendMessage(msg.chat.id, 'Hello, ' + name + '!').then(() => {
+    // const name = msg.from.first_name;
+    const response = await runMLScript(text);
+    // const text = msg.text;
+    bot.sendMessage(msg.chat.id, 'Hello, ' + response + '!').then(() => {
       // reply sent!
     });
-    console.log(text);
-    const response = await runMLScript(text);
-    console.log(response);
+    // console.log(text);
+   
+    // console.log(response);
     // await bot.sendMessage(response);
   } catch (e) {
     console.log("Failed");

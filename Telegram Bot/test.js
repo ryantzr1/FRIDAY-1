@@ -24,4 +24,8 @@ async function runMLScript(parameter) {
     });
   }
 
-  console.log(runMLScript("What camera does the drone use?"));
+   
+  const response =  runMLScript("What camera does the drone use?"); 
+//   console.log(runMLScript("What camera does the drone use?"));
+
+// console.log(response);
