@@ -1,6 +1,5 @@
 from sentence_transformers import SentenceTransformer, util
 import nltk
-import json
 import numpy as np
 
 MODEL_PATH = "Machine Learning/Models/SentenceTransformer"
@@ -8,6 +7,7 @@ MODEL_PATH = "Machine Learning/Models/SentenceTransformer"
 class EmbeddingModel():
     def __init__(self,path):
         self.model = SentenceTransformer(MODEL_PATH)
+        nltk.download('punkt',quiet = True)
         with open(path) as f:
             self.context = f.read()
         self.sentences = nltk.sent_tokenize(self.context)
