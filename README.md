@@ -2,10 +2,20 @@
 
 TODO
 
+## Question - Answering Pipeline 
+-----
+
+<img width="865" alt="image" src="https://user-images.githubusercontent.com/81154837/212583228-318e0d73-5b75-471e-a0aa-825a1475a715.png">
+Our model is a [T5](https://ai.googleblog.com/2020/02/exploring-transfer-learning-with-t5.html) fine tuned for product question and answering. We first store all of the information regarding the product in a vector database. This is done via the use of Sentence Transformers in `Machine \ Learning/src/Embeddings.py` which converts all the information into vectors. 
+
+When we receive our customer query we embed it into a vector in a similar manner. We then compute the dot product of this query vector with all our information vectors to find the most appropriate context. Next, we feed this context and query pair into the model to generate an answer. 
+
+This pipeline allows for the model to learn on the job. As the vector database grows, its answer searching domain grows as well, allowing it to answer more questions, fufilling the needs of both the business and the customer. 
+
 
 ## Model Capabilities
 -----
-The current version of our model (v1.0 can be found [here](https://drive.google.com/file/d/1xHvjKEh4drOFQKmfZn2deAdGQgYUvbxi/view?usp=share_link)) is a version of the [T5-base model](https://ai.googleblog.com/2020/02/exploring-transfer-learning-with-t5.html). The dataset we use is a combination of the [Amazon Review Dataset](https://jmcauley.ucsd.edu/data/amazon_v2/index.html) as well as a synthetic dataset generated in `Machine\ Learning/Notebooks/Question.ipynb`. The current version is trained on 3000 rows of data over 6 epochs and the training code can be found in `Machine\ Learning/Notebooks/Train.ipynb`. We have just been given access to AWS Activate credits and we aim to leverage on SageMaker and EC2 to not only train the model at a higher level but also generate a larger synthetic dataset. This section will thus outline the primary features of our model as well as examples we came across during our empirical testing. 
+The current version of our model (v1.0 can be found [here](https://drive.google.com/file/d/1xHvjKEh4drOFQKmfZn2deAdGQgYUvbxi/view?usp=share_link)) is a version of the [T5 Model](https://ai.googleblog.com/2020/02/exploring-transfer-learning-with-t5.html). The dataset we use is a combination of the [Amazon Review Dataset](https://jmcauley.ucsd.edu/data/amazon_v2/index.html) as well as a synthetic dataset generated in `Machine\ Learning/Notebooks/Question.ipynb`. The current version is trained on 3000 rows of data over 6 epochs and the training code can be found in `Machine\ Learning/Notebooks/Train.ipynb`. We have just been given access to AWS Activate credits and we aim to leverage on SageMaker and EC2 to not only train the model at a higher level but also generate a larger synthetic dataset. This section will thus outline the primary features of our model as well as examples we came across during our empirical testing. 
 
 1. Abstractive Question Answering
 ```
