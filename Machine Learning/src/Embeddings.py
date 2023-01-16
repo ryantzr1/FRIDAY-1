@@ -21,15 +21,15 @@ class EmbeddingModel():
         chunk = []
         for sentence in self.sentences:
             word_c = self.word_count(sentence)
-            if curr_count + word_c < MAX_LENGTH:
+            curr_count += word_c
+            if curr_count < MAX_LENGTH:
                 chunk.append(sentence)
-                curr_count += word_c
             else:
-                chunk.append(sentence)
                 curr_count = 0
                 chunks.append(' '.join(chunk))
                 chunk = []
-        
+        if chunk:
+            chunks.append(' '.join(chunk))
         self.chunks = chunks
         mapping = {}
         for i,chunk in enumerate(chunks):
@@ -47,7 +47,6 @@ class EmbeddingModel():
             if dot_product > HIGHEST:
                 HIGHEST = dot_product
                 index = k
-
         return self.chunks[index]
 
     
