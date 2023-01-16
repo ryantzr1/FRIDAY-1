@@ -6,7 +6,8 @@ import sys
 
 CONTEXT_PATH = 'context.txt'
 
-def main(question):
+if __name__ == "__main__":
+    #create database
     embeddings = EmbeddingModel(CONTEXT_PATH)
     embeddings.create_mappings()
 
@@ -15,8 +16,4 @@ def main(question):
     question = sys.argv[1]
     context = embeddings.get_closest(question)
     answer = generate_answer(trained_model,generate_question(question,context))
-    return answer
-
-if __name__ == "__main__":
-    question = sys.argv[1]
-    main(question)
+    print(answer)
