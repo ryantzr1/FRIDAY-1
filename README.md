@@ -11,7 +11,7 @@ This repository also provides a command line interface for the model. To do so o
 1. Clone this repository and run 
 ```
 git clone https://github.com/nreHieW/FRIDAY.git <Your Directory>
-pip install requirements.txt
+pip3 install -r requirements.txt
 ```
 
 2. Download the models either from [here](https://drive.google.com/file/d/1xHvjKEh4drOFQKmfZn2deAdGQgYUvbxi/view?usp=share_link) or run the folowing command:
