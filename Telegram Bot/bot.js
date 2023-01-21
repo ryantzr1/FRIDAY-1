@@ -1,7 +1,6 @@
 const token = process.env.TOKEN;
-const {spawn} = require('child_process')
 
-const { spawn } = require("child_process"); 
+const axios = require('axios');
 const Bot = require('node-telegram-bot-api');
 let bot;
 
@@ -16,46 +15,17 @@ else {
 console.log('Bot server started in the ' + process.env.NODE_ENV + ' mode');
 
 bot.on('message', async (msg) => {
-  console.log(msg);
+  // console.log(msg);
   try {
-    // const name = msg.from.first_name;
-    const response = await runMLScript(text);
-    // const text = msg.text;
-    bot.sendMessage(msg.chat.id, 'Hello, ' + response + '!').then(() => {
-      // reply sent!
-    });
-    // console.log(text);
-   
-    // console.log(response);
-    // await bot.sendMessage(response);
-  } catch (e) {
-    console.log("Failed");
+    const text = msg.text;
+    console.log(text);
+    const res = await axios.get("http://35.79.22.161/predict", { params: { question: text } });
+    console.log(res.data.answer);
+    bot.sendMessage(msg.chat.id, res.data.answer).then(() => {});  
+  } catch(e) {
+    console.log(e.message);
   }
   
 });
-
-async function runMLScript(parameter) {
-  return new Promise((resolve, reject) => {
-    const python = spawn("python3", [
-      "Machine Learning\src\main.py",
-      parameter,
-    ]);
-    let output = "";
-    python.stdout.on("data", (data) => {
-      console.log(`stdout: ${data}`);
-      output += data;
-    });
-
-    python.stderr.on("data", (data) => {
-      console.log(`stderr: ${data}`);
-    });
-
-    python.on("close", (code) => {
-      // console.log(`child process exited with code ${code}`);
-      const results = output;
-      resolve(results);
-    });
-  });
-}
 
 module.exports = bot;
