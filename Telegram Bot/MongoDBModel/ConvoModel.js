@@ -14,6 +14,6 @@ const Convo = new mongoose.Schema(
 );
 
 //can import Convos into other files to access this model
-const model = mongoose.model("Convo", User);
+const model = mongoose.model("Convo", Convo);
 
 module.exports = model;
