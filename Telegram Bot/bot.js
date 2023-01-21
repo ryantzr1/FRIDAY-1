@@ -4,7 +4,7 @@ const axios = require("axios");
 const e = require("express");
 const Bot = require("node-telegram-bot-api");
 let bot;
-const Convo = require("Telegram Bot/MongoDBModel/ConvoModel"); //importing Convos
+const Convo = require("./MongoDBModel/ConvoModel"); //importing Convos
 
 if (process.env.NODE_ENV === "production") {
   bot = new Bot(token);
@@ -20,16 +20,16 @@ bot.on("message", async (msg) => {
   try {
     const text = msg.text;
     console.log(text);
-    const res = await axios.get("http://35.79.22.161/predict", {
-      params: { question: text },
-    });
-    console.log(res.data.answer);
-    const answer = res.data.answer;
+    // const res = await axios.get("http://35.79.22.161/predict", {
+    //   params: { question: text },
+    // });
+    // console.log(res.data.answer);
+    // const answer = res.data.answer;
     //we also want to store the question and answer in our mongoDB
 
     //a convo instance
-    const convo = new Convo({ question: text, answer: answer });
-
+    const convo = new Convo({ question: text, answer: "hello" });
+    // console.log(convo);
     //save model to database
     convo.save(function (err, convo) {
       if (err) {
@@ -39,7 +39,9 @@ bot.on("message", async (msg) => {
       }
     });
 
-    bot.sendMessage(msg.chat.id, res.data.answer).then(() => {});
+    // bot.sendMessage(msg.chat.id, res.data.answer).then(() => {});
+    bot.sendMessage(msg.chat.id, "hello").then(() => {});
+
   } catch (e) {
     console.log(e.message);
   }

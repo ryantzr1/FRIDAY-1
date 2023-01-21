@@ -1,12 +1,11 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const packageInfo = require("./package.json");
+const mongoose = require("mongoose");
 
 const app = express();
 app.use(bodyParser.json());
 
-//making connection to MongoDB server
-//MONGO_URL = "mongodb+srv://tanaldo:hello123@cluster0.b1cjijc.mongodb.net/Friday"
 mongoose
   .connect(process.env.MONGO_URL)
   .then(() => console.log("Connected to your database"))
