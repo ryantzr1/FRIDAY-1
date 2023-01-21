@@ -8,6 +8,14 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 class DataLoader:
 
+    '''
+    Args:
+        url: url to download data from
+    
+    Returns: 
+        Pandas DataFrame with columns: title, asin, description
+    '''
+
     def __init__(self, url):
         self.url = url
     
