@@ -20,11 +20,11 @@ bot.on("message", async (msg) => {
   try {
     const text = msg.text;
     console.log(text);
-    // const res = await axios.get("http://35.79.22.161/predict", {
-    //   params: { question: text },
-    // });
-    // console.log(res.data.answer);
-    // const answer = res.data.answer;
+    const res = await axios.get("http://13.115.58.243//predict", {
+      params: { question: text },
+    });
+    console.log(res.data.answer);
+    const answer = res.data.answer;
     //we also want to store the question and answer in our mongoDB
 
     //a convo instance
