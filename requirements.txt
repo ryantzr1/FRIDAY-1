@@ -8,3 +8,5 @@ sentence_transformers==2.2.2
 torch==1.13.1
 transformers==4.24.0
 urllib3==1.26.13
+uvicorn==0.20.0
+xgboost==1.7.1
