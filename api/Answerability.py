@@ -13,7 +13,7 @@ nltk.download('punkt')
 
 class AnswerabilityModel:
     def __init__(self):
-        with open('Machine Learning/Models/AnswerabilityModel1.pkl', 'rb') as f:
+        with open('Machine Learning/Models/AnswerabilityModel.pkl', 'rb') as f:
             self.model = pickle.load(f)
             self.tokenizer = AutoTokenizer.from_pretrained("bert-base-uncased")
             self.tfidf_vectorizer = TfidfVectorizer(stop_words ='english')
@@ -43,6 +43,11 @@ class AnswerabilityModel:
             return np.linalg.norm(a-b)
         self.tfidf_vectorizer.fit([question,context])
 
+        def sentence_mean_max(model,q,r):
+            f = dotproduct
+            vals = [f(q,model(sentence)) for sentence in nltk.tokenize.sent_tokenize(r)]
+            return pd.Series([np.mean(vals), np.max(vals)])
+
         df = pd.DataFrame({'Question':[question],'Context':[context]})
         df['Question_ntokens'] = df['Question'].apply(lambda x:len(tokenize(x)))
         df['Context_ntokens'] = df['Context'].apply(lambda x:len(tokenize(x)))
@@ -59,12 +64,13 @@ class AnswerabilityModel:
             df[f'cosine_sim_{m}'] = df.apply(lambda row: cosine_similarity(row[f'Question_{m}'], row[f'Context_{m}']),axis =1 )
             df[f'dot_prod_{m}'] = df.apply(lambda row: dotproduct(row[f'Question_{m}'], row[f'Context_{m}']),axis =1 )
             df[f'euclid_dist_{m}'] = df.apply(lambda row: euclid_dist(row[f'Question_{m}'], row[f'Context_{m}']),axis =1 )
-    
+        df[['sent_max_encoded','sent_mean_encoded']] = df.apply(lambda row: sentence_mean_max(sentenceTransform, row['Question_encoded'], row['Context']),axis =1 )
+        df[['sent_max_tfidf','sent_mean_tfidf']] = df.apply(lambda row: sentence_mean_max(vectorize, row['Question_tfidf'], row['Context']),axis =1 )
         df.drop(['Question_tokens','Context_tokens','Question_encoded','Context_encoded','Question_tfidf','Context_tfidf','Question','Context'],axis =1 , inplace = True)
         self.df = df
         return df
 
     def predict(self,question, context):
         features = self.create_features(question, context)
-        return self.predict_proba(features)[0][1] > 0.4
+        return self.model.predict_proba(features)[0][1] > 0.4
 
