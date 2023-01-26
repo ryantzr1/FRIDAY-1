@@ -6,14 +6,14 @@ from Answerability import *
 
 CONTEXT_PATH = 'context.txt'
 
+app = FastAPI()
+
 #Setup
+answerability = AnswerabilityClassifier()
 embeddings = EmbeddingModel(CONTEXT_PATH)
 embeddings.create_mappings(MAX_LENGTH=140)
 trained_model = QandAModel()
 trained_model.eval()
-answerability = AnswerabilityModel()
-
-app = FastAPI()
 
 @app.get("/")
 def read_root():

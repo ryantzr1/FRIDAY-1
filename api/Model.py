@@ -12,7 +12,7 @@ class QandAModel(pl.LightningModule):
     '''
     Model that allows to generate answers to questions given a context using T5 fine tuned using custom dataset. 
 
-    Class is different from the one in train.ipybn because this loads the model locally.
+    Class is different from the one in train.ipynb because this loads the model locally.
     
     '''
 
@@ -119,5 +119,6 @@ class Dataset(torch.utils.data.Dataset):
             attention_mask = source_encoding["attention_mask"].flatten(),
             labels = labels.flatten()
         )
+
 
   
