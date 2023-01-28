@@ -16,18 +16,22 @@ Here we connect a Telegram channel to our API which allows a customer to interac
 
 ## Question - Answering Pipeline 
 -----
+<p align="center">
+  <img width="804" alt="image" src="https://user-images.githubusercontent.com/81154837/215249821-8fb0f80c-766f-4df5-8ab6-4a267642154e.png">
+</p>
 
-<img width="838" alt="image" src="https://user-images.githubusercontent.com/81154837/212588549-9b318392-5476-419d-a616-c2ce95f7c691.png">
-Our model is a T5 Transformer fine tuned for product question and answering. We first store all of the information regarding the product in a vector database. This is done via the use of Sentence Transformers which converts all the information into vectors. 
+Our model is a T5 Transformer fine tuned for product question and answering. We chose the T5 Model due to its prowess at both transfer learning and Text-to-text generation. We first store all of the information regarding the product in a vector database. This is done via the use of Sentence Transformers which converts all the information into vectors. 
 
-When we receive our customer query we embed it into a vector in a similar manner. We then compute the dot product of this query vector with all our information vectors to find the most appropriate context. Next, we feed this context and query pair into the model to generate an answer. 
+When we receive our customer query we embed it into a vector in a similar manner. We then compute the dot product of this query vector with all our information vectors to find the most appropriate context. Next, we feed this context and query pair into the Answerability model to determine the likelihood that the answer can be found withint that context. Our Answerability Model is a version of BERT finetuned on SQuAD v2 with an added linear layer and sigmoid function to turn it into a binary classifier model. If the model is not confident in finding an answer, we flag it and request for a human to answer this question. Otherwise, the query and context are fed to T5 to generate the answer.
+
+*We had originally used xGBoost for the answerability model with features extracted from both the Embeddings and TF-IDF vectors of the context and query vectors. While both models had similar accuracy scores, we found that BERT had significantly higher specifity (lower number of false positives) which made it more appropriate. We have included the xGBoost variant for download as well.*
 
 This pipeline allows for the model to learn on the job. As the vector database grows, its answer searching domain grows as well, allowing it to answer more questions, fufilling the needs of both the business and the customer. 
 
 
 ## Model Capabilities
 -----
-The current version of our model (v1.0 can be found [here](https://drive.google.com/file/d/1xHvjKEh4drOFQKmfZn2deAdGQgYUvbxi/view?usp=share_link)) is a version of the [T5 Model](https://ai.googleblog.com/2020/02/exploring-transfer-learning-with-t5.html). The dataset we use is a combination of the [Amazon Review Dataset](https://jmcauley.ucsd.edu/data/amazon_v2/index.html) as well as a synthetic dataset generated in `Machine\ Learning/Notebooks/Question.ipynb`. The current version is trained on 3000 rows of data over 6 epochs and the training code can be found in `Machine\ Learning/Notebooks/Train.ipynb`. We have just been given access to AWS Activate credits and we aim to leverage on SageMaker and EC2 to not only train the model at a higher level but also generate a larger synthetic dataset. This section will thus outline the primary features of our model as well as examples we came across during our empirical testing. 
+The current version of our model (v1.0 can be found [here](https://drive.google.com/file/d/1j4LY-kXIJsAyoD-zE7AZTDvX5LMRgdmn/view?usp=sharing) is a version of the [T5 Model](https://ai.googleblog.com/2020/02/exploring-transfer-learning-with-t5.html). The dataset we use is a combination of the [Amazon Review Dataset](https://jmcauley.ucsd.edu/data/amazon_v2/index.html) as well as a synthetic dataset generated in `Machine\ Learning/Notebooks/Question.ipynb`. The current version is trained on 3000 rows of data over 6 epochs and the training code can be found in `Machine\ Learning/Notebooks/Train.ipynb`. We have just been given access to AWS Activate credits and we aim to leverage on SageMaker and EC2 to not only train the model at a higher level but also generate a larger synthetic dataset. This section will thus outline the primary features of our model as well as examples we came across during our empirical testing. 
 
 1. Abstractive Question Answering
 ```
@@ -46,6 +50,19 @@ Answer: Yes
 ```
 In this example, we note that neither 'Apple' nor 'iphone' appear in the given context. Yet the model was able to associate the term ios with 'Apple iphone'. Also, it is able to differentiate between a descriptive question in the first example and yes/no questions in this example. 
 
+3. Synthesis 
+```
+Question: What imaging technology does the drone have?
+Answer: It has a 4/3 CMOS camera. It can also record 4K/60fps pictures.
+```
+Here, the term *imaging technology* is extremely vague which might stump even human customer service agents. Yet the model is able to synthesis an adequate summary of the drone's capabilities. 
+
+4. Question Inference
+```
+Question: Obstacle Avoidance?
+Answer: APAS 5.0 - Mavic 3 Classic detects obstacles in all directions and avoids them.
+```
+We understand that customer service is about increasing customer convienience. Sometimes, customers might not ask questions in the form of full sentences. Our model is more than capable to answer questions in the form of incomplete sentences as well. 
 
 
 ## Usage
@@ -58,10 +75,10 @@ git clone https://github.com/nreHieW/FRIDAY.git <Your Directory>
 pip3 install -r requirements.txt
 ```
 
-2. Download the models either from [here](https://drive.google.com/file/d/1xHvjKEh4drOFQKmfZn2deAdGQgYUvbxi/view?usp=share_link) or run the folowing command:
+2. Download the models either from [here](https://drive.google.com/file/d/1j4LY-kXIJsAyoD-zE7AZTDvX5LMRgdmn/view?usp=sharing) or run the folowing command:
 ```
 pip install gdown
-gdown 1xHvjKEh4drOFQKmfZn2deAdGQgYUvbxi
+gdown 1j4LY-kXIJsAyoD-zE7AZTDvX5LMRgdmn
 ```
 
 3. Unzip the model 
