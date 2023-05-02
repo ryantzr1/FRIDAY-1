@@ -6,7 +6,7 @@ const bot = new TelegramBot(process.env.TELEGRAM_BOT_TOKEN, { polling: true });
 
 mongoose.connect(process.env.MONGODB_URL, { useNewUrlParser: true });
 
-const specificUserId = "1"; //86028224
+let verifiedChatId = null;
 
 const db = mongoose.connection;
 db.on("error", console.error.bind(console, "MongoDB connection error:"));
@@ -17,6 +17,7 @@ bot.onText(/\/start/, (msg) => {
   // Check if user provided the correct password
   if (msg.text.split(" ")[1] === process.env.FRIDAYMONITORINGTOOL) {
     bot.sendMessage(chatId, "Welcome! You have access to the bot.");
+    verifiedChatId = chatId;
   } else {
     bot.sendMessage(
       chatId,
@@ -36,9 +37,15 @@ db.once("open", function () {
     if (change.operationType === "insert") {
       const { userId, question, answer } = change.fullDocument;
 
-      if (userId !== specificUserId) {
+      if (userId === specificUserId) {
         const message = `New question added:\n\nQuestion: ${question}\nAnswer: ${answer}`;
-        bot.sendMessage(process.env.TELEGRAM_USER_ID, message);
+
+        // Check if a verified user has initiated the /start command
+        if (verifiedChatId) {
+          bot.sendMessage(verifiedChatId, message);
+        } else {
+          console.error("No verified user found!");
+        }
       }
     }
   });
@@ -46,3 +53,6 @@ db.once("open", function () {
 
 // Start the server
 const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server listening on port ${PORT}`);
+});
