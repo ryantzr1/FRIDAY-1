@@ -39,7 +39,7 @@ db.once("open", function () {
 
       specificUserId = "1";
 
-      if (userId === specificUserId) {
+      if (userId != specificUserId) {
         const message = `New question added:\n\nQuestion: ${question}\nAnswer: ${answer}`;
 
         // Check if a verified user has initiated the /start command
