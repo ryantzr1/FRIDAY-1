@@ -1,7 +1,9 @@
 const TelegramBot = require("node-telegram-bot-api");
 const mongoose = require("mongoose");
 require("dotenv").config();
+const express = require("express");
 
+const app = express();
 const bot = new TelegramBot(process.env.TELEGRAM_BOT_TOKEN, { polling: true });
 
 mongoose.connect(process.env.MONGODB_URL, { useNewUrlParser: true });
@@ -42,4 +44,10 @@ db.once("open", function () {
       }
     }
   });
+});
+
+// Start the server
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server listening on port ${PORT}`);
 });
