@@ -1,0 +1,23 @@
+{
+    "name": "friday-monitoring-tool",
+    "version": "1.0.0",
+    "description": "A monitoring tool for MongoDB updates via Telegram bot",
+    "main": "index.js",
+    "scripts": {
+      "start": "node index.js"
+    },
+    "keywords": [
+      "mongodb",
+      "telegram",
+      "bot",
+      "monitoring"
+    ],
+    "author": "Your Name",
+    "license": "MIT",
+    "dependencies": {
+      "dotenv": "^10.0.0",
+      "mongoose": "^6.0.14",
+      "node-telegram-bot-api": "^0.54.0"
+    }
+  }
+  
