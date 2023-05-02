@@ -37,17 +37,11 @@ db.once("open", function () {
     if (change.operationType === "insert") {
       const { userId, question, answer } = change.fullDocument;
 
-      specificUserId = "86025540"; //Ryan's testing id
+      let specificUserId = "86025540"; //Ryan's testing id
 
-      if (userId != specificUserId) {
+      if (userId !== specificUserId && verifiedChatId) {
         const message = `New question added:\n\nQuestion: ${question}\nAnswer: ${answer}`;
-
-        // Check if a verified user has initiated the /start command
-        if (verifiedChatId) {
-          bot.sendMessage(verifiedChatId, message);
-        } else {
-          console.error("No verified user found!");
-        }
+        bot.sendMessage(verifiedChatId, message);
       }
     }
   });
