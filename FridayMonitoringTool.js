@@ -6,7 +6,7 @@ const bot = new TelegramBot(process.env.TELEGRAM_BOT_TOKEN, { polling: true });
 
 mongoose.connect(process.env.MONGODB_URL, { useNewUrlParser: true });
 
-const specificUserId = "86028224";
+const specificUserId = "1"; //86028224
 
 const db = mongoose.connection;
 db.on("error", console.error.bind(console, "MongoDB connection error:"));
