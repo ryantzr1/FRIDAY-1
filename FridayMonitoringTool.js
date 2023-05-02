@@ -1,3 +1,5 @@
+const express = require("express");
+const app = express();
 const TelegramBot = require("node-telegram-bot-api");
 const mongoose = require("mongoose");
 require("dotenv").config();
@@ -45,4 +47,10 @@ db.once("open", function () {
       }
     }
   });
+});
+
+// Listen to the correct port specified by Heroku
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server listening on port ${PORT}`);
 });
