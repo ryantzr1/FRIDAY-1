@@ -15,16 +15,30 @@ db.on("error", console.error.bind(console, "MongoDB connection error:"));
 
 bot.onText(/\/start/, (msg) => {
   const chatId = msg.chat.id;
+  const chatType = msg.chat.type;
 
-  // Check if user provided the correct password
-  if (msg.text.split(" ")[1] === process.env.FRIDAYMONITORINGTOOL) {
-    bot.sendMessage(chatId, "Welcome! You have access to the bot.");
-    verifiedChatId = chatId;
+  if (chatType === "channel") {
+    // Check if user provided the correct password
+    if (msg.text.split(" ")[1] === process.env.FRIDAYMONITORINGTOOL) {
+      bot.sendMessage(chatId, "Welcome! You have access to the bot.");
+      verifiedChatId = `@${msg.chat.username}`;
+    } else {
+      bot.sendMessage(
+        chatId,
+        "Access denied. Please provide the correct password."
+      );
+    }
   } else {
-    bot.sendMessage(
-      chatId,
-      "Access denied. Please provide the correct password."
-    );
+    // Private chat handling remains the same
+    if (msg.text.split(" ")[1] === process.env.FRIDAYMONITORINGTOOL) {
+      bot.sendMessage(chatId, "Welcome! You have access to the bot.");
+      verifiedChatId = chatId;
+    } else {
+      bot.sendMessage(
+        chatId,
+        "Access denied. Please provide the correct password."
+      );
+    }
   }
 });
 
