@@ -53,9 +53,10 @@ db.once("open", function () {
     if (change.operationType === "insert") {
       const { userId, question, answer } = change.fullDocument;
 
-      let specificUserId = "86028224" || "85788878"; //Ryan's testing id
+      let ryanTest = "86028224";
+      let ryanLive = "85788878"; //Ryan's testing id
 
-      if (userId !== specificUserId && verifiedChatId) {
+      if (userId !== ryanLive && userId != ryanTest && verifiedChatId) {
         const message = `New question added:\n\nQuestion: ${question}\nAnswer: ${answer}`;
         bot.sendMessage(verifiedChatId, message);
       }
