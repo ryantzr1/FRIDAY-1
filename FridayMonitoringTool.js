@@ -23,7 +23,7 @@ bot.onText(/\/start/, (msg) => {
     // Check if user provided the correct password
     if (msg.text.split(" ")[1] === process.env.FRIDAYMONITORINGTOOL) {
       bot.sendMessage(chatId, "Welcome! You have access to the bot.");
-      verifiedChatId = `@${msg.chat.username}`;
+      verifiedChatIds.push(`@${msg.chat.username}`);
     } else {
       bot.sendMessage(
         chatId,
@@ -179,9 +179,8 @@ bot.onText(
 
     const bugReport = `New bug reported:\n\nIssue faced: ${issueFaced}\nSuspected platform failure: ${platformFailure}\nSeverity level: ${severityLevel}`;
 
-    // Send the bug report to all verified users (who are connected)
+    console.log("Sending bug report...");
     for (const userChatId of verifiedChatIds) {
-      console.log(`Sending bug report to user ${userChatId}`);
       bot.sendMessage(userChatId, bugReport).catch((err) => {
         console.error(`Error sending message to user ${userChatId}: ${err}`);
       });
