@@ -7,7 +7,9 @@ const axios = require("axios");
 
 const bot = new TelegramBot(process.env.TELEGRAM_BOT_TOKEN, { polling: true });
 
-mongoose.connect(process.env.MONGODB_URL, { useNewUrlParser: true });
+mongoose.connect(process.env.MONGODB_URL, { useNewUrlParser: true }, () =>
+  watchCollection()
+);
 
 //store verified users
 let verifiedChatIds = new Set();
@@ -306,6 +308,28 @@ bot.onText(/\/newfeature/, (msg) => {
     });
   }
 });
+
+//track mongodb changes
+async function watchCollection() {
+  const collection = db.collection("your_collection_name");
+  const changeStream = collection.watch();
+
+  changeStream.on("change", (next) => {
+    // Perform actions when a new object is inserted into the collection
+    console.log("New object inserted:", next.fullDocument);
+
+    const question = next.fullDocument.Question;
+    const answer = next.fullDocument.Answer;
+
+    // Notify all verified users of the new object
+    for (const userChatId of verifiedChatIds) {
+      bot.sendMessage(
+        userChatId,
+        `New question added:\n\nQuestion: ${question}\nAnswer: ${answer}`
+      );
+    }
+  });
+}
 
 // Listen to the correct port specified by Heroku
 const PORT = process.env.PORT || 3000;
