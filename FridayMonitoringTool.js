@@ -20,7 +20,6 @@ let connectedUsers = [];
 bot.onText(/\/start/, (msg) => {
   const chatId = msg.chat.id;
   const chatType = msg.chat.type;
-  showMenuBar(chatId);
 
   if (!connectedUsers.includes(chatId)) {
     connectedUsers.push(chatId);
@@ -93,29 +92,6 @@ bot.onText(/\/troubleshoot/, async (msg) => {
 bot.on("callback_query", async (callbackQuery) => {
   const chatId = callbackQuery.message.chat.id;
 
-  // if (callbackQuery.data === "/troubleshoot") {
-  //   bot.answerCallbackQuery(callbackQuery.id); // Acknowledge the callback query
-  //   bot.sendMessage(chatId, "What kind of problem are you facing?", {
-  //     reply_markup: {
-  //       inline_keyboard: [
-  //         [
-  //           { text: "Bot is not answering", callback_data: "no_answer" },
-  //           { text: "Issue with respond.io", callback_data: "respond_io" },
-  //         ],
-  //       ],
-  //     },
-  //   });
-  // } else if (callbackQuery.data === "/reportbug") {
-  //   bot.answerCallbackQuery(callbackQuery.id); // Acknowledge the callback query
-  //   bot.sendMessage(
-  //     chatId,
-  //     "Please provide the following information separated by new lines:\n\n" +
-  //       "Issue faced:\n" +
-  //       "Suspected platform failure: Respond.io/OpenAI/Heroku\n" +
-  //       "Severity level:"
-  //   );
-  // }
-
   if (callbackQuery.data === "no_answer") {
     bot.sendMessage(chatId, "Please tag @weihern for assistance.");
   } else if (callbackQuery.data === "respond_io") {
@@ -141,7 +117,7 @@ bot.onText(/\/reportbug/, (msg) => {
 bot.onText(
   /^Issue faced:(.*)\nSuspected platform failure:(.*)\nSeverity level:(.*)/i,
   (msg, match) => {
-    const chatId = msg.chat.id;
+    // const chatId = msg.chat.id;
     const issueFaced = match[1].trim();
     const platformFailure = match[2].trim();
     const severityLevel = match[3].trim();
@@ -150,22 +126,11 @@ bot.onText(
 
     // Send the bug report to all connected users
     for (const userChatId of connectedUsers) {
+      console.log(userChatId + " Hello");
       bot.sendMessage(userChatId, bugReport);
     }
   }
 );
-
-// This function handles the menu bar
-function showMenuBar(chatId) {
-  bot.sendMessage(chatId, "Select an option:", {
-    reply_markup: {
-      inline_keyboard: [
-        [{ text: "Troubleshoot", callback_data: "/troubleshoot" }],
-        [{ text: "Report Bug", callback_data: "/reportbug" }],
-      ],
-    },
-  });
-}
 
 // Listen to the correct port specified by Heroku
 const PORT = process.env.PORT || 3000;
