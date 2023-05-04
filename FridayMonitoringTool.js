@@ -68,9 +68,8 @@ db.once("open", function () {
 });
 
 const commands = [
-  { command: "/start", description: "Start using bot" },
-  { command: "/help", description: "Display help" },
-  { command: "/menu", description: "Display menu" },
+  { command: "/troubleshoot", description: "Guide to troubleshoot issues" },
+  { command: "/reportbug", description: "Report Bugs" },
 ];
 
 if (verifiedChatIds.includes(chatId)) {
