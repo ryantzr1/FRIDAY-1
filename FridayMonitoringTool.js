@@ -22,7 +22,7 @@ bot.onText(/\/start/, (msg) => {
   if (chatType === "channel") {
     // Check if user provided the correct password
     if (msg.text.split(" ")[1] === process.env.FRIDAYMONITORINGTOOL) {
-      bot.sendMessage(chatId, "Welcome! You have access to the bot.");
+      // bot.sendMessage(chatId, "Welcome! You have access to the bot.");
       verifiedChatIds.add(`@${msg.chat.username}`);
     } else {
       bot.sendMessage(
