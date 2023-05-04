@@ -170,7 +170,7 @@ bot.onText(/\/reportbug/, (msg) => {
 });
 
 bot.onText(
-  /^Issue faced:(.*)\nSuspected platform failure:(.*)\nSeverity level:(.*)/i,
+  /^Issue faced:(.*)\n(?:Suspected )?(?:Platform )?Failure:(.*)\nSeverity level:(.*)/i,
   (msg, match) => {
     const issueFaced = match[1].trim();
     const platformFailure = match[2].trim();
@@ -178,11 +178,7 @@ bot.onText(
 
     const bugReport = `New bug reported:\n\nIssue faced: ${issueFaced}\nSuspected platform failure: ${platformFailure}\nSeverity level: ${severityLevel}`;
 
-    console.log("Sending bug report...");
-    console.log("verifiedChatIds: ", verifiedChatIds);
-
     for (const userChatId of verifiedChatIds) {
-      console.log("Sending bug report to user ", userChatId);
       bot.sendMessage(userChatId, bugReport).catch((err) => {
         console.error(`Error sending message to user ${userChatId}: ${err}`);
       });
