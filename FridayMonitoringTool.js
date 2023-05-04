@@ -64,6 +64,34 @@ db.once("open", function () {
   });
 });
 
+bot.onText(/\/troubleshoot/, async (msg) => {
+  const chatId = msg.chat.id;
+
+  bot.sendMessage(chatId, "What kind of problem are you facing?", {
+    reply_markup: {
+      inline_keyboard: [
+        [
+          { text: "Bot is not answering", callback_data: "no_answer" },
+          { text: "Issue with respond.io", callback_data: "respond_io" },
+        ],
+      ],
+    },
+  });
+});
+
+bot.on("callback_query", async (callbackQuery) => {
+  const chatId = callbackQuery.message.chat.id;
+
+  if (callbackQuery.data === "no_answer") {
+    bot.sendMessage(chatId, "Please tag @weihern for assistance.");
+  } else if (callbackQuery.data === "respond_io") {
+    bot.sendMessage(
+      chatId,
+      "Please go to https://app.respond.io/space/122282/workflows/builder/1683131397851603 and turn the workflow off as a precaution."
+    );
+  }
+});
+
 // Listen to the correct port specified by Heroku
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
