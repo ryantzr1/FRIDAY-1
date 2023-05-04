@@ -160,6 +160,31 @@ bot.on("callback_query", async (callbackQuery) => {
         bot.sendMessage(chatId, "Feature added successfully!");
       });
     });
+  } else if (
+    callbackQuery.data === "heroku_password" ||
+    callbackQuery.data === "huggingface_password" ||
+    callbackQuery.data === "gmail/mongodb_password"
+  ) {
+    let password;
+    switch (data) {
+      case "heroku_password":
+        password = process.env.HEROKU_PASSWORD;
+        break;
+      case "huggingface_password":
+        password = process.env.HUGGINGFACE_PASSWORD;
+        break;
+      case "gmail/mongodb_password":
+        password = process.env.GMAIL_PASSWORD;
+        break;
+    }
+    bot
+      .sendMessage(chatId, `Password: ${password}`, {
+        reply_to_message_id: callbackQuery.message.message_id,
+        reply_markup: { remove_keyboard: true },
+      })
+      .then((msg) => {
+        setTimeout(() => bot.deleteMessage(msg.chat.id, msg.message_id), 10000); // Delete message after 10 seconds
+      });
   }
 });
 
