@@ -166,7 +166,7 @@ bot.on("callback_query", async (callbackQuery) => {
     callbackQuery.data === "gmail/mongodb_password"
   ) {
     let password;
-    switch (data) {
+    switch (callbackQuery.data) {
       case "heroku_password":
         password = process.env.HEROKU_PASSWORD;
         break;
