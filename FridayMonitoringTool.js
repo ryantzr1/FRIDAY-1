@@ -35,6 +35,9 @@ bot.onText(/\/start/, (msg) => {
     if (msg.text.split(" ")[1] === process.env.FRIDAYMONITORINGTOOL) {
       bot.sendMessage(chatId, "Welcome! You have access to the bot.");
       verifiedChatIds.push(chatId); // Add to verifiedChatIds array
+
+      // Set the commands for verified users
+      bot.setMyCommands(commands);
     } else {
       bot.sendMessage(
         chatId,
@@ -43,38 +46,6 @@ bot.onText(/\/start/, (msg) => {
     }
   }
 });
-
-// This handles the updates from mongodb
-db.once("open", function () {
-  console.log("Connected to database!");
-
-  const collection = db.collection("queries");
-
-  const changeStream = collection.watch();
-
-  changeStream.on("change", async (change) => {
-    if (change.operationType === "insert") {
-      const { userId, question, answer } = change.fullDocument;
-
-      let ryanTest = "86028224";
-      let ryanLive = "85788878"; //Ryan's testing id
-
-      if (userId !== ryanLive && userId != ryanTest && verifiedChatId) {
-        const message = `New question added:\n\nQuestion: ${question}\nAnswer: ${answer}`;
-        bot.sendMessage(verifiedChatId, message);
-      }
-    }
-  });
-});
-
-const commands = [
-  { command: "/troubleshoot", description: "Guide to troubleshoot issues" },
-  { command: "/reportbug", description: "Report Bugs" },
-];
-
-if (verifiedChatIds.includes(chatId)) {
-  bot.setMyCommands(commands);
-}
 
 // Provides a guide to troubleshoot errors
 bot.onText(/\/troubleshoot/, async (msg) => {
