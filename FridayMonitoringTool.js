@@ -118,6 +118,52 @@ bot.on("callback_query", async (callbackQuery) => {
       },
     });
 
+    bot.on("callback_query", (callbackQuery) => {
+      const chatId = callbackQuery.message.chat.id;
+      const website = callbackQuery.data;
+
+      if (website === "heroku_password") {
+        const password = process.env.HEROKU_PASSWORD;
+        bot
+          .sendMessage(chatId, `Heroku password: ${password}`, {
+            reply_to_message_id: callbackQuery.message.message_id,
+            reply_markup: { remove_keyboard: true },
+          })
+          .then((msg) => {
+            setTimeout(
+              () => bot.deleteMessage(msg.chat.id, msg.message_id),
+              10000
+            ); // Delete message after 10 seconds
+          });
+      } else if (website === "huggingface_password") {
+        const password = process.env.HUGGINGFACE_PASSWORD;
+        bot
+          .sendMessage(chatId, `Hugging Face password: ${password}`, {
+            reply_to_message_id: callbackQuery.message.message_id,
+            reply_markup: { remove_keyboard: true },
+          })
+          .then((msg) => {
+            setTimeout(
+              () => bot.deleteMessage(msg.chat.id, msg.message_id),
+              10000
+            ); // Delete message after 10 seconds
+          });
+      } else if (website === "gmail_password") {
+        const password = process.env.GMAIL_PASSWORD;
+        bot
+          .sendMessage(chatId, `Gmail password: ${password}`, {
+            reply_to_message_id: callbackQuery.message.message_id,
+            reply_markup: { remove_keyboard: true },
+          })
+          .then((msg) => {
+            setTimeout(
+              () => bot.deleteMessage(msg.chat.id, msg.message_id),
+              10000
+            ); // Delete message after 10 seconds
+          });
+      }
+    });
+
     // Set listener to handle platform selection
     bot.on("callback_query", (callbackQuery) => {
       const platform = callbackQuery.data;
@@ -152,6 +198,31 @@ bot.on("callback_query", async (callbackQuery) => {
         });
       });
     });
+  }
+});
+
+//Function to get our passwords
+bot.onText(/\/getpassword/, (msg) => {
+  const chatId = msg.chat.id;
+
+  if (verifiedChatIds.has(chatId)) {
+    // Send message with buttons to select the platform
+    bot.sendMessage(chatId, "Select a website to get the password from:", {
+      reply_markup: {
+        inline_keyboard: [
+          [
+            { text: "Heroku", callback_data: "heroku_password" },
+            { text: "Hugging Face", callback_data: "huggingface_password" },
+          ],
+          [{ text: "Gmail", callback_data: "gmail/mongodb_password" }],
+        ],
+      },
+    });
+  } else {
+    bot.sendMessage(
+      chatId,
+      "Access denied. Please provide the correct password with /start command."
+    );
   }
 });
 
