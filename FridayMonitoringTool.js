@@ -13,11 +13,18 @@ let verifiedChatId = null;
 const db = mongoose.connection;
 db.on("error", console.error.bind(console, "MongoDB connection error:"));
 
+//this array to store connected users
+let connectedUsers = [];
+
 // Handle the /start command
 bot.onText(/\/start/, (msg) => {
   const chatId = msg.chat.id;
   const chatType = msg.chat.type;
   showMenuBar(chatId);
+
+  if (!connectedUsers.includes(chatId)) {
+    connectedUsers.push(chatId);
+  }
 
   if (chatType === "channel") {
     // Check if user provided the correct password
