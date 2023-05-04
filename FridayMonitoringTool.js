@@ -35,6 +35,7 @@ bot.onText(/\/start/, (msg) => {
     if (msg.text.split(" ")[1] === process.env.FRIDAYMONITORINGTOOL) {
       bot.sendMessage(chatId, "Welcome! You have access to the bot.");
       verifiedChatIds.push(chatId); // Add to verifiedChatIds array
+      console.log(`User ${chatId} added to verifiedChatIds array.`);
 
       const commands = [
         {
