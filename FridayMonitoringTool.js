@@ -137,6 +137,61 @@ bot.onText(
   }
 );
 
+//test
+bot.onText(/\/newfeature/, (msg) => {
+  const chatId = msg.chat.id;
+
+  // Send message with buttons to select the platform
+  bot.sendMessage(chatId, "Which platform did you build the feature on?", {
+    reply_markup: {
+      inline_keyboard: [
+        [
+          { text: "Respond.io", callback_data: "respond_io" },
+          { text: "Backend Server", callback_data: "backend_server" },
+          { text: "FRIDAY AI", callback_data: "friday_ai" },
+        ],
+      ],
+    },
+  });
+});
+
+// Handle platform selection callback
+bot.on("callback_query", (callbackQuery) => {
+  const chatId = callbackQuery.message.chat.id;
+  const platform = callbackQuery.data;
+
+  // Send message to input feature details
+  bot.sendMessage(chatId, `What is the feature you built on ${platform}?`);
+
+  // Set listener to handle feature details
+  bot.once("message", (msg) => {
+    const featureDetails = msg.text;
+
+    // Send message to input short description of feature
+    bot.sendMessage(
+      chatId,
+      "Please provide a short description of the feature you built."
+    );
+
+    // Set listener to handle short description of feature
+    bot.once("message", (msg) => {
+      const featureDescription = msg.text;
+
+      // Send message to all verified users with the feature details
+      for (const userChatId of verifiedChatIds) {
+        console.log(userChatId + "This is a user!");
+        bot.sendMessage(
+          userChatId,
+          `New feature added!\n\nPlatform: ${platform}\nFeature: ${featureDetails}\nDescription: ${featureDescription}`
+        );
+      }
+
+      // Send confirmation message to user
+      bot.sendMessage(chatId, "Feature added successfully!");
+    });
+  });
+});
+
 // Listen to the correct port specified by Heroku
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
