@@ -125,6 +125,8 @@ bot.onText(
     const bugReport = `New bug reported:\n\nIssue faced: ${issueFaced}\nSuspected platform failure: ${platformFailure}\nSeverity level: ${severityLevel}`;
 
     // Send the bug report to all connected users
+    console.log(connectedUsers);
+
     for (const userChatId of connectedUsers) {
       console.log(userChatId + " Hello");
       bot.sendMessage(userChatId, bugReport);
