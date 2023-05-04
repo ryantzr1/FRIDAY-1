@@ -15,23 +15,12 @@ const db = mongoose.connection;
 db.on("error", console.error.bind(console, "MongoDB connection error:"));
 
 // Handle the /start command
+// Handle the /start command
 bot.onText(/\/start/, (msg) => {
   const chatId = msg.chat.id;
   const chatType = msg.chat.type;
 
-  if (chatType === "channel") {
-    // Check if user provided the correct password
-    if (msg.text.split(" ")[1] === process.env.FRIDAYMONITORINGTOOL) {
-      // bot.sendMessage(chatId, "Welcome! You have access to the bot.");
-      verifiedChatIds.add(`@${msg.chat.username}`);
-    } else {
-      bot.sendMessage(
-        chatId,
-        "Access denied. Please provide the correct password."
-      );
-    }
-  } else {
-    // Private chat handling remains the same
+  if (chatType === "private") {
     if (msg.text.split(" ")[1] === process.env.FRIDAYMONITORINGTOOL) {
       bot.sendMessage(chatId, "Welcome! You have access to the bot.");
       verifiedChatIds.add(chatId); // Add to verifiedChatIds array
@@ -45,24 +34,26 @@ bot.onText(/\/start/, (msg) => {
         { command: "/newfeature", description: "Push a new feature!" },
       ];
 
-      if (chatType === "private") {
-        // Check if the chat type is private
-        const keyboard = {
-          keyboard: commands.map((command) => [{ text: command.command }]),
-          resize_keyboard: true,
-          one_time_keyboard: true,
-        };
+      const keyboard = {
+        keyboard: commands.map((command) => [{ text: command.command }]),
+        resize_keyboard: true,
+        one_time_keyboard: true,
+      };
 
-        bot.sendMessage(chatId, "Available commands:", {
-          reply_markup: keyboard,
-        });
-      }
+      bot.sendMessage(chatId, "Available commands:", {
+        reply_markup: keyboard,
+      });
     } else {
       bot.sendMessage(
         chatId,
         "Access denied. Please provide the correct password."
       );
     }
+  } else {
+    bot.sendMessage(
+      chatId,
+      "This bot is only available for private chats. Please contact the bot in a private chat."
+    );
   }
 });
 
