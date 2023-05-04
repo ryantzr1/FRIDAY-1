@@ -86,6 +86,29 @@ bot.onText(/\/troubleshoot/, async (msg) => {
 bot.on("callback_query", async (callbackQuery) => {
   const chatId = callbackQuery.message.chat.id;
 
+  if (callbackQuery.data === "/troubleshoot") {
+    bot.answerCallbackQuery(callbackQuery.id); // Acknowledge the callback query
+    bot.sendMessage(chatId, "What kind of problem are you facing?", {
+      reply_markup: {
+        inline_keyboard: [
+          [
+            { text: "Bot is not answering", callback_data: "no_answer" },
+            { text: "Issue with respond.io", callback_data: "respond_io" },
+          ],
+        ],
+      },
+    });
+  } else if (callbackQuery.data === "/reportbug") {
+    bot.answerCallbackQuery(callbackQuery.id); // Acknowledge the callback query
+    bot.sendMessage(
+      chatId,
+      "Please provide the following information separated by new lines:\n\n" +
+        "Issue faced:\n" +
+        "Suspected platform failure: Respond.io/OpenAI, Heroku\n" +
+        "Severity level:"
+    );
+  }
+
   if (callbackQuery.data === "no_answer") {
     bot.sendMessage(chatId, "Please tag @weihern for assistance.");
   } else if (callbackQuery.data === "respond_io") {
@@ -103,7 +126,7 @@ bot.onText(/\/reportbug/, (msg) => {
     chatId,
     "Please provide the following information separated by new lines:\n\n" +
       "Issue faced:\n" +
-      "Suspected platform failure: Respond.io/OpenAI, Heroku\n" +
+      "Suspected platform failure: Respond.io OR OpenAI OR Heroku\n" +
       "Severity level:"
   );
 });
