@@ -205,7 +205,7 @@ bot.onText(/\/getPassword/, (msg) => {
             { text: "Heroku", callback_data: "heroku_password" },
             { text: "Hugging Face", callback_data: "huggingface_password" },
           ],
-          [{ text: "Gmail", callback_data: "gmail/mongodb_password" }],
+          [{ text: "Gmail/MongoDB", callback_data: "gmail/mongodb_password" }],
         ],
       },
     });
