@@ -8,7 +8,7 @@ const axios = require("axios");
 const bot = new TelegramBot(process.env.TELEGRAM_BOT_TOKEN, { polling: true });
 
 mongoose.connect(process.env.MONGODB_URL, { useNewUrlParser: true }, () =>
-  watchCollection()
+  trackMessages()
 );
 
 //store verified users
@@ -310,8 +310,8 @@ bot.onText(/\/newfeature/, (msg) => {
 });
 
 //track mongodb changes
-async function watchCollection() {
-  const collection = db.collection("your_collection_name");
+async function trackMessages() {
+  const collection = db.collection("queries");
   const changeStream = collection.watch();
 
   changeStream.on("change", (next) => {
