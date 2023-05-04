@@ -181,8 +181,10 @@ bot.onText(
 
     // Send the bug report to all verified users (who are connected)
     for (const userChatId of verifiedChatIds) {
-      console.log(userChatId + " Hello");
-      bot.sendMessage(userChatId, bugReport);
+      console.log(`Sending bug report to user ${userChatId}`);
+      bot.sendMessage(userChatId, bugReport).catch((err) => {
+        console.error(`Error sending message to user ${userChatId}: ${err}`);
+      });
     }
   }
 );
