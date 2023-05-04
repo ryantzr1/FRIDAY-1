@@ -3,6 +3,7 @@ const app = express();
 const TelegramBot = require("node-telegram-bot-api");
 const mongoose = require("mongoose");
 require("dotenv").config();
+const axios = require("axios");
 
 const bot = new TelegramBot(process.env.TELEGRAM_BOT_TOKEN, { polling: true });
 
@@ -164,10 +165,10 @@ bot.onText(/\/checkserver/, async (msg) => {
       if (response.data.Test === "Hello World") {
         bot.sendMessage(chatId, "Server is running!");
       } else {
-        bot.sendMessage(chatId, response.data.Test);
+        bot.sendMessage(chatId, "Server is not responding properly.");
       }
     } catch (error) {
-      bot.sendMessage(chatId, response.data.Test);
+      bot.sendMessage(chatId, "Server is not responding.");
     }
   } else {
     bot.sendMessage(
