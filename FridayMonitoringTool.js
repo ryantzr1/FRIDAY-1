@@ -9,7 +9,7 @@ const bot = new TelegramBot(process.env.TELEGRAM_BOT_TOKEN, { polling: true });
 mongoose.connect(process.env.MONGODB_URL, { useNewUrlParser: true });
 
 //store verified users
-let verifiedChatIds = [];
+let verifiedChatIds = new Set();
 
 const db = mongoose.connection;
 db.on("error", console.error.bind(console, "MongoDB connection error:"));
@@ -23,7 +23,7 @@ bot.onText(/\/start/, (msg) => {
     // Check if user provided the correct password
     if (msg.text.split(" ")[1] === process.env.FRIDAYMONITORINGTOOL) {
       bot.sendMessage(chatId, "Welcome! You have access to the bot.");
-      verifiedChatIds.push(`@${msg.chat.username}`);
+      verifiedChatIds.add(`@${msg.chat.username}`);
     } else {
       bot.sendMessage(
         chatId,
@@ -34,8 +34,7 @@ bot.onText(/\/start/, (msg) => {
     // Private chat handling remains the same
     if (msg.text.split(" ")[1] === process.env.FRIDAYMONITORINGTOOL) {
       bot.sendMessage(chatId, "Welcome! You have access to the bot.");
-      verifiedChatIds.push(chatId); // Add to verifiedChatIds array
-      console.log(`User ${chatId} added to verifiedChatIds array.`);
+      verifiedChatIds.add(chatId); // Add to verifiedChatIds array
 
       const commands = [
         {
@@ -68,7 +67,7 @@ bot.onText(/\/start/, (msg) => {
 bot.onText(/\/troubleshoot/, async (msg) => {
   const chatId = msg.chat.id;
 
-  if (verifiedChatIds.includes(chatId)) {
+  if (verifiedChatIds.has(chatId)) {
     bot.sendMessage(chatId, "What kind of problem are you facing?", {
       reply_markup: {
         inline_keyboard: [
@@ -152,7 +151,7 @@ bot.on("callback_query", async (callbackQuery) => {
 bot.onText(/\/reportbug/, (msg) => {
   const chatId = msg.chat.id;
 
-  if (verifiedChatIds.includes(chatId)) {
+  if (verifiedChatIds.has(chatId)) {
     bot.sendMessage(
       chatId,
       "Issue faced:\n" +
@@ -190,18 +189,20 @@ bot.onText(
 bot.onText(/\/newfeature/, (msg) => {
   const chatId = msg.chat.id;
 
-  // Send message with buttons to select the platform
-  bot.sendMessage(chatId, "Which platform did you build the feature on?", {
-    reply_markup: {
-      inline_keyboard: [
-        [
-          { text: "Respond.io", callback_data: "respond_io" },
-          { text: "Backend Server", callback_data: "backend_server" },
-          { text: "FRIDAY AI", callback_data: "friday_ai" },
+  if (verifiedChatIds.has(chatId)) {
+    // Send message with buttons to select the platform
+    bot.sendMessage(chatId, "Which platform did you build the feature on?", {
+      reply_markup: {
+        inline_keyboard: [
+          [
+            { text: "Respond.io", callback_data: "respond_io" },
+            { text: "Backend Server", callback_data: "backend_server" },
+            { text: "FRIDAY AI", callback_data: "friday_ai" },
+          ],
         ],
-      ],
-    },
-  });
+      },
+    });
+  }
 });
 
 // Listen to the correct port specified by Heroku
