@@ -45,7 +45,8 @@ bot.onText(/\/start/, (msg) => {
         { command: "/newfeature", description: "Push a new feature!" },
       ];
 
-      if (chatType != "channel") {
+      if (chatType === "private") {
+        // Check if the chat type is private
         const keyboard = {
           keyboard: commands.map((command) => [{ text: command.command }]),
           resize_keyboard: true,
