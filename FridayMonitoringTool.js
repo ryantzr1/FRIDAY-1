@@ -67,14 +67,18 @@ db.once("open", function () {
   });
 });
 
-// Add a function to show all available commands
-bot.onText(/\/commands/, (msg) => {
+// Add a function to show all available commands when a user types "/"
+bot.onText(/^\/$/, (msg) => {
   const chatId = msg.chat.id;
 
   if (verifiedChatIds.includes(chatId)) {
     bot.sendMessage(
       chatId,
-      "Available commands:\n\n/start\n/troubleshoot\n/reportbug"
+      "Available commands:\n\n" +
+        "/start - Start the bot and get access\n" +
+        "/troubleshoot - Troubleshoot issues\n" +
+        "/reportbug - Report a bug\n" +
+        "/commands - Show all available commands"
     );
   } else {
     bot.sendMessage(
