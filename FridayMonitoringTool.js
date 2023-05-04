@@ -318,8 +318,8 @@ async function trackMessages() {
     // Perform actions when a new object is inserted into the collection
     console.log("New object inserted:", next.fullDocument);
 
-    const question = next.fullDocument.Question;
-    const answer = next.fullDocument.Answer;
+    const question = next.fullDocument.question;
+    const answer = next.fullDocument.answer;
 
     // Notify all verified users of the new object
     for (const userChatId of verifiedChatIds) {
