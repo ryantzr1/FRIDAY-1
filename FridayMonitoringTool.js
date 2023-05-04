@@ -150,6 +150,29 @@ bot.on("callback_query", async (callbackQuery) => {
   }
 });
 
+//checking OpenAI (FAST API) server to see if it is working
+bot.onText(/\/checkserver/, async (msg) => {
+  const chatId = msg.chat.id;
+
+  if (verifiedChatIds.has(chatId)) {
+    try {
+      const response = await axios.get("http://54.238.198.35/");
+      if (response.data.Test === "Hello World") {
+        bot.sendMessage(chatId, "Server is running!");
+      } else {
+        bot.sendMessage(chatId, "Server is not responding properly.");
+      }
+    } catch (error) {
+      bot.sendMessage(chatId, "Server is not responding.");
+    }
+  } else {
+    bot.sendMessage(
+      chatId,
+      "Access denied. Please provide the correct password with /start command."
+    );
+  }
+});
+
 // Function to report bugs
 bot.onText(/\/reportbug/, (msg) => {
   const chatId = msg.chat.id;
