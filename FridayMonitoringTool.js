@@ -43,8 +43,16 @@ bot.onText(/\/start/, (msg) => {
         },
         { command: "/reportbug", description: "Report Bugs" },
       ];
-      // Set the commands for verified users
-      bot.setMyCommands(commands);
+
+      const keyboard = {
+        keyboard: commands.map((command) => [{ text: command.command }]),
+        resize_keyboard: true,
+        one_time_keyboard: true,
+      };
+
+      bot.sendMessage(chatId, "Available commands:", {
+        reply_markup: keyboard,
+      });
     } else {
       bot.sendMessage(
         chatId,
