@@ -36,6 +36,13 @@ bot.onText(/\/start/, (msg) => {
       bot.sendMessage(chatId, "Welcome! You have access to the bot.");
       verifiedChatIds.push(chatId); // Add to verifiedChatIds array
 
+      const commands = [
+        {
+          command: "/troubleshoot",
+          description: "Guide to troubleshoot issues",
+        },
+        { command: "/reportbug", description: "Report Bugs" },
+      ];
       // Set the commands for verified users
       bot.setMyCommands(commands);
     } else {
