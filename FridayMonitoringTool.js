@@ -72,14 +72,15 @@ bot.onText(/^\/$/, (msg) => {
   const chatId = msg.chat.id;
 
   if (verifiedChatIds.includes(chatId)) {
-    bot.sendMessage(
-      chatId,
-      "Available commands:\n\n" +
-        "/start - Start the bot and get access\n" +
-        "/troubleshoot - Troubleshoot issues\n" +
-        "/reportbug - Report a bug\n" +
-        "/commands - Show all available commands"
-    );
+    bot.sendMessage(chatId, "Available commands:", {
+      reply_markup: {
+        inline_keyboard: [
+          [{ text: "Start", callback_data: "/start" }],
+          [{ text: "Troubleshoot", callback_data: "/troubleshoot" }],
+          [{ text: "Report Bug", callback_data: "/reportbug" }],
+        ],
+      },
+    });
   } else {
     bot.sendMessage(
       chatId,
