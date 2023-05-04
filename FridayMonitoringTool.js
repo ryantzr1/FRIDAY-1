@@ -167,7 +167,7 @@ bot.onText(/\/checkserver/, async (msg) => {
         bot.sendMessage(chatId, response.data.Test);
       }
     } catch (error) {
-      bot.sendMessage(chatId, "Server is not responding.");
+      bot.sendMessage(chatId, response.data.Test);
     }
   } else {
     bot.sendMessage(
