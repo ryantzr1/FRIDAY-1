@@ -43,6 +43,10 @@ bot.onText(/\/start/, (msg) => {
         },
         { command: "/reportbug", description: "Report Bugs" },
         { command: "/newfeature", description: "Push a new feature!" },
+        {
+          command: "/checkserver",
+          description: "Use this to check if OpenAI is online",
+        },
       ];
 
       if (chatType === "private") {
