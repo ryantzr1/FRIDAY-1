@@ -95,6 +95,54 @@ bot.on("callback_query", async (callbackQuery) => {
       chatId,
       "Please go to https://app.respond.io/space/122282/workflows/builder/1683131397851603 using our FRIDAY Google account and turn the workflow off as a precaution."
     );
+  } else if (callbackQuery.data === "new_feature") {
+    // Send message with buttons to select the platform
+    bot.sendMessage(chatId, "Which platform did you build the feature on?", {
+      reply_markup: {
+        inline_keyboard: [
+          [
+            { text: "Respond.io", callback_data: "respond_io" },
+            { text: "Backend Server", callback_data: "backend_server" },
+            { text: "FRIDAY AI", callback_data: "friday_ai" },
+          ],
+        ],
+      },
+    });
+
+    // Set listener to handle platform selection
+    bot.on("callback_query", (callbackQuery) => {
+      const platform = callbackQuery.data;
+
+      // Send message to input feature details
+      bot.sendMessage(chatId, `What is the feature you built on ${platform}?`);
+
+      // Set listener to handle feature details
+      bot.once("message", (msg) => {
+        const featureDetails = msg.text;
+
+        // Send message to input short description of feature
+        bot.sendMessage(
+          chatId,
+          "Please provide a short description of the feature you built."
+        );
+
+        // Set listener to handle short description of feature
+        bot.once("message", (msg) => {
+          const featureDescription = msg.text;
+
+          // Send message to all verified users with the feature details
+          for (const userChatId of verifiedChatIds) {
+            bot.sendMessage(
+              userChatId,
+              `New feature added!\n\nPlatform: ${platform}\nFeature: ${featureDetails}\nDescription: ${featureDescription}`
+            );
+          }
+
+          // Send confirmation message to user
+          bot.sendMessage(chatId, "Feature added successfully!");
+        });
+      });
+    });
   }
 });
 
@@ -152,43 +200,6 @@ bot.onText(/\/newfeature/, (msg) => {
         ],
       ],
     },
-  });
-});
-
-// Handle platform selection callback
-bot.on("callback_query", (callbackQuery) => {
-  const chatId = callbackQuery.message.chat.id;
-  const platform = callbackQuery.data;
-
-  // Send message to input feature details
-  bot.sendMessage(chatId, `What is the feature you built on ${platform}?`);
-
-  // Set listener to handle feature details
-  bot.once("message", (msg) => {
-    const featureDetails = msg.text;
-
-    // Send message to input short description of feature
-    bot.sendMessage(
-      chatId,
-      "Please provide a short description of the feature you built."
-    );
-
-    // Set listener to handle short description of feature
-    bot.once("message", (msg) => {
-      const featureDescription = msg.text;
-
-      // Send message to all verified users with the feature details
-      for (const userChatId of verifiedChatIds) {
-        console.log(userChatId + "This is a user!");
-        bot.sendMessage(
-          userChatId,
-          `New feature added!\n\nPlatform: ${platform}\nFeature: ${featureDetails}\nDescription: ${featureDescription}`
-        );
-      }
-
-      // Send confirmation message to user
-      bot.sendMessage(chatId, "Feature added successfully!");
-    });
   });
 });
 
