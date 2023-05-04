@@ -42,6 +42,7 @@ bot.onText(/\/start/, (msg) => {
           description: "Guide to troubleshoot issues",
         },
         { command: "/reportbug", description: "Report Bugs" },
+        { command: "/newfeature", description: "Push a new feature!" },
       ];
 
       const keyboard = {
