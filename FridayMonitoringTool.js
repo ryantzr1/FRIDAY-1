@@ -35,28 +35,6 @@ bot.onText(/\/start/, (msg) => {
     if (msg.text.split(" ")[1] === process.env.FRIDAYMONITORINGTOOL) {
       bot.sendMessage(chatId, "Welcome! You have access to the bot.");
       verifiedChatIds.add(chatId); // Add to verifiedChatIds array
-
-      // const commands = [
-      //   {
-      //     command: "/troubleshoot",
-      //     description: "Guide to troubleshoot issues",
-      //   },
-      //   { command: "/reportbug", description: "Report Bugs" },
-      //   { command: "/newfeature", description: "Push a new feature!" },
-      // ];
-
-      // if (chatType === "private") {
-      //   // Check if the chat type is private
-      //   const keyboard = {
-      //     keyboard: commands.map((command) => [{ text: command.command }]),
-      //     resize_keyboard: true,
-      //     one_time_keyboard: true,
-      //   };
-
-      //   bot.sendMessage(chatId, "Available commands:", {
-      //     reply_markup: keyboard,
-      //   });
-      // }
     } else {
       bot.sendMessage(
         chatId,
