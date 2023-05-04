@@ -13,9 +13,11 @@ let verifiedChatId = null;
 const db = mongoose.connection;
 db.on("error", console.error.bind(console, "MongoDB connection error:"));
 
+// Handle the /start command
 bot.onText(/\/start/, (msg) => {
   const chatId = msg.chat.id;
   const chatType = msg.chat.type;
+  showMenuBar(chatId);
 
   if (chatType === "channel") {
     // Check if user provided the correct password
@@ -42,6 +44,7 @@ bot.onText(/\/start/, (msg) => {
   }
 });
 
+//This handles the updates from mongodb
 db.once("open", function () {
   console.log("Connected to database!");
 
@@ -64,6 +67,7 @@ db.once("open", function () {
   });
 });
 
+//provides a guide to troubleshoot errors
 bot.onText(/\/troubleshoot/, async (msg) => {
   const chatId = msg.chat.id;
 
@@ -87,10 +91,51 @@ bot.on("callback_query", async (callbackQuery) => {
   } else if (callbackQuery.data === "respond_io") {
     bot.sendMessage(
       chatId,
-      "Please go to https://app.respond.io/space/122282/workflows/builder/1683131397851603 and turn the workflow off as a precaution."
+      "Please go to https://app.respond.io/space/122282/workflows/builder/1683131397851603 using our FRIDAY google account and turn the workflow off as a precaution."
     );
   }
 });
+
+//function to report bugs
+bot.onText(/\/reportbug/, (msg) => {
+  const chatId = msg.chat.id;
+  bot.sendMessage(
+    chatId,
+    "Please provide the following information separated by new lines:\n\n" +
+      "Issue faced:\n" +
+      "Suspected platform failure: Respond.io/OpenAI, Heroku\n" +
+      "Severity level:"
+  );
+});
+
+bot.onText(
+  /^Issue faced:(.*)\nSuspected platform failure:(.*)\nSeverity level:(.*)/i,
+  (msg, match) => {
+    const chatId = msg.chat.id;
+    const issueFaced = match[1].trim();
+    const platformFailure = match[2].trim();
+    const severityLevel = match[3].trim();
+
+    const bugReport = `New bug reported:\n\nIssue faced: ${issueFaced}\nSuspected platform failure: ${platformFailure}\nSeverity level: ${severityLevel}`;
+
+    // Send the bug report to all connected users
+    for (const userChatId of connectedUsers) {
+      bot.sendMessage(userChatId, bugReport);
+    }
+  }
+);
+
+//this function to handle the menu bar
+function showMenuBar(chatId) {
+  bot.sendMessage(chatId, "Select an option:", {
+    reply_markup: {
+      inline_keyboard: [
+        [{ text: "Troubleshoot", callback_data: "/troubleshoot" }],
+        [{ text: "Report Bug", callback_data: "/reportbug" }],
+      ],
+    },
+  });
+}
 
 // Listen to the correct port specified by Heroku
 const PORT = process.env.PORT || 3000;
