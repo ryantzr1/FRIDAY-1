@@ -8,22 +8,16 @@ const bot = new TelegramBot(process.env.TELEGRAM_BOT_TOKEN, { polling: true });
 
 mongoose.connect(process.env.MONGODB_URL, { useNewUrlParser: true });
 
-let verifiedChatId = null;
+//store verified users
+let verifiedChatIds = [];
 
 const db = mongoose.connection;
 db.on("error", console.error.bind(console, "MongoDB connection error:"));
-
-// This array to store connected users
-let connectedUsers = [];
 
 // Handle the /start command
 bot.onText(/\/start/, (msg) => {
   const chatId = msg.chat.id;
   const chatType = msg.chat.type;
-
-  if (!connectedUsers.includes(chatId)) {
-    connectedUsers.push(chatId);
-  }
 
   if (chatType === "channel") {
     // Check if user provided the correct password
@@ -40,7 +34,7 @@ bot.onText(/\/start/, (msg) => {
     // Private chat handling remains the same
     if (msg.text.split(" ")[1] === process.env.FRIDAYMONITORINGTOOL) {
       bot.sendMessage(chatId, "Welcome! You have access to the bot.");
-      verifiedChatId = chatId;
+      verifiedChatIds.push(chatId); // Add to verifiedChatIds array
     } else {
       bot.sendMessage(
         chatId,
@@ -71,6 +65,23 @@ db.once("open", function () {
       }
     }
   });
+});
+
+// Add a function to show all available commands
+bot.onText(/\/commands/, (msg) => {
+  const chatId = msg.chat.id;
+
+  if (verifiedChatIds.includes(chatId)) {
+    bot.sendMessage(
+      chatId,
+      "Available commands:\n\n/start\n/troubleshoot\n/reportbug"
+    );
+  } else {
+    bot.sendMessage(
+      chatId,
+      "Access denied. Please provide the correct password with /start command."
+    );
+  }
 });
 
 // Provides a guide to troubleshoot errors
@@ -105,12 +116,22 @@ bot.on("callback_query", async (callbackQuery) => {
 // Function to report bugs
 bot.onText(/\/reportbug/, (msg) => {
   const chatId = msg.chat.id;
-  bot.sendMessage(
-    chatId,
-    "Issue faced:\n" +
-      "Suspected platform failure: Respond.io OR OpenAI OR Heroku\n" +
-      "Severity level:"
-  );
+
+  if (verifiedChatIds.includes(chatId)) {
+    bot.sendMessage(
+      chatId,
+      "Issue faced:\n" +
+        "Suspected platform failure: Respond.io OR OpenAI OR Heroku\n" +
+        "Severity level:\n" +
+        "\n" +
+        "Copy this message!"
+    );
+  } else {
+    bot.sendMessage(
+      chatId,
+      "Access denied. Please provide the correct password with /start command."
+    );
+  }
 });
 
 bot.onText(
@@ -123,11 +144,8 @@ bot.onText(
 
     const bugReport = `New bug reported:\n\nIssue faced: ${issueFaced}\nSuspected platform failure: ${platformFailure}\nSeverity level: ${severityLevel}`;
 
-    // Send the bug report to all connected users
-    console.log(connectedUsers);
-    console.log(bugReport);
-
-    for (const userChatId of connectedUsers) {
+    // Send the bug report to all verified users (who are connected)
+    for (const userChatId of verifiedChatIds) {
       console.log(userChatId + " Hello");
       bot.sendMessage(userChatId, bugReport);
     }
