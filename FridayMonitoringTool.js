@@ -7,8 +7,10 @@ const axios = require("axios");
 
 const bot = new TelegramBot(process.env.TELEGRAM_BOT_TOKEN, { polling: true });
 
-mongoose.connect(process.env.MONGODB_URL, { useNewUrlParser: true }, () =>
-  trackMessages()
+mongoose.connect(
+  process.env.MONGODB_URL,
+  { useNewUrlParser: true },
+  () => trackMessages() //this is how we can track all incoming messages
 );
 
 //store verified users
@@ -112,92 +114,50 @@ bot.on("callback_query", async (callbackQuery) => {
       reply_markup: {
         inline_keyboard: [
           [
-            { text: "Respond.io", callback_data: "respond_io" },
-            { text: "Backend Server", callback_data: "backend_server" },
-            { text: "FRIDAY AI", callback_data: "friday_ai" },
+            { text: "Respond.io", callback_data: "platform_respond_io" },
+            {
+              text: "Backend Server",
+              callback_data: "platform_backend_server",
+            },
+            { text: "FRIDAY AI", callback_data: "platform_friday_ai" },
           ],
         ],
       },
     });
+  } else if (
+    callbackQuery.data === "platform_respond_io" ||
+    callbackQuery.data === "platform_backend_server" ||
+    callbackQuery.data === "platform_friday_ai"
+  ) {
+    const platform = callbackQuery.data.split("_")[1];
 
-    bot.on("callback_query", (callbackQuery) => {
-      const chatId = callbackQuery.message.chat.id;
-      const website = callbackQuery.data;
+    // Send message to input feature details
+    bot.sendMessage(chatId, `What is the feature you built on ${platform}?`);
 
-      if (website === "heroku_password") {
-        const password = process.env.HEROKU_PASSWORD;
-        bot
-          .sendMessage(chatId, `Heroku password: ${password}`, {
-            reply_to_message_id: callbackQuery.message.message_id,
-            reply_markup: { remove_keyboard: true },
-          })
-          .then((msg) => {
-            setTimeout(
-              () => bot.deleteMessage(msg.chat.id, msg.message_id),
-              10000
-            ); // Delete message after 10 seconds
-          });
-      } else if (website === "huggingface_password") {
-        const password = process.env.HUGGINGFACE_PASSWORD;
-        bot
-          .sendMessage(chatId, `Hugging Face password: ${password}`, {
-            reply_to_message_id: callbackQuery.message.message_id,
-            reply_markup: { remove_keyboard: true },
-          })
-          .then((msg) => {
-            setTimeout(
-              () => bot.deleteMessage(msg.chat.id, msg.message_id),
-              10000
-            ); // Delete message after 10 seconds
-          });
-      } else if (website === "gmail_password") {
-        const password = process.env.GMAIL_PASSWORD;
-        bot
-          .sendMessage(chatId, `Gmail password: ${password}`, {
-            reply_to_message_id: callbackQuery.message.message_id,
-            reply_markup: { remove_keyboard: true },
-          })
-          .then((msg) => {
-            setTimeout(
-              () => bot.deleteMessage(msg.chat.id, msg.message_id),
-              10000
-            ); // Delete message after 10 seconds
-          });
-      }
-    });
+    // Set listener to handle feature details
+    bot.once("message", (msg) => {
+      const featureDetails = msg.text;
 
-    // Set listener to handle platform selection
-    bot.on("callback_query", (callbackQuery) => {
-      const platform = callbackQuery.data;
+      // Send message to input short description of feature
+      bot.sendMessage(
+        chatId,
+        "Please provide a short description of the feature you built."
+      );
 
-      // Send message to input feature details
-      bot.sendMessage(chatId, `What is the feature you built on ${platform}?`);
-
-      // Set listener to handle feature details
+      // Set listener to handle short description of feature
       bot.once("message", (msg) => {
-        const featureDetails = msg.text;
+        const featureDescription = msg.text;
 
-        // Send message to input short description of feature
-        bot.sendMessage(
-          chatId,
-          "Please provide a short description of the feature you built."
-        );
+        // Send message to all verified users with the feature details
+        for (const userChatId of verifiedChatIds) {
+          bot.sendMessage(
+            userChatId,
+            `New feature added!\n\nPlatform: ${platform}\nFeature: ${featureDetails}\nDescription: ${featureDescription}`
+          );
+        }
 
-        // Set listener to handle short description of feature
-        bot.once("message", (msg) => {
-          const featureDescription = msg.text;
-
-          // Send message to all verified users with the feature details
-          for (const userChatId of verifiedChatIds) {
-            bot.sendMessage(
-              userChatId,
-              `New feature added!\n\nPlatform: ${platform}\nFeature: ${featureDetails}\nDescription: ${featureDescription}`
-            );
-          }
-
-          // Send confirmation message to user
-          bot.sendMessage(chatId, "Feature added successfully!");
-        });
+        // Send confirmation message to user
+        bot.sendMessage(chatId, "Feature added successfully!");
       });
     });
   }
