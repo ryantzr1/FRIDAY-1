@@ -107,8 +107,7 @@ bot.onText(/\/reportbug/, (msg) => {
   const chatId = msg.chat.id;
   bot.sendMessage(
     chatId,
-    "Please provide the following information separated by new lines:\n\n" +
-      "Issue faced:\n" +
+    "Issue faced:\n" +
       "Suspected platform failure: Respond.io OR OpenAI OR Heroku\n" +
       "Severity level:"
   );
