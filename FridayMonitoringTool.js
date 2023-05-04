@@ -288,9 +288,12 @@ bot.onText(/\/newfeature/, (msg) => {
       reply_markup: {
         inline_keyboard: [
           [
-            { text: "Respond.io", callback_data: "respond_io" },
-            { text: "Backend Server", callback_data: "backend_server" },
-            { text: "FRIDAY AI", callback_data: "friday_ai" },
+            { text: "Respond.io", callback_data: "platform_respond_io" }, // Update callback_data
+            {
+              text: "Backend Server",
+              callback_data: "platform_backend_server",
+            }, // Update callback_data
+            { text: "FRIDAY AI", callback_data: "platform_friday_ai" }, // Update callback_data
           ],
         ],
       },
