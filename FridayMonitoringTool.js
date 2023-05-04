@@ -170,7 +170,7 @@ bot.onText(/\/reportbug/, (msg) => {
 });
 
 bot.onText(
-  /^Issue faced:(.*)\n(?:Suspected )?(?:Platform )?Failure:(.*)\nSeverity level:(.*)/i,
+  /^issue faced:?(.*)\n.*platform failure:?(.*)\n.*severity level:?(.*)/i,
   (msg, match) => {
     const issueFaced = match[1].trim();
     const platformFailure = match[2].trim();
