@@ -13,7 +13,7 @@ let verifiedChatId = null;
 const db = mongoose.connection;
 db.on("error", console.error.bind(console, "MongoDB connection error:"));
 
-//this array to store connected users
+// This array to store connected users
 let connectedUsers = [];
 
 // Handle the /start command
@@ -51,7 +51,7 @@ bot.onText(/\/start/, (msg) => {
   }
 });
 
-//This handles the updates from mongodb
+// This handles the updates from mongodb
 db.once("open", function () {
   console.log("Connected to database!");
 
@@ -74,7 +74,7 @@ db.once("open", function () {
   });
 });
 
-//provides a guide to troubleshoot errors
+// Provides a guide to troubleshoot errors
 bot.onText(/\/troubleshoot/, async (msg) => {
   const chatId = msg.chat.id;
 
@@ -93,28 +93,28 @@ bot.onText(/\/troubleshoot/, async (msg) => {
 bot.on("callback_query", async (callbackQuery) => {
   const chatId = callbackQuery.message.chat.id;
 
-  if (callbackQuery.data === "/troubleshoot") {
-    bot.answerCallbackQuery(callbackQuery.id); // Acknowledge the callback query
-    bot.sendMessage(chatId, "What kind of problem are you facing?", {
-      reply_markup: {
-        inline_keyboard: [
-          [
-            { text: "Bot is not answering", callback_data: "no_answer" },
-            { text: "Issue with respond.io", callback_data: "respond_io" },
-          ],
-        ],
-      },
-    });
-  } else if (callbackQuery.data === "/reportbug") {
-    bot.answerCallbackQuery(callbackQuery.id); // Acknowledge the callback query
-    bot.sendMessage(
-      chatId,
-      "Please provide the following information separated by new lines:\n\n" +
-        "Issue faced:\n" +
-        "Suspected platform failure: Respond.io/OpenAI, Heroku\n" +
-        "Severity level:"
-    );
-  }
+  // if (callbackQuery.data === "/troubleshoot") {
+  //   bot.answerCallbackQuery(callbackQuery.id); // Acknowledge the callback query
+  //   bot.sendMessage(chatId, "What kind of problem are you facing?", {
+  //     reply_markup: {
+  //       inline_keyboard: [
+  //         [
+  //           { text: "Bot is not answering", callback_data: "no_answer" },
+  //           { text: "Issue with respond.io", callback_data: "respond_io" },
+  //         ],
+  //       ],
+  //     },
+  //   });
+  // } else if (callbackQuery.data === "/reportbug") {
+  //   bot.answerCallbackQuery(callbackQuery.id); // Acknowledge the callback query
+  //   bot.sendMessage(
+  //     chatId,
+  //     "Please provide the following information separated by new lines:\n\n" +
+  //       "Issue faced:\n" +
+  //       "Suspected platform failure: Respond.io/OpenAI/Heroku\n" +
+  //       "Severity level:"
+  //   );
+  // }
 
   if (callbackQuery.data === "no_answer") {
     bot.sendMessage(chatId, "Please tag @weihern for assistance.");
@@ -126,7 +126,7 @@ bot.on("callback_query", async (callbackQuery) => {
   }
 });
 
-//function to report bugs
+// Function to report bugs
 bot.onText(/\/reportbug/, (msg) => {
   const chatId = msg.chat.id;
   bot.sendMessage(
@@ -155,7 +155,7 @@ bot.onText(
   }
 );
 
-//this function to handle the menu bar
+// This function handles the menu bar
 function showMenuBar(chatId) {
   bot.sendMessage(chatId, "Select an option:", {
     reply_markup: {
