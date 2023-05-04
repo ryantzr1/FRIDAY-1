@@ -67,27 +67,15 @@ db.once("open", function () {
   });
 });
 
-// Add a function to show all available commands when a user types "/"
-bot.onText(/^\/$/, (msg) => {
-  const chatId = msg.chat.id;
+const commands = [
+  { command: "/start", description: "Start using bot" },
+  { command: "/help", description: "Display help" },
+  { command: "/menu", description: "Display menu" },
+];
 
-  if (verifiedChatIds.includes(chatId)) {
-    bot.sendMessage(chatId, "Available commands:", {
-      reply_markup: {
-        inline_keyboard: [
-          [{ text: "Start", callback_data: "/start" }],
-          [{ text: "Troubleshoot", callback_data: "/troubleshoot" }],
-          [{ text: "Report Bug", callback_data: "/reportbug" }],
-        ],
-      },
-    });
-  } else {
-    bot.sendMessage(
-      chatId,
-      "Access denied. Please provide the correct password with /start command."
-    );
-  }
-});
+if (verifiedChatIds.includes(chatId)) {
+  bot.setMyCommands(commands);
+}
 
 // Provides a guide to troubleshoot errors
 bot.onText(/\/troubleshoot/, async (msg) => {
