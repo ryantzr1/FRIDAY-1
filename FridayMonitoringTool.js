@@ -66,16 +66,23 @@ bot.onText(/\/start/, (msg) => {
 bot.onText(/\/troubleshoot/, async (msg) => {
   const chatId = msg.chat.id;
 
-  bot.sendMessage(chatId, "What kind of problem are you facing?", {
-    reply_markup: {
-      inline_keyboard: [
-        [
-          { text: "Bot is not answering", callback_data: "no_answer" },
-          { text: "Issue with respond.io", callback_data: "respond_io" },
+  if (verifiedChatIds.includes(chatId)) {
+    bot.sendMessage(chatId, "What kind of problem are you facing?", {
+      reply_markup: {
+        inline_keyboard: [
+          [
+            { text: "Bot is not answering", callback_data: "no_answer" },
+            { text: "Issue with respond.io", callback_data: "respond_io" },
+          ],
         ],
-      ],
-    },
-  });
+      },
+    });
+  } else {
+    bot.sendMessage(
+      chatId,
+      "Access denied. Please provide the correct password with /start command."
+    );
+  }
 });
 
 bot.on("callback_query", async (callbackQuery) => {
@@ -86,7 +93,7 @@ bot.on("callback_query", async (callbackQuery) => {
   } else if (callbackQuery.data === "respond_io") {
     bot.sendMessage(
       chatId,
-      "Please go to https://app.respond.io/space/122282/workflows/builder/1683131397851603 using our FRIDAY google account and turn the workflow off as a precaution."
+      "Please go to https://app.respond.io/space/122282/workflows/builder/1683131397851603 using our FRIDAY Google account and turn the workflow off as a precaution."
     );
   }
 });
