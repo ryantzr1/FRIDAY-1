@@ -126,6 +126,7 @@ bot.onText(
 
     // Send the bug report to all connected users
     console.log(connectedUsers);
+    console.log(bugReport);
 
     for (const userChatId of connectedUsers) {
       console.log(userChatId + " Hello");
