@@ -332,7 +332,7 @@ async function trackMessages() {
     try {
       const result = await findQuestion(question);
       if (result) {
-        res.json(result);
+        res.send({ answer: result });
       } else {
         res.status(404).json({ error: "Question not found" });
       }
