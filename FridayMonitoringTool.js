@@ -40,6 +40,7 @@ bot.onText(/\/start/, (msg) => {
   } else {
     // Private chat handling remains the same
     if (msg.text.split(" ")[1] === process.env.FRIDAYMONITORINGTOOL) {
+      console.log(chatId + "hello");
       bot.sendMessage(chatId, "Welcome! You have access to the bot.");
       verifiedChatIds.add(chatId); // Add to verifiedChatIds array
 
@@ -321,35 +322,6 @@ async function trackMessages() {
       );
     }
   });
-
-  //query mongo for question and answer
-  app.post("/question", async (req, res) => {
-    const question = req.query.question;
-    if (!question) {
-      return res.status(400).json({ error: "Missing 'q' parameter" });
-    }
-
-    try {
-      const result = await findQuestion(question);
-      if (result) {
-        res.send({ answer: result });
-      } else {
-        res.status(404).json({ error: "Question not found" });
-      }
-    } catch (error) {
-      res.status(500).json({ error: "Internal server error" });
-    }
-  });
-
-  //Then, create a function to find a question in the database:
-
-  async function findQuestion(question) {
-    const collection = db.collection("queries");
-    console.log(question + " This is the question");
-    const result = await collection.findOne({ question: question });
-    console.log(result + " This is the result");
-    return result;
-  }
 }
 
 // Listen to the correct port specified by Heroku
