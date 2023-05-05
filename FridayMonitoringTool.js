@@ -324,8 +324,7 @@ async function trackMessages() {
 
   //query mongo for question and answer
   app.post("/question", async (req, res) => {
-    console.log('"testing');
-    const question = req.body.question;
+    const question = req.query.question;
     if (!question) {
       return res.status(400).json({ error: "Missing 'q' parameter" });
     }
