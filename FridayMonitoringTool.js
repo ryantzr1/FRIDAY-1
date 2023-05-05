@@ -324,7 +324,7 @@ async function trackMessages() {
 
   //query mongo for question and answer
   app.get("/question", async (req, res) => {
-    const question = req.query.question;
+    const question = req.body.question;
     if (!question) {
       return res.status(400).json({ error: "Missing 'q' parameter" });
     }
@@ -345,7 +345,9 @@ async function trackMessages() {
 
   async function findQuestion(question) {
     const collection = db.collection("queries");
+    console.log(question + " This is the question");
     const result = await collection.findOne({ question: question });
+    console.log(result + " This is the result");
     return result;
   }
 }
