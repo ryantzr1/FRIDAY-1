@@ -28,7 +28,8 @@ bot.onText(/\/start/, (msg) => {
     // Check if user provided the correct password
     if (msg.text.split(" ")[1] === process.env.FRIDAYMONITORINGTOOL) {
       // bot.sendMessage(chatId, "Welcome! You have access to the bot.");
-      console.log(msg.chat.username);
+      console.log(msg.chat.username + "hello");
+      console.log(chatId + "hello");
       verifiedChatIds.add(`@${msg.chat.username}`);
     } else {
       bot.sendMessage(
