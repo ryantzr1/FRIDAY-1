@@ -15,6 +15,8 @@ mongoose.connect(
 
 //store verified users
 let verifiedChatIds = new Set();
+verifiedChatIds.add(-842373692); //grp chat
+verifiedChatIds.add(293830606); //ryan
 
 const db = mongoose.connection;
 db.on("error", console.error.bind(console, "MongoDB connection error:"));
