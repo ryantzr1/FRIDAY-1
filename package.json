@@ -4,7 +4,7 @@
     "description": "A monitoring tool for MongoDB updates via Telegram bot",
     "main": "index.js",
     "scripts": {
-      "start": "node app.js"
+      "start": "node FridayMonitoringTool.js"
     },
     "keywords": [
       "mongodb",
