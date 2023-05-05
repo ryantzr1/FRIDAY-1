@@ -321,6 +321,33 @@ async function trackMessages() {
       );
     }
   });
+
+  //query mongo for question and answer
+  app.get("/question", async (req, res) => {
+    const question = req.query.q;
+    if (!question) {
+      return res.status(400).json({ error: "Missing 'q' parameter" });
+    }
+
+    try {
+      const result = await findQuestion(question);
+      if (result) {
+        res.json(result);
+      } else {
+        res.status(404).json({ error: "Question not found" });
+      }
+    } catch (error) {
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+  //Then, create a function to find a question in the database:
+
+  async function findQuestion(question) {
+    const collection = db.collection("queries");
+    const result = await collection.findOne({ question: question });
+    return result;
+  }
 }
 
 // Listen to the correct port specified by Heroku
