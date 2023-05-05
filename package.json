@@ -4,21 +4,21 @@
     "description": "A monitoring tool for MongoDB updates via Telegram bot",
     "main": "index.js",
     "scripts": {
-      "start": "node FridayMonitoringTool.js"
+        "start": "node FridayMonitoringTool.js"
     },
     "keywords": [
-      "mongodb",
-      "telegram",
-      "bot",
-      "monitoring"
+        "mongodb",
+        "telegram",
+        "bot",
+        "monitoring"
     ],
     "author": "Your Name",
     "license": "MIT",
     "dependencies": {
-      "dotenv": "^10.0.0",
-      "express": "^4.17.1",
-      "mongoose": "^6.0.14",
-      "node-telegram-bot-api": "^0.54.0"
+        "axios": "^1.4.0",
+        "dotenv": "^10.0.0",
+        "express": "^4.17.1",
+        "mongoose": "^6.0.14",
+        "node-telegram-bot-api": "^0.54.0"
     }
-  }
-  
+}
