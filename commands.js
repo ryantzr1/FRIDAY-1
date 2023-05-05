@@ -1,33 +1,16 @@
-const express = require("express");
-const app = express();
-const TelegramBot = require("node-telegram-bot-api");
-const mongoose = require("mongoose");
-require("dotenv").config();
+const db = require("./db");
+const bot = require("./bot");
 const axios = require("axios");
 
-const bot = new TelegramBot(process.env.TELEGRAM_BOT_TOKEN, { polling: true });
-
-mongoose.connect(
-  process.env.MONGODB_URL,
-  { useNewUrlParser: true },
-  () => trackMessages() //this is how we can track all incoming messages
-);
-
-//store verified users
+// Store verified users
 let verifiedChatIds = new Set();
 
-const db = mongoose.connection;
-db.on("error", console.error.bind(console, "MongoDB connection error:"));
-
-// Handle the /start command
-bot.onText(/\/start/, (msg) => {
+function onStart(msg) {
   const chatId = msg.chat.id;
   const chatType = msg.chat.type;
 
   if (chatType === "channel") {
-    // Check if user provided the correct password
     if (msg.text.split(" ")[1] === process.env.FRIDAYMONITORINGTOOL) {
-      // bot.sendMessage(chatId, "Welcome! You have access to the bot.");
       console.log(msg.chat.username);
       verifiedChatIds.add(`@${msg.chat.username}`);
     } else {
@@ -37,10 +20,9 @@ bot.onText(/\/start/, (msg) => {
       );
     }
   } else {
-    // Private chat handling remains the same
     if (msg.text.split(" ")[1] === process.env.FRIDAYMONITORINGTOOL) {
       bot.sendMessage(chatId, "Welcome! You have access to the bot.");
-      verifiedChatIds.add(chatId); // Add to verifiedChatIds array
+      verifiedChatIds.add(chatId);
 
       const commands = [
         {
@@ -60,7 +42,6 @@ bot.onText(/\/start/, (msg) => {
       ];
 
       if (chatType === "private") {
-        // Check if the chat type is private
         const keyboard = {
           keyboard: commands.map((command) => [{ text: command.command }]),
           resize_keyboard: true,
@@ -78,10 +59,9 @@ bot.onText(/\/start/, (msg) => {
       );
     }
   }
-});
+}
 
-// Provides a guide to troubleshoot errors
-bot.onText(/\/troubleshoot/, async (msg) => {
+function onTroubleshoot(msg) {
   const chatId = msg.chat.id;
 
   if (verifiedChatIds.has(chatId)) {
@@ -101,9 +81,9 @@ bot.onText(/\/troubleshoot/, async (msg) => {
       "Access denied. Please provide the correct password with /start command."
     );
   }
-});
+}
 
-bot.on("callback_query", async (callbackQuery) => {
+function onCallbackQuery(callbackQuery) {
   const chatId = callbackQuery.message.chat.id;
 
   if (callbackQuery.data === "no_answer") {
@@ -191,10 +171,9 @@ bot.on("callback_query", async (callbackQuery) => {
         setTimeout(() => bot.deleteMessage(msg.chat.id, msg.message_id), 10000); // Delete message after 10 seconds
       });
   }
-});
+}
 
-//Function to get our passwords
-bot.onText(/\/getPassword/, (msg) => {
+function onGetPassword(msg) {
   const chatId = msg.chat.id;
 
   if (verifiedChatIds.has(chatId)) {
@@ -216,10 +195,9 @@ bot.onText(/\/getPassword/, (msg) => {
       "Access denied. Please provide the correct password with /start command."
     );
   }
-});
+}
 
-//checking OpenAI (FAST API) server to see if it is working
-bot.onText(/\/checkserver/, async (msg) => {
+async function onCheckServer(msg) {
   const chatId = msg.chat.id;
 
   if (verifiedChatIds.has(chatId)) {
@@ -239,10 +217,9 @@ bot.onText(/\/checkserver/, async (msg) => {
       "Access denied. Please provide the correct password with /start command."
     );
   }
-});
+}
 
-// Function to report bugs
-bot.onText(/\/reportbug/, (msg) => {
+function onReportBug(msg) {
   const chatId = msg.chat.id;
 
   if (verifiedChatIds.has(chatId)) {
@@ -260,11 +237,15 @@ bot.onText(/\/reportbug/, (msg) => {
       "Access denied. Please provide the correct password with /start command."
     );
   }
-});
+}
 
-bot.onText(
-  /^Issue faced:([\s\S]*?)\n+(?:Suspected|Platform) failure:([\s\S]*?)\n+Severity level:([\s\S]*?)$/i,
-  (msg, match) => {
+//handle new bug report message
+function onBugReportMessage(msg) {
+  const bugReportRegex =
+    /^Issue faced:([\s\S]*?)\n+(?:Suspected|Platform) failure:([\s\S]*?)\n+Severity level:([\s\S]*?)$/i;
+  const match = bugReportRegex.exec(msg.text);
+
+  if (match) {
     const issueFaced = match[1].trim();
     const platformFailure = match[2].trim();
     const severityLevel = match[3].trim();
@@ -277,10 +258,9 @@ bot.onText(
       });
     }
   }
-);
+}
 
-//test
-bot.onText(/\/newfeature/, (msg) => {
+function onNewFeature(msg) {
   const chatId = msg.chat.id;
 
   if (verifiedChatIds.has(chatId)) {
@@ -300,9 +280,8 @@ bot.onText(/\/newfeature/, (msg) => {
       },
     });
   }
-});
+}
 
-//track mongodb changes
 async function trackMessages() {
   const collection = db.collection("queries");
   const changeStream = collection.watch();
@@ -322,8 +301,14 @@ async function trackMessages() {
   });
 }
 
-// Listen to the correct port specified by Heroku
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server listening on port ${PORT}`);
-});
+trackMessages(); // Start tracking messages
+
+module.exports = {
+  onStart,
+  onTroubleshoot,
+  onCallbackQuery,
+  onGetPassword,
+  onCheckServer,
+  onReportBug,
+  onNewFeature,
+};
