@@ -1,9 +1,11 @@
-const db = require("./db");
+const db = require("./databaseHandle");
 const bot = require("./bot");
 const axios = require("axios");
 
 // Store verified users
 let verifiedChatIds = new Set();
+verifiedChatIds.add(-842373692); //grp chat
+verifiedChatIds.add(293830606); //ryan
 
 function onStart(msg) {
   const chatId = msg.chat.id;
