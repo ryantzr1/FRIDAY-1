@@ -33,4 +33,4 @@ async function trackMessages() {
   });
 }
 
-module.exports = { db, bot };
+module.exports = { databaseHandle, bot };
