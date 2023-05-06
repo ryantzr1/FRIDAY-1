@@ -58,7 +58,7 @@ bot.onText(/\/start/, (msg) => {
           description: "Use this to check if OpenAI is online",
         },
         {
-          command: "/getPassword",
+          command: "/getpassword",
           description: "Check our FRIDAY passwords",
         },
       ];
@@ -198,7 +198,7 @@ bot.on("callback_query", async (callbackQuery) => {
 });
 
 //Function to get our passwords
-bot.onText(/\/getPassword/, (msg) => {
+bot.onText(/\/getpassword/, (msg) => {
   const chatId = msg.chat.id;
 
   if (verifiedChatIds.has(chatId)) {
