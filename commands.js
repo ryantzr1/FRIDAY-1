@@ -7,6 +7,20 @@ let verifiedChatIds = new Set();
 verifiedChatIds.add(-842373692); //grp chat
 verifiedChatIds.add(293830606); //ryan
 
+function registerHandlers(bot) {
+  bot.onText(/\/start/, onStart);
+  bot.onText(/\/troubleshoot/, onTroubleshoot);
+  bot.onText(/\/getpassword/, onGetPassword);
+  bot.onText(/\/checkserver/, onCheckServer);
+  bot.onText(/\/reportbug/, onReportBug);
+  bot.onText(/\/newfeature/, onNewFeature);
+  bot.on("callback_query", onCallbackQuery);
+  bot.onText(
+    /^Issue faced:([\s\S]*?)\n+(?:Suspected|Platform) failure:([\s\S]*?)\n+Severity level:([\s\S]*?)$/i,
+    onBugReportMessage
+  );
+}
+
 function onStart(msg) {
   const chatId = msg.chat.id;
   const chatType = msg.chat.type;
@@ -284,6 +298,7 @@ function onNewFeature(msg) {
 }
 
 module.exports = {
+  registerHandlers,
   onStart,
   onTroubleshoot,
   onCallbackQuery,
