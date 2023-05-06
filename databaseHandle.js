@@ -1,6 +1,9 @@
 const mongoose = require("mongoose");
 require("dotenv").config();
+const TelegramBot = require("node-telegram-bot-api");
 const { verifiedChatIds } = require("./bot");
+
+const bot = new TelegramBot(process.env.TELEGRAM_BOT_TOKEN, { polling: true });
 
 mongoose.connect(
   process.env.MONGODB_URL,
@@ -30,4 +33,4 @@ async function trackMessages() {
   });
 }
 
-module.exports = db;
+module.exports = { db, bot };

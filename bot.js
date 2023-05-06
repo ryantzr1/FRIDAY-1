@@ -20,7 +20,7 @@ bot.onText(
   /^Issue faced:([\s\S]*?)\n+(?:Suspected|Platform) failure:([\s\S]*?)\n+Severity level:([\s\S]*?)$/i,
   onBugReportMessage
 );
-bot.onText(/\/deleteTest (.+)/, onDeleteTest);
+bot.onText(/\/deletemongotestmsgs (.+)/, onDeleteTest);
 
 function onStart(msg) {
   const chatId = msg.chat.id;
@@ -56,9 +56,9 @@ function onStart(msg) {
           description: "Check our FRIDAY passwords",
         },
         {
-          command: "/deleteMongoTestMsgs",
+          command: "/deletemongotestmsgs",
           description:
-            "Delete items from a specific collection (please specify the collection name e.g. queries as argument)",
+            "Clear our test messages (please specify the collection name e.g. queries as argument)",
         },
       ];
 
