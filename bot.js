@@ -169,7 +169,8 @@ function onCallbackQuery(callbackQuery) {
   } else if (
     callbackQuery.data === "heroku_password" ||
     callbackQuery.data === "huggingface_password" ||
-    callbackQuery.data === "gmail/mongodb_password"
+    callbackQuery.data === "gmail/mongodb_password" ||
+    callbackQuery.data === "respond.io_password"
   ) {
     let password;
     switch (callbackQuery.data) {
@@ -181,6 +182,9 @@ function onCallbackQuery(callbackQuery) {
         break;
       case "gmail/mongodb_password":
         password = process.env.GMAIL_PASSWORD;
+        break;
+      case "respond.io_password":
+        password = "Exact same as FRIDAY Gmail Login";
         break;
     }
     bot
@@ -207,6 +211,7 @@ function onGetPassword(msg) {
             { text: "Hugging Face", callback_data: "huggingface_password" },
           ],
           [{ text: "Gmail/MongoDB", callback_data: "gmail/mongodb_password" }],
+          [{ text: "Respond.io", callback_data: "respond.io_password" }],
         ],
       },
     });
