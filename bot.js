@@ -12,6 +12,7 @@ const {
   onCheckServer,
   onReportBug,
   onNewFeature,
+  onBugReportMessage,
 } = require("./commands");
 
 // Register bot commands
