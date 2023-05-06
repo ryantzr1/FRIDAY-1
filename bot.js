@@ -175,7 +175,7 @@ function onCallbackQuery(callbackQuery) {
     let password;
     switch (callbackQuery.data) {
       case "heroku_password":
-        password = process.env.HEROKU_PASSWORD;
+        password = "Exact same as FRIDAY Gmail Login";
         break;
       case "huggingface_password":
         password = process.env.HUGGINGFACE_PASSWORD;
