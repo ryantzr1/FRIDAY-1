@@ -1,6 +1,7 @@
 const TelegramBot = require("node-telegram-bot-api");
 const axios = require("axios");
 require("dotenv").config();
+const deleteTest = require("./deleteMongoTest");
 
 const bot = new TelegramBot(process.env.TELEGRAM_BOT_TOKEN, { polling: true });
 
@@ -19,6 +20,7 @@ bot.onText(
   /^Issue faced:([\s\S]*?)\n+(?:Suspected|Platform) failure:([\s\S]*?)\n+Severity level:([\s\S]*?)$/i,
   onBugReportMessage
 );
+bot.onText(/\/deleteTest (.+)/, onDeleteTest);
 
 function onStart(msg) {
   const chatId = msg.chat.id;
@@ -52,6 +54,11 @@ function onStart(msg) {
         {
           command: "/getpassword",
           description: "Check our FRIDAY passwords",
+        },
+        {
+          command: "/deleteMongoTestMsgs",
+          description:
+            "Delete items from a specific collection (please specify the collection name e.g. queries as argument)",
         },
       ];
 
@@ -293,6 +300,26 @@ function onNewFeature(msg) {
         ],
       },
     });
+  }
+}
+
+async function onDeleteTest(msg, match) {
+  const chatId = msg.chat.id;
+  const modelName = match[1];
+
+  if (verifiedChatIds.has(chatId)) {
+    const query = {}; // Modify this to specify the items you want to delete
+    const deletedCount = await deleteTest(modelName, query);
+
+    bot.sendMessage(
+      chatId,
+      `Successfully deleted ${deletedCount} items from the '${modelName}' collection.`
+    );
+  } else {
+    bot.sendMessage(
+      chatId,
+      "Access denied. Please provide the correct password with /start command."
+    );
   }
 }
 
