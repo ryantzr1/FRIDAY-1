@@ -323,4 +323,14 @@ async function onDeleteTest(msg, match) {
   }
 }
 
-module.exports = bot;
+module.exports = {
+  onStart,
+  onTroubleshoot,
+  onCallbackQuery,
+  onGetPassword,
+  onCheckServer,
+  onReportBug,
+  onNewFeature,
+  onDeleteTest,
+  verifiedChatIds, // Export verifiedChatIds
+};

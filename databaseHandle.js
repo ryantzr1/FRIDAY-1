@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 require("dotenv").config();
+const { verifiedChatIds } = require("./bot");
 
 mongoose.connect(
   process.env.MONGODB_URL,
