@@ -10,7 +10,7 @@ class VectorDatabaseAgent(ConversationalAgent):
     '''
 
     def __init__(self, company_info) -> None:
-        self.embeddings = HuggingFaceHubEmbeddings()
+        # self.embeddings = HuggingFaceHubEmbeddings()
         self.product_list = company_info["product_list"]
         self.company_name = company_info["company_name"]
 

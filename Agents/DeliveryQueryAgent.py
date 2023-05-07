@@ -5,14 +5,14 @@ from .PromptTemplate import PromptTemplate
 
 class DeliveryQueryAgent(ConversationalAgent):
     def __init__(self, company_info) -> None:
-        self.company_name = company_info["company_name"]
+        self.company_desc = company_info["company_desc"]
 
     def __str__(self) -> str:
         return "Agent with ability to access delivery status"
 
     @property
     def prompt(self) -> None:
-        s = """You are a Customer Service assistant for {company_name}. 
+        s = """You are a Customer Service assistant for {company_desc}. 
     Delivery status:
     {delivery_status}
     Your Task:
@@ -31,7 +31,7 @@ class DeliveryQueryAgent(ConversationalAgent):
 
         df = pd.read_csv("deliverystatusdemo.csv")
         formatted_prompt = self.prompt.format({
-            "company_name": self.company_name,
+            "company_desc": self.company_desc,
             "delivery_status": df.to_string(),
             "current_date": datetime.now(),
             "current_day": datetime.now().weekday()

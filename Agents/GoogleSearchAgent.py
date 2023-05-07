@@ -8,14 +8,14 @@ from .utils import sum_dict
 
 class GoogleSearchAgent(ConversationalAgent):
     def __init__(self, company_info) -> None:
-        self.company_name = company_info["company_name"]
+        self.company_desc = company_info["company_desc"]
 
     def __str__(self) -> str:
         return "Agent with ability to Google Search"
 
     @property
     def prompt(self) -> None:
-        s =  """You are a Question Answering assistant for {company_name}. 
+        s =  """You are a Question Answering assistant for {company_desc}. 
     Your Task:
     - Given some context and a question, answer the question
     - If you cannot answer the question, output [NO ANSWER]
@@ -28,7 +28,7 @@ class GoogleSearchAgent(ConversationalAgent):
     def generate_answer(self, query, chat_history = list(), system_prompt = None) -> dict:
         google_query = self.get_search_query(query)
         top_k_results = self.get_top_k_google_search_results(google_query)
-        system_prompt = self.prompt.format({"company_name": self.company_name})
+        system_prompt = self.prompt.format({"company_desc": self.company_desc})
 
         for result in top_k_results:
             body_text = self.scrape_website(result)

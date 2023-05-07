@@ -17,25 +17,28 @@ class ScheduleAgent(ConversationalAgent):
     Scheduling agent
     '''
     def __init__(self, company_info) -> None:
-        self.chat_history = []
-        self.company_name = company_info["company_name"]
-        self.appointment_type = company_info["scheduling"]["appointment_type"]
-        self.start_time = parser.parse(company_info["scheduling"]["start_time"])
-        self.end_time = parser.parse(company_info["scheduling"]["end_time"])
-        self.interval = int(company_info["scheduling"]["interval"])
-        self.email = company_info["scheduling"]["email"]
-        self.clash_condition = int(company_info["scheduling"]["clash_condition"])
-        self.fields_required = company_info["scheduling"]["fields_required"]
-        self.event_type = company_info["scheduling"]["event_type"]
-        self.event_duration = int(company_info["scheduling"]["event_duration"])
+        if "schedule" not in company_info:
+            self.to_schedule = False
+        else:
+            self.chat_history = []
+            self.company_desc = company_info["company_desc"]
+            self.appointment_type = company_info["scheduling"]["appointment_type"]
+            self.start_time = parser.parse(company_info["scheduling"]["start_time"])
+            self.end_time = parser.parse(company_info["scheduling"]["end_time"])
+            self.interval = int(company_info["scheduling"]["interval"])
+            self.email = company_info["scheduling"]["email"]
+            self.clash_condition = int(company_info["scheduling"]["clash_condition"])
+            self.fields_required = company_info["scheduling"]["fields_required"]
+            self.event_type = company_info["scheduling"]["event_type"]
+            self.event_duration = int(company_info["scheduling"]["event_duration"])
 
 
-        calendar = GoogleCalendar(self.email, credentials_path = "credentials.json")
-        self.events = [x for x in calendar.get_events(time_min=datetime.now(), time_max=datetime.now() + timedelta(days=30))]
-        self.calendar = calendar
-        self.start_timings = [x.start for x in self.calendar if x.start is not None]
-        self.end_timings = [x.end for x in self.calendar if x.end is not None]
-        self.scratchpad = ""
+            calendar = GoogleCalendar(self.email, credentials_path = "credentials.json")
+            self.events = [x for x in calendar.get_events(time_min=datetime.now(), time_max=datetime.now() + timedelta(days=30))]
+            self.calendar = calendar
+            self.start_timings = [x.start for x in self.calendar if x.start is not None]
+            self.end_timings = [x.end for x in self.calendar if x.end is not None]
+            self.scratchpad = ""
 
     def __str__(self) -> str:
         return "Agent with ability to schedule meetings"
@@ -43,7 +46,7 @@ class ScheduleAgent(ConversationalAgent):
     @property
     def prompt(self) -> None:
         s = """
-        You are a customer service agent for {company_name} tasked with helping them schedule {event_type} for the human agents to carry out. You will be helping to schedule {appointment_type}. To schedule an appointment, you will need the following information:
+        You are a customer service agent for {company_desc} tasked with helping them schedule {event_type} for the human agents to carry out. You will be helping to schedule {appointment_type}. To schedule an appointment, you will need the following information:
         {fields_required_bulleted}
         - Date and Time 
 
@@ -127,8 +130,14 @@ class ScheduleAgent(ConversationalAgent):
 
     
     def generate_answer(self, query, chat_history = list(), system_prompt = None) -> dict:
-        self.company_name = self.company_name
+        self.company_desc = self.company_desc
         self.usage = {}
+
+        if not self.to_schedule:
+            return {
+                "answer": "",
+                "usage": {}
+                }
 
         ACTION_MAPPING = {
             "Range": self.get_available_slots,
@@ -145,7 +154,7 @@ class ScheduleAgent(ConversationalAgent):
                 if iterations > 3:
                     raise Exception("Too many iterations")
                 system_prompt = self.prompt.format({
-                    "company_name": self.company_name,
+                    "company_desc": self.company_desc,
                     "appointment_type": self.appointment_type,
                     "current_date": datetime.now().strftime("%Y-%m-%d %H:%M:%S%z"),
                     "current_day": datetime.now().strftime("%A"),

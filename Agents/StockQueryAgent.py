@@ -4,14 +4,14 @@ from .PromptTemplate import PromptTemplate
 
 class StockQueryAgent(ConversationalAgent):
     def __init__(self, company_info) -> None:
-        self.company_name = company_info["company_name"]
+        self.company_desc = company_info["company_desc"]
 
     def __str__(self) -> str:
         return "Agent with ability to access stock information"
 
     @property
     def prompt(self) -> None:
-        s =  """You are a Customer Service assistant for {company_name}. 
+        s =  """You are a Customer Service assistant for {company_desc}. 
     Current Stock:
     {price_list}
     Your Task:
@@ -30,7 +30,7 @@ class StockQueryAgent(ConversationalAgent):
 
         df = pd.read_csv("stocklistdemo.csv")
         formatted_prompt = self.prompt.format({
-            "company_name": self.company_name,
+            "company_desc": self.company_desc,
             "price_list": df.to_string()
         })
         ans_payload = super().generate_answer(

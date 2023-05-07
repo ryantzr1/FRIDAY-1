@@ -17,7 +17,7 @@ class ToolSelectionAgent(Agent):
 
     def __init__(self, company_info) -> None:
         self.tools = company_info["tools"]
-        self.company_name = company_info["company_name"]
+        self.company_desc = company_info["company_desc"]
         self.company_info = company_info
         AGENTS = {}
         files = glob.glob("Agents/*Agent.py")
@@ -33,7 +33,7 @@ class ToolSelectionAgent(Agent):
 
     @property
     def prompt(self) -> None:
-        s = ''' You are a Task Manager for {company_name}. You are tasked with choosing the best tool to assist a cusomter given the conversation history so far. Output only the name of the tool and nothing else. Your output has to be exactly the same as one of the options below. Do not give me any reasoning.
+        s = ''' You are a Task Manager for {company_desc}. You are tasked with choosing the best tool to assist a cusomter given the conversation history so far. Output only the name of the tool and nothing else. Your output has to be exactly the same as one of the options below. Do not give me any reasoning.
         
         You have access to the following tools:
         {tools_list}
@@ -69,10 +69,10 @@ class ToolSelectionAgent(Agent):
         usingtools = '\n\n'.join([tools_master[tool] for tool in self.tools])
         formatted_history = "\n".join([f"{message['role']}: {message['content']}" for message in (chat_history + [{"role": "user", "content": query}])])
         processed_prompt = self.prompt.format({
-            "company_name": self.company_name,
+            "company_desc": self.company_desc,
             "tools_list": usingtools,
             "conversaton_history": formatted_history,
-            "tools_master": ", ".join(tools_master)
+            "tools_master": ", ".join([tools_master[tool] for tool in self.tools])
         })
 
         ans = openai.ChatCompletion.create(
