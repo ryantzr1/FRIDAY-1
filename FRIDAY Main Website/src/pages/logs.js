@@ -1,31 +1,18 @@
 import { useState, useEffect } from "react";
-import { useRouter } from "next/router";
-import { auth } from "../firebase/firebase";
 import axios from "axios";
+import { useAuth } from "../context/AuthContext";
 
 import IncomingRequestsCard from "../components/IncomingRequestsCard";
 
 function LogsPage() {
   const [logs, setLogs] = useState([]);
-
-  const router = useRouter();
-
-  useEffect(() => {
-    // Check if the user is authenticated on every route change
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      if (!user) {
-        // Redirect to the login page if the user is not authenticated
-        router.push("/login");
-      }
-    });
-
-    // Unsubscribe from the listener when the component unmounts
-    return unsubscribe;
-  }, []);
+  const { getUid } = useAuth();
   
   useEffect(() => {
     const fetchData = async () => {
-      const response = await axios.get("https://friday-backend-server-new.herokuapp.com/queries/log");
+      const response = getUid() === "lZLIC6fK2WQOvIxyXKECEjx625w1"  || getUid() === "Hoz3NtloWXX7MciVcTn8BNAHIJs1"
+        ? await axios.get("https://friday-backend-server-new.herokuapp.com/queries/log")
+        : null;
       const { queries } = response.data;
       setLogs(queries);
     };

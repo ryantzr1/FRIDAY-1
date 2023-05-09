@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useRouter } from "next/router";
-import { auth } from "../firebase/firebase";
+import { useAuth } from "../context/AuthContext";
 
 function CounterCard({ value, label, color }) {
   return (
@@ -49,30 +48,18 @@ function RequestContainer({ log }) {
   );
 }
 
-export default function Home() {
+function Home() {
   const [totalQueries, setTotalQueries] = useState(0);
   const [unansweredQueries, setUnansweredQueries] = useState(0);
   const [logs, setLogs] = useState([]);
-
-  const router = useRouter();
-
-  useEffect(() => {
-    // Check if the user is authenticated on every route change
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      if (!user) {
-        // Redirect to the login page if the user is not authenticated
-        router.push("/login");
-      }
-    });
-
-    // Unsubscribe from the listener when the component unmounts
-    return unsubscribe;
-  }, []);
+  const { getUid } = useAuth();
 
   useEffect(() => {
     async function fetchData() {
       try {
-        const response = await axios.get('https://friday-backend-server-new.herokuapp.com/queries/log');
+        const response = getUid() === "lZLIC6fK2WQOvIxyXKECEjx625w1"  || getUid() === "Hoz3NtloWXX7MciVcTn8BNAHIJs1"
+          ? await axios.get('https://friday-backend-server-new.herokuapp.com/queries/log')
+          : null;
         const { queries, totalQueriesCount, unansweredQueriesCount } = response.data;
         console.log(queries);
         console.log(totalQueriesCount);
@@ -98,3 +85,5 @@ export default function Home() {
     </main>
   );
 }
+
+export default Home;
