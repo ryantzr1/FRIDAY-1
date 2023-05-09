@@ -6,7 +6,7 @@ import { HiOutlineShoppingBag } from 'react-icons/hi';
 import { FiSettings } from 'react-icons/fi';
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
-import { auth } from "../firebase/firebase";
+import { auth } from "../config/firebase";
 
 const Sidebar = ({ children }) => {
   const router = useRouter();
