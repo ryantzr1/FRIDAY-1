@@ -45,56 +45,6 @@ let counter = 0;
 app.get("/", async (req, res) => {
   try {
 
-    // const question = req.body.question;
-
-    // const userId = req.body.id;
-
-    // console.log(question);
-
-    // const responseAI = await axios.get("http://54.238.198.35/predict", {
-    //   params: { question: question },
-    // });
-
-    // console.log(responseAI.data.answer);
-
-    // const answer = responseAI.data.answer || "No Answer";
-
-    // // Query convo history from database
-
-    // const prevConvoArr = await Query.find({userId:userId});
-
-    // console.log(prevConvoArr);
-
-    // let prevConvo = null;
-
-    // if (!prevConvoArr == null) {
-    //   prevConvo = prevConvoArr[prevConvoArr.length - 1];
-    // } else {
-    //   prevConvo = {
-    //     history: "NIL"
-    //   }
-    // }   
-
-    // // if (prevConvo != undefined || prevConvo != null) {
-    // //   currHistory = currHistory + prevConvo.history;
-    // //   console.log("Concat");
-    // // }
-
-    // // Save current history
-
-    // const currHistory = "question: " + question + '\n' + "answer: " + answer + '\n' + prevConvo.history;
-
-    // // Save the query to the MongoDB database
-    // const query = new Query({ question: question, answer: answer, userId: userId, history: currHistory, company: "DashcamSG" });
-
-    // console.log("Saved Query: " + query);
-
-    // await query.save().then().catch(e => console.log(e));
-
-    // counter = counter + 1;
-
-    // console.log("Number of queries: " + counter);
-
     res.send({
       // answer: query.answer
       answer: "Wrong Endpoint"
@@ -110,6 +60,8 @@ app.get("/", async (req, res) => {
 app.get("/queries", async (req, res) => {
   try {
 
+    const apiEndpoint = 'http://18.183.218.48/predict';
+    
     const question = req.body.question;
 
     let processedQuestion = question.trim();
@@ -119,21 +71,58 @@ app.get("/queries", async (req, res) => {
     }
 
     const userId = req.body.id;
+
+    // Encode the question using encodeURIComponent()
+    const encodedQuestion = encodeURIComponent(processedQuestion);
   
-    const responseAI = await axios.get("http://54.238.198.35/predict", {
-      params: { question: processedQuestion },
-    });
+    // Construct the URL with the encoded question as a query string parameter
+    const url = `${apiEndpoint}?question=${encodedQuestion}`;
+
+    console.log(url);
+
+    console.log(userId);
+
+    let requestBody = {
+      chat_history: [],
+      company_info: {
+        company_desc: 'DashcamSG, a company that sells car accessories',
+        company_name: 'DashcamSG',
+        product_list: ['A500s'],
+        tools: ['Schedule', 'PriceList', 'VectorDatabase'],
+        usable_tools: ['VectorDatabase'],
+      },
+    };
+
+    const prevConvoArr = await Query.find({userId: userId});
+    
+    if (prevConvoArr.length != 0) {
+      const previousHistory = prevConvoArr[prevConvoArr.length - 1].history;
+      requestBody = {
+        chat_history: previousHistory,
+        company_info: requestBody.company_info
+      }
+    }
+
+    console.log(requestBody);
+    
+    const responseAI = await axios.post(url, requestBody);
   
     const answer = responseAI.data.answer;
+
+    const agent = responseAI.data.agent;
   
     console.log(answer); 
   
+    console.log(agent);
+    
+    const type = agent.includes("vector") ? "[ITEM]"
+      : (agent.includes("schedule") ? "[SCHEDULE]"
+      : "[PRICE]");
+    
+    console.log(type);
+
     const success = !answer.includes("[NO ANSWER]");
-  
-    console.log(success);
-  
-    const prevConvoArr = await Query.find({userId: userId});
-  
+    
     let currentHistory = [{
       role: "user",
       content: processedQuestion
@@ -147,8 +136,6 @@ app.get("/queries", async (req, res) => {
       currentHistory = previousHistory.concat(currentHistory);
     }
   
-    console.log("Current History: " + currentHistory);
-    
     // Save the query to the MongoDB database
     const query = new Query({ 
       question: processedQuestion, 
@@ -158,13 +145,12 @@ app.get("/queries", async (req, res) => {
       history: currentHistory, 
       company: "DashcamSG" 
     });
-  
-    console.log("Saved Query: " + query);
-  
+    
     await query.save().then().catch(e => console.log(e));
   
     res.send({
-      answer: query.answer
+      answer: query.answer,
+      agent: type
     });
 
   } catch (error) {
