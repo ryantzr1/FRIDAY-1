@@ -228,8 +228,8 @@ async function onCheckServer(msg) {
 
   if (verifiedChatIds.has(chatId)) {
     try {
-      const response = await axios.get("http://54.238.198.35/");
-      if (response.data.Test === "Hello World") {
+      const response = await axios.get("http://18.183.218.48/");
+      if (response.data.status === "Alive") {
         bot.sendMessage(chatId, "Server is running!");
       } else {
         bot.sendMessage(chatId, "Server is not responding properly.");
