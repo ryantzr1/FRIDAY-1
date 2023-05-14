@@ -25,8 +25,6 @@ app.post("/respondio", (req, res) => {
   const messageText = req.body.message.message.text;
 
   console.log(`Received message from ${phoneNumber}: ${messageText}`);
-  // Log the entire request object
-  console.log(req);
 
   // Respond to the request to acknowledge receipt
   res.status(200).end();
