@@ -31,11 +31,12 @@ db.on("error", console.error.bind(console, "MongoDB connection error:"));
 
 // Handle the /start command
 bot.onText(/\/start/, (msg) => {
-  bot.sendMessage(msg.chat.id, "Hi!  How may I assist you?");
+  bot.sendMessage(msg.chat.id, "Hi! How may I assist you?");
 });
 
 async function onMessage(msg) {
   if (msg.text.startsWith("/")) return; // Ignore commands
+  console.log("Received question:", msg.text); // add this line to log the question
 
   const chatId = msg.chat.id;
   const apiEndpoint = "http://18.183.218.48/test";
@@ -53,7 +54,7 @@ async function onMessage(msg) {
         "LayerZero enables messages to be sent between blockchains.",
       company_name: "LayerZero",
       product_list: [""],
-      tools: ["Schedule", "PriceList", "VectorDatabase"],
+      tools: ["VectorDatabase"],
       usable_tools: ["VectorDatabase"],
     },
   };
@@ -63,7 +64,7 @@ async function onMessage(msg) {
   if (prevConvoArr.length != 0) {
     const previousHistory = prevConvoArr[prevConvoArr.length - 1].history;
     requestBody = {
-      chat_history: previousHistory,
+      chat_history: [],
       company_info: requestBody.company_info,
     };
   }
@@ -71,8 +72,8 @@ async function onMessage(msg) {
   const responseAI = await axios.post(url, requestBody);
   const answer = responseAI.data.answer;
   const agent = responseAI.data.agent;
-
-  const success = !answer.includes("[NO ANSWER]");
+  const success =
+    !answer.includes("[NO ANSWER]") && !answer.includes("Flagged as");
 
   let currentHistory = [
     {
@@ -132,7 +133,7 @@ async function onMessage(msg) {
 }
 
 // Listen to the correct port specified by Heroku
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 1234;
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);
 });

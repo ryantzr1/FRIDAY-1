@@ -13,32 +13,22 @@ const db = mongoose.connection;
 db.on("error", console.error.bind(console, "MongoDB connection error:"));
 
 async function trackMessages() {
-  // Get the names of all collections in the database
-  const collectionNames = await db.listCollections().toArray();
+  const collection = db.collection("queries");
+  const changeStream = collection.watch();
 
-  // Watch each collection and handle changes
-  for (const collectionInfo of collectionNames) {
-    const collection = db.collection(collectionInfo.name);
-    const changeStream = collection.watch();
+  changeStream.on("change", (next) => {
+    // Perform actions when a new object is inserted into the collection
+    const question = next.fullDocument.question;
+    const answer = next.fullDocument.answer;
 
-    changeStream.on("change", (next) => {
-      // Perform actions when a new object is inserted into the collection
-      if (next.operationType === "insert") {
-        const fullDocument = next.fullDocument;
-
-        const question = fullDocument.question;
-        const answer = fullDocument.answer;
-
-        // Notify all verified users of the new object
-        for (const userChatId of verifiedChatIds) {
-          bot.sendMessage(
-            userChatId,
-            `New question added (${collectionInfo.name}):\n\nQuestion: ${question}\nAnswer: ${answer}`
-          );
-        }
-      }
-    });
-  }
+    // Notify all verified users of the new object
+    for (const userChatId of verifiedChatIds) {
+      bot.sendMessage(
+        userChatId,
+        `New question added:\n\nQuestion: ${question}\nAnswer: ${answer}`
+      );
+    }
+  });
 }
 
 module.exports = { db, bot };
