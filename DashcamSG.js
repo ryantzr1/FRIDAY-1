@@ -52,7 +52,7 @@ app.post("/respond.io", async (req, res) => {
   const url = `${apiEndpoint}?question=${encodedQuestion}`;
 
   const responseAI = await axios.post(url, requestBody);
-  const answer = responseAI.data.answer;
+  let answer = responseAI.data.answer;
   const agent = responseAI.data.agent;
   const success =
     !answer.includes("[NO ANSWER]") && !answer.includes("Flagged as");
