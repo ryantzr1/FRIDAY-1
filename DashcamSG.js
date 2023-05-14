@@ -9,7 +9,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.post("/respondio", (req, res) => {
   const signature = req.get("X-Webhook-Signature");
-  const signingKey = "qwHN5wHm8he4DCpoVWyRAZctWrP4/KRg4lWp0XjprlM=";
+  const signingKey = "51wjxvecd+lF3QLvdILVHGGFGFf3sVKLStQNBXJ3h9U=";
 
   const expectedSignature = createHmac("sha256", signingKey)
     .update(JSON.stringify(req.body))
