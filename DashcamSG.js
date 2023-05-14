@@ -34,6 +34,39 @@ app.post("/respond.io", async (req, res) => {
   console.log(`Received message from ${phoneNumber}: ${messageText}`);
   console.log("This is the channelId" + " " + channelId);
 
+  //asking FRIDAY
+  let requestBody = {
+    chat_history: [],
+    company_info: {
+      company_desc: "DashcamSG, a company that sells car accessories",
+      company_name: "DashcamSG",
+      product_list: ["A500s"],
+      tools: ["VectorDatabase"],
+      usable_tools: ["VectorDatabase"],
+    },
+  };
+
+  const apiEndpoint = "http://18.183.218.48/test";
+  const question = messageText;
+  const encodedQuestion = encodeURIComponent(question);
+  const url = `${apiEndpoint}?question=${encodedQuestion}`;
+
+  const responseAI = await axios.post(url, requestBody);
+  const answer = responseAI.data.answer;
+  const agent = responseAI.data.agent;
+  const success =
+    !answer.includes("[NO ANSWER]") && !answer.includes("Flagged as");
+  let consecutiveFails = 0;
+  if (!success) {
+    consecutiveFails++;
+  }
+  if (!success && consecutiveFails < 2) {
+    answer = "Sorry, we didn't understand your question, please try again.";
+  } else if (!success && consecutiveFails >= 2) {
+    answer =
+      "We did not get your question, please hold as our team will be with you shortly.";
+  }
+
   // Send a reply to the incoming message
   try {
     const response = await axios.post(
@@ -42,7 +75,7 @@ app.post("/respond.io", async (req, res) => {
         channelId: 138265,
         message: {
           type: "text",
-          text: "testing API.",
+          text: answer,
         },
       },
       {
