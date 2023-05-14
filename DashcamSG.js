@@ -1,10 +1,26 @@
 const express = require("express");
+const bodyParser = require("body-parser");
+const { createHmac } = require("crypto");
+
 const app = express();
 
-// Middleware for parsing JSON in request bodies
 app.use(express.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
 app.post("/respondio", (req, res) => {
+  const signature = req.get("X-Webhook-Signature");
+  const signingKey = "my-signing-key";
+
+  const expectedSignature = createHmac("sha256", signingKey)
+    .update(JSON.stringify(req.body))
+    .digest("base64");
+
+  if (signature !== expectedSignature) {
+    return res.status(400).json({
+      message: "Invalid signature",
+    });
+  }
+
   const phoneNumber = req.body.contact.phone;
   const messageText = req.body.message.message.text;
 
