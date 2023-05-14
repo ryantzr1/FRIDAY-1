@@ -29,8 +29,10 @@ app.post("/respond.io", async (req, res) => {
 
   const phoneNumber = req.body.contact.phone; //this is the identifier for the respond.io API to use anyways
   const messageText = req.body.message.message.text; //message to send to FRIDAY
+  const channelId = req.body.message.channelId;
 
   console.log(`Received message from ${phoneNumber}: ${messageText}`);
+  console.log("This is the channelId" + " " + channelId);
 
   // Send a reply to the incoming message
   try {
