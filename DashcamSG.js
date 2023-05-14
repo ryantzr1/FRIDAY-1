@@ -37,7 +37,7 @@ app.post("/respond.io", async (req, res) => {
   // Send a reply to the incoming message
   try {
     const response = await axios.post(
-      `${apiUrl}/contact/id:${id}/message`,
+      `${apiUrl}/contact/id:${phoneNumber}/message`,
       {
         channelId: 138265,
         message: {
