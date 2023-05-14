@@ -27,7 +27,7 @@ app.post("/respond.io", async (req, res) => {
     });
   }
 
-  const phoneNumber = req.body.contact.phone; //this is the identifier for the respond.io API to use anyways
+  const phoneNumber = req.body.contact.id; //this is the identifier for the respond.io API to use anyways
   const messageText = req.body.message.message.text; //message to send to FRIDAY
   const channelId = req.body.message.channelId;
 
@@ -37,7 +37,7 @@ app.post("/respond.io", async (req, res) => {
   // Send a reply to the incoming message
   try {
     const response = await axios.post(
-      `${apiUrl}/contact/phone:${phoneNumber}/message`,
+      `${apiUrl}/contact/id:${id}/message`,
       {
         channelId: 138265,
         message: {
