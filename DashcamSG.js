@@ -73,7 +73,8 @@ app.post("/conversationClosed", async (req, res) => {
 
   mongoCustomer.failureCount = 0;
   await mongoCustomer.save();
-  //ok now reset the failureCount
+  // Respond to the webhook request to acknowledge receipt
+  res.status(200).end();
 });
 
 app.post("/respond.io", async (req, res) => {
