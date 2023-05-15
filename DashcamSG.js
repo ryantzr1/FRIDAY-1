@@ -154,7 +154,7 @@ app.post("/respond.io", async (req, res) => {
   let failureCount = 0; // Default value
 
   if (prevQuery && !isNaN(prevQuery.failureCount)) {
-    failureCount = prevQuery.failureCount; // Extract failureCount if document exists and failureCount is a number
+    failureCount = prevQuery.failureCount + 1; // Extract failureCount if document exists and failureCount is a number
   }
 
   const query = new Query({
