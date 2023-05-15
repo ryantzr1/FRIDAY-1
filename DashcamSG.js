@@ -121,7 +121,7 @@ app.post("/respond.io", async (req, res) => {
   // Update the count of consecutive failed responses for this user
   if (!success) {
     mongoCustomer.failureCount++;
-    await user.save();
+    await mongoCustomer.save();
   } else {
     // Reset the count if the response was successful
     mongoCustomer.failureCount = 0;
