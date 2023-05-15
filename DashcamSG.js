@@ -135,7 +135,8 @@ app.post("/respond.io", async (req, res) => {
   const responseAI = await axios.post(url, requestBody);
   let answer = responseAI.data.answer; //FRIDAY's ANSWER
 
-  const success =
+  //***NEED TO IMPLEMENT CATCH WHEN FRIDAY IS DOWN OR RATE LIMITED */
+  success =
     !answer.includes("[NO ANSWER]") &&
     !answer.includes("Flagged as") &&
     !answer.includes("context");
