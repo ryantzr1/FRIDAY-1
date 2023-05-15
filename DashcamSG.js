@@ -82,7 +82,6 @@ app.post("/respond.io", async (req, res) => {
 
   const responseAI = await axios.post(url, requestBody);
   let answer = responseAI.data.answer; //FRIDAY's ANSWER
-  const agent = responseAI.data.agent;
 
   const success =
     !answer.includes("[NO ANSWER]") && !answer.includes("Flagged as");
@@ -143,30 +142,33 @@ app.post("/respond.io", async (req, res) => {
   // Decide the response based on the count of consecutive failed responses
   if (!success && mongoCustomer.failureCount < 2) {
     answer = "Sorry, we didn't understand your question, please try again.";
-  } else if (!success && mongoCustomer.failureCount == 2) {
+  } else if (!success && mongoCustomer.failureCount >= 2) {
     answer =
       "We did not get your question, please hold as our team will be with you shortly.";
   }
   //yeah then if more than 2 failures we just leave it open and wait for DashcamSG team to reply
 
   // Send a reply to the incoming message
+
   try {
-    const response = await axios.post(
-      `${apiUrl}/contact/id:${userId}/message`,
-      {
-        channelId: 138265,
-        message: {
-          type: "text",
-          text: answer,
+    if (mongoCustomer.failureCount <= 3) {
+      const response = await axios.post(
+        `${apiUrl}/contact/id:${userId}/message`,
+        {
+          channelId: 138265,
+          message: {
+            type: "text",
+            text: answer,
+          },
         },
-      },
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+    }
 
     console.log(
       "Reply sent successfully. Message ID:",
