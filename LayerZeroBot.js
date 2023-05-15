@@ -91,13 +91,14 @@ async function onMessage(msg) {
     currentHistory = previousHistory.concat(currentHistory);
   }
 
-  const query = new LayerZero({
-    question: question,
+  // Save the query to the MongoDB database
+  const query = new Query({
+    question: processedQuestion,
     answer: answer,
     userId: userId,
     success: success,
     history: currentHistory,
-    company: "LayerZero",
+    company: "DashcamSG",
   });
 
   await query
