@@ -233,7 +233,7 @@ app.post("/respond.io", async (req, res) => {
   }
 
   try {
-    if (failureCount < 2) {
+    if (success && failureCount < 2) {
       await axios.post(
         `${apiUrl}/contact/id:${userId}/conversation/status`,
         {
