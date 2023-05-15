@@ -63,6 +63,17 @@ app.post("/conversationClosed", async (req, res) => {
 
   console.log("Conversation closed for " + userId);
 
+  async function removeDocuments() {
+    try {
+      const result = await Query.deleteMany({ userId: "86028224" });
+      console.log(`${result.deletedCount} documents deleted.`);
+    } catch (error) {
+      console.error("Error occurred while removing documents:", error);
+    }
+  }
+
+  removeDocuments();
+
   //checking the previous failure count to update the current failure count
   let mongoCustomer;
   try {
