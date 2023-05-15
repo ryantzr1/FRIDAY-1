@@ -104,8 +104,8 @@ app.post("/respond.io", async (req, res) => {
 
   let failureCount = 0; // Default value
 
-  if (prevQuery) {
-    failureCount = prevQuery.failureCount; // Extract failureCount if document exists
+  if (prevQuery && !isNaN(prevQuery.failureCount)) {
+    failureCount = prevQuery.failureCount; // Extract failureCount if document exists and failureCount is a number
   }
 
   const query = new Query({
@@ -175,18 +175,23 @@ app.post("/respond.io", async (req, res) => {
   }
 
   //   // Close the conversation if the failure count is less than 2
-  if (mongoCustomer.failureCount < 2) {
-    await axios.post(
-      `${apiUrl}/contact/id:${userId}/conversation/status`,
-      {
-        status: "close",
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`, // Replace with your actual token
+  try {
+    if (mongoCustomer.failureCount < 2) {
+      await axios.post(
+        `${apiUrl}/contact/id:${userId}/conversation/status`,
+        {
+          status: "close",
         },
-      }
-    );
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // Replace with your actual token
+          },
+        }
+      );
+    }
+  } catch (error) {
+    console.error(`Error closing conversation for user ${userId}:`, error);
+    // Handle error, for example by sending a response with a status code
   }
 
   // Respond to the request to acknowledge receipt
