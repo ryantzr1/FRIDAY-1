@@ -126,6 +126,8 @@ app.post("/respond.io", async (req, res) => {
   const mongoCustomer = await Query.findOne({
     //want to get the Message Object from MongoDB to check number of failures
     question: question.toString(),
+  }).sort({
+    createdAt: -1,
   });
 
   // Update the count of consecutive failed responses for this user
