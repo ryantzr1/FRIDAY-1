@@ -181,6 +181,10 @@ app.post("/respond.io", async (req, res) => {
   //   // Close the conversation if the failure count is less than 2
   try {
     if (mongoCustomer.failureCount < 2) {
+      // Reset the count on MongoDB
+      mongoCustomer.failureCount = 0;
+      await mongoCustomer.save();
+
       await axios.post(
         `${apiUrl}/contact/id:${userId}/conversation/status`,
         {
