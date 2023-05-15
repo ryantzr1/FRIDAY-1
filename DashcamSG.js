@@ -98,6 +98,15 @@ app.post("/respond.io", async (req, res) => {
       content: answer,
     },
   ];
+  const prevQuery = await Query.findOne({ userId: userId }).sort({
+    createdAt: -1,
+  });
+
+  let failureCount = 0; // Default value
+
+  if (latestQuery) {
+    failureCount = latestQuery.failureCount; // Extract failureCount if document exists
+  }
 
   const query = new Query({
     question: question,
@@ -106,7 +115,7 @@ app.post("/respond.io", async (req, res) => {
     success: success,
     history: currentHistory,
     company: "DashcamSG",
-    failureCount: 0,
+    failureCount: failureCount,
   });
 
   await query
