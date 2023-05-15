@@ -147,19 +147,16 @@ app.post("/respond.io", async (req, res) => {
       const urlRegex = /(https?:\/\/[^\s]+)/; // Regex pattern to match URLs
 
       const urlMatch = messageText.match(urlRegex);
-      const carousellURL = urlMatch[0].trim();
-      console.log(carousellURL + " This is the Carousell link");
-      const response = await axios
-        .get(url, { maxRedirects: 0 })
-        .catch(function (error) {
-          if (error.response) {
-            finalURL = error.response.headers.location;
-          } else {
-            console.error(error.message);
-          }
-        });
-      // This will be the final URL after all redirects
-      console.log(finalURL + " This is the redirected Carousell link");
+      if (urlMatch) {
+        const carousellURL = urlMatch[0].trim();
+        console.log(carousellURL + " This is the Carousell link");
+        const response = await axios.get(
+          "https://carousell.app.link/bAD4ebleSyb"
+        );
+        // This will be the final URL after all redirects
+        finalURL = response.request.res.responseUrl;
+        console.log(finalURL + " This is the redirected Carousell link");
+      }
     } catch (error) {
       console.error("Error:", error);
     }
