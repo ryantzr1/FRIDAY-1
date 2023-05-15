@@ -72,7 +72,7 @@ app.post("/conversationClosed", async (req, res) => {
     }
   }
 
-  removeDocuments();
+  //   removeDocuments();
 
   //checking the previous failure count to update the current failure count
   let mongoCustomer;
