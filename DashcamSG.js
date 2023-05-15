@@ -160,7 +160,7 @@ app.post("/respond.io", async (req, res) => {
           url: carousellURL,
           followAllRedirects: true,
         });
-        finalURL = response.request.href; // final URL after redirects
+        finalURL = response.request.location; // final URL after redirects
 
         console.log(finalURL + " This is the redirected Carousell link");
       }
