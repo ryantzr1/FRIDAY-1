@@ -143,6 +143,8 @@ app.post("/respond.io", async (req, res) => {
   let answer = responseAI.data.answer; //FRIDAY's ANSWER
 
   let finalURL = ""; //for redirects only
+  const util = require("util"); // built-in Node.js module
+  const requestPromise = util.promisify(request);
 
   if (messageText.includes("carousell.app")) {
     try {
