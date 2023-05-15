@@ -154,8 +154,8 @@ app.post("/respond.io", async (req, res) => {
   let failureCount = 0; // Default value
 
   if (prevQuery && !isNaN(prevQuery.failureCount)) {
-    failureCount = prevQuery.failureCount + 1; // Extract failureCount if document exists and failureCount is a number
-    console.log("we have increased failure Count " + failureCount);
+    failureCount = !success ? prevQuery.failureCount + 1 : 0; // Increment failureCount if the response is not successful
+    console.log("we have updated failure Count " + failureCount);
   }
 
   const query = new Query({
@@ -166,7 +166,7 @@ app.post("/respond.io", async (req, res) => {
     success: success,
     history: currentHistory,
     company: "DashcamSG",
-    failureCount: failureCount,
+    failureCount: failureCount, // This is where the updated failureCount is saved
   });
 
   await query
@@ -174,43 +174,20 @@ app.post("/respond.io", async (req, res) => {
     .then()
     .catch((e) => console.log(e));
 
-  //Checking how many messages we failed to answer this customer so we can flag out to DashcamSG
-  //we will assign the conversation to DashcamSG if there are more than 2 failed responses
-  const mongoCustomer = await Query.findOne({ user: userId }).sort({
-    createdAt: -1,
-  });
-
-  //log failure count
-  console.log(
-    "Initial mongoCustomer.failureCount:",
-    mongoCustomer.failureCount
-  );
-
-  // Update the count of consecutive failed responses for this user
-  if (!success) {
-    mongoCustomer.failureCount++;
-    console.log(
-      "Incremented mongoCustomer.failureCount:",
-      mongoCustomer.failureCount
-    );
-    await mongoCustomer.save();
-  } else {
-    // Reset the count if the response was successful
-    mongoCustomer.failureCount = 0;
-    await mongoCustomer.save();
-  }
+  console.log("Updated failureCount:", failureCount);
 
   // Decide the response based on the count of consecutive failed responses
-  if (!success && mongoCustomer.failureCount < 2) {
+  if (!success && failureCount < 2) {
     answer = "Sorry, we didn't understand your question, please try again.";
-  } else if (!success && mongoCustomer.failureCount >= 2) {
+  } else if (!success && failureCount >= 2) {
     answer =
       "We did not get your question, please hold as our team will be with you shortly.";
   }
+
   // Send a reply to the incoming message using Respond.io
   // If more than 2 failures we just leave it open and wait for DashcamSG team to reply
   try {
-    if (mongoCustomer.failureCount <= 3) {
+    if (failureCount < 3) {
       const response = await axios.post(
         `${apiUrl}/contact/id:${userId}/message`,
         {
@@ -255,11 +232,7 @@ app.post("/respond.io", async (req, res) => {
   }
 
   try {
-    if (mongoCustomer.failureCount < 2) {
-      // Reset the count on MongoDB
-      mongoCustomer.failureCount = 0;
-      await mongoCustomer.save();
-
+    if (failureCount < 2) {
       await axios.post(
         `${apiUrl}/contact/id:${userId}/conversation/status`,
         {
