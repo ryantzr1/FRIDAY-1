@@ -144,7 +144,11 @@ app.post("/respond.io", async (req, res) => {
   let finalURL = ""; //for redirects only
   if (messageText.includes("carousell.app")) {
     try {
-      const response = await axios.get(url);
+      const urlRegex = /(https?:\/\/[^\s]+)/; // Regex pattern to match URLs
+
+      const match = messageText.match(urlRegex);
+      const carousellURL = match[0];
+      const response = await axios.get(carousellURL);
       // This will be the final URL after all redirects
       finalURL = response.request.res.responseUrl;
     } catch (error) {
