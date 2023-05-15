@@ -104,8 +104,8 @@ app.post("/respond.io", async (req, res) => {
 
   let failureCount = 0; // Default value
 
-  if (latestQuery) {
-    failureCount = latestQuery.failureCount; // Extract failureCount if document exists
+  if (prevQuery) {
+    failureCount = prevQuery.failureCount; // Extract failureCount if document exists
   }
 
   const query = new Query({
