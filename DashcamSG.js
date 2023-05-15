@@ -78,7 +78,7 @@ app.post("/conversationClosed", async (req, res) => {
   let mongoCustomer;
   try {
     mongoCustomer = await Query.findOne({ userId: userId }).sort({
-      createdAt: -1,
+      timestamp: -1,
     });
     mongoCustomer.failureCount = 0;
     await mongoCustomer.save();
@@ -157,7 +157,7 @@ app.post("/respond.io", async (req, res) => {
   let prevQuery;
   try {
     prevQuery = await Query.findOne({ userId: userId }).sort({
-      createdAt: -1,
+      timestamp: -1,
     });
   } catch (error) {
     console.error(`Error fetching previous query for user ${userId}:`);
