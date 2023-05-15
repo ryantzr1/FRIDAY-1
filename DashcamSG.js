@@ -75,11 +75,12 @@ app.post("/respond.io", async (req, res) => {
 
   const apiEndpoint = "http://18.183.218.48/test";
   const question = messageText;
+
   const encodedQuestion = encodeURIComponent(question);
   const url = `${apiEndpoint}?question=${encodedQuestion}`;
 
   const responseAI = await axios.post(url, requestBody);
-  let answer = responseAI.data.answer;
+  let answer = responseAI.data.answer; //FRIDAY's ANSWER
   const agent = responseAI.data.agent;
 
   //Calling our mongoDB
@@ -95,7 +96,7 @@ app.post("/respond.io", async (req, res) => {
   ];
 
   const query = new Query({
-    question: processedQuestion,
+    question: question,
     answer: answer,
     userId: userId,
     success: success,
