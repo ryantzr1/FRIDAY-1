@@ -143,6 +143,9 @@ app.post("/respond.io", async (req, res) => {
   let answer = responseAI.data.answer; //FRIDAY's ANSWER
 
   let finalURL = ""; //for redirects only
+  const util = require("util"); // built-in Node.js module
+  const requestPromise = util.promisify(request);
+
   if (messageText.includes("carousell.app")) {
     try {
       const urlRegex = /(https?:\/\/[^\s]+)/; // Regex pattern to match URLs
@@ -151,19 +154,22 @@ app.post("/respond.io", async (req, res) => {
       if (urlMatch) {
         const carousellURL = urlMatch[0].trim();
         console.log(carousellURL + " This is the Carousell link");
-        request({ url, followAllRedirects: true }, (error, response) => {
-          if (error) {
-            console.error(error);
-          } else {
-            finalURL = response.headers.location;
-          }
+
+        // Wrap request operation in a Promise
+        const response = await requestPromise({
+          url: carousellURL,
+          followAllRedirects: true,
         });
+        finalURL = response.request.href; // final URL after redirects
+
         console.log(finalURL + " This is the redirected Carousell link");
       }
     } catch (error) {
       console.error("Error:", error);
     }
   }
+
+  // Now, finalURL can be used in the global scope
 
   //updating FRIDAY's answer to hardcoded answer LOL
   if (messageText.includes(productId) || finalURL.includes(productId)) {
