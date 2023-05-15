@@ -154,7 +154,7 @@ app.post("/respond.io", async (req, res) => {
   let failureCount = 0; // Default value
 
   if (prevQuery && !isNaN(prevQuery.failureCount)) {
-    console.log(prevQuery.question + " this was the previous question");
+    console.log(prevQuery);
     console.log(prevQuery.failureCount + "This is prev failure count");
     failureCount = !success ? prevQuery.failureCount + 1 : 0; // Increment failureCount if the response is not successful
     console.log("we have updated failure Count " + failureCount);
