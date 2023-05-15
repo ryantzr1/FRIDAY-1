@@ -94,13 +94,13 @@ app.post("/respond.io", async (req, res) => {
     },
   ];
 
-  const query = new LayerZero({
-    question: question,
+  const query = new Query({
+    question: processedQuestion,
     answer: answer,
     userId: userId,
     success: success,
     history: currentHistory,
-    company: "LayerZero",
+    company: "DashcamSG",
   });
 
   await query
