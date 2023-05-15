@@ -113,18 +113,11 @@ app.post("/respond.io", async (req, res) => {
     .catch((e) => console.log(e));
 
   async function findQuestion(question) {
-    let processedQuestion = question.trim();
-
-    if (!processedQuestion.endsWith("?")) {
-      processedQuestion += "?"; // add question mark if not already present
-    }
-
-    console.log(processedQuestion);
-
     const result = await Query.findOne({
-      question: processedQuestion.toString(),
+      question: question.toString(),
     });
     console.log(result);
+
     return result.answer;
   }
 
