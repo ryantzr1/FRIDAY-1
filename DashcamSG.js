@@ -47,20 +47,6 @@ const token =
 //this simulates how when DashcamSG closes the convo, FRIDAY will be there to answer
 //to get around this, on our dashboard we can show the user whom Dashcam has yet to answer!!!
 
-    const url = req.query.url;
-    axios.get({ url, followRedirect: false }, (error, response) => {
-      if (error) {
-        console.error(error);
-        res.status(500).send('Error occurred');
-      } else {
-        const location = response.headers.location;
-        console.log(location);
-        const itemId = location.split('.').pop();
-        res.send(itemId);
-      }
-
-
-
 app.post("/conversationClosed", async (req, res) => {
   const signature = req.get("X-Webhook-Signature");
   const signingKey = "DdH/wg/I/zhJQNpPAe7WDWKwSqAa/ofybvEqM1927nA=";
@@ -155,15 +141,15 @@ app.post("/respond.io", async (req, res) => {
   const responseAI = await axios.post(url, requestBody);
   let answer = responseAI.data.answer; //FRIDAY's ANSWER
 
-  let finalURL; //for redirects only 
+  let finalURL; //for redirects only
   if (userMessage.includes("carousell.app")) {
     try {
-        const response = await axios.get(url);
-        // This will be the final URL after all redirects
-        finalURL = response.request.res.responseUrl;
-      } catch (error) {
-        console.error('Error:', error);
-      }
+      const response = await axios.get(url);
+      // This will be the final URL after all redirects
+      finalURL = response.request.res.responseUrl;
+    } catch (error) {
+      console.error("Error:", error);
+    }
   }
 
   //updating FRIDAY's answer to hardcoded answer LOL
