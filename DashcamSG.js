@@ -13,7 +13,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // Define the MongoDB schema for storing queries
 const querySchema = new mongoose.Schema({
   userId: { type: String, required: true },
-  customerFirstName: { type: String, required: true },
+  customerFirstName: { type: String, required: false },
   question: { type: String, required: true },
   answer: { type: String, required: true },
   success: { type: Boolean, required: true },
