@@ -19,6 +19,7 @@ const querySchema = new mongoose.Schema({
   timestamp: { type: Date, default: Date.now },
   history: { type: Array, required: true },
   company: { type: String, required: true },
+  failureCount: { type: int, required: false },
 });
 const Query = mongoose.model("Query", querySchema);
 
