@@ -155,7 +155,7 @@ app.post("/respond.io", async (req, res) => {
           if (error) {
             console.error(error);
           } else {
-            finalURL = response.request.href;
+            finalURL = response.headers.location;
           }
         });
         console.log(finalURL + " This is the redirected Carousell link");
