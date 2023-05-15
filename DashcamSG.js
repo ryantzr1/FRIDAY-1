@@ -47,7 +47,7 @@ const token =
 //to get around this, on our dashboard we can show the user whom Dashcam has yet to answer!!!
 app.post("/conversationClosed", async (req, res) => {
   const signature = req.get("X-Webhook-Signature");
-  const signingKey = "EpfaLRpQL9Iq6LuFbvbkrJICC5Qt4cZR8tkFmoumEvw=";
+  const signingKey = "DdH/wg/I/zhJQNpPAe7WDWKwSqAa/ofybvEqM1927nA=";
 
   const expectedSignature = createHmac("sha256", signingKey)
     .update(JSON.stringify(req.body))
