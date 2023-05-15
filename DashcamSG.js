@@ -142,7 +142,7 @@ app.post("/respond.io", async (req, res) => {
   let answer = responseAI.data.answer; //FRIDAY's ANSWER
 
   let finalURL; //for redirects only
-  if (userMessage.includes("carousell.app")) {
+  if (messageText.includes("carousell.app")) {
     try {
       const response = await axios.get(url);
       // This will be the final URL after all redirects
@@ -153,7 +153,7 @@ app.post("/respond.io", async (req, res) => {
   }
 
   //updating FRIDAY's answer to hardcoded answer LOL
-  if (userMessage.includes(productId) || finalURL.includes(productId)) {
+  if (messageText.includes(productId) || finalURL.includes(productId)) {
     answer =
       "We see that you're interested in the 70mai A500S Dashcam. Let us know how can we help you";
   }
