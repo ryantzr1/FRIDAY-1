@@ -106,6 +106,7 @@ app.post("/respond.io", async (req, res) => {
     success: success,
     history: currentHistory,
     company: "DashcamSG",
+    failureCount: 0,
   });
 
   await query
