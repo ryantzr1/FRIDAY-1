@@ -102,7 +102,6 @@ app.post("/respond.io", async (req, res) => {
 
   console.log(`Received message from ${userId}: ${messageText}`);
   console.log("This is the channelId" + " " + channelId);
-  console.log("This is the assignee" + " " + assignee);
 
   //asking FRIDAY
   let requestBody = {
