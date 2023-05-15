@@ -168,12 +168,12 @@ app.post("/respond.io", async (req, res) => {
           },
         }
       );
-    }
 
-    console.log(
-      "Reply sent successfully. Message ID:",
-      response.data.messageId
-    );
+      console.log(
+        "Reply sent successfully. Message ID:",
+        response.data.messageId
+      );
+    }
   } catch (error) {
     console.error("Failed to send reply:", error.response.data);
   }
