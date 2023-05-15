@@ -80,14 +80,14 @@ app.post("/conversationClosed", async (req, res) => {
     mongoCustomer = await Query.findOne({ userId: userId }).sort({
       createdAt: -1,
     });
+    mongoCustomer.failureCount = 0;
+    await mongoCustomer.save();
   } catch (error) {
     console.error(
       `ignore this error it will never happen in real life ${userId}:`
     );
   }
 
-  mongoCustomer.failureCount = 0;
-  await mongoCustomer.save();
   // Respond to the webhook request to acknowledge receipt
   res.status(200).end();
 });
