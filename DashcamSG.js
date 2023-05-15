@@ -141,7 +141,7 @@ app.post("/respond.io", async (req, res) => {
   const responseAI = await axios.post(url, requestBody);
   let answer = responseAI.data.answer; //FRIDAY's ANSWER
 
-  let finalURL; //for redirects only
+  let finalURL = ""; //for redirects only
   if (messageText.includes("carousell.app")) {
     try {
       const response = await axios.get(url);
