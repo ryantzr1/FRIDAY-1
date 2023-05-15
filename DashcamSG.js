@@ -46,6 +46,21 @@ const token =
 //whenever we close the convo, this updates the failureCount back to 0
 //this simulates how when DashcamSG closes the convo, FRIDAY will be there to answer
 //to get around this, on our dashboard we can show the user whom Dashcam has yet to answer!!!
+
+    const url = req.query.url;
+    axios.get({ url, followRedirect: false }, (error, response) => {
+      if (error) {
+        console.error(error);
+        res.status(500).send('Error occurred');
+      } else {
+        const location = response.headers.location;
+        console.log(location);
+        const itemId = location.split('.').pop();
+        res.send(itemId);
+      }
+
+
+
 app.post("/conversationClosed", async (req, res) => {
   const signature = req.get("X-Webhook-Signature");
   const signingKey = "DdH/wg/I/zhJQNpPAe7WDWKwSqAa/ofybvEqM1927nA=";
@@ -73,7 +88,7 @@ app.post("/conversationClosed", async (req, res) => {
     }
   }
 
-  //   removeDocuments();
+  //   removeDocuments(); //
 
   //checking the previous failure count to update the current failure count
   let mongoCustomer;
@@ -107,10 +122,14 @@ app.post("/respond.io", async (req, res) => {
     });
   }
 
+  //Let's first check against all the products that they have!
+
   const userId = req.body.contact.id; //this is the identifier for the respond.io API to use anyways
   const messageText = req.body.message.message.text; //message to send to FRIDAY
   const channelId = req.body.message.channelId;
   const customerFirstName = req.body.contact.firstName; //this is to show Dashcam which user they need to reply to in event of no answer
+
+  const productId = "1067575291";
 
   console.log(`Received message from ${userId}: ${messageText}`);
   console.log("This is the channelId" + " " + channelId);
@@ -136,10 +155,38 @@ app.post("/respond.io", async (req, res) => {
   const responseAI = await axios.post(url, requestBody);
   let answer = responseAI.data.answer; //FRIDAY's ANSWER
 
+  let finalURL; //for redirects only 
+  if (userMessage.includes("carousell.app")) {
+    try {
+        const response = await axios.get(url);
+        // This will be the final URL after all redirects
+        finalURL = response.request.res.responseUrl;
+      } catch (error) {
+        console.error('Error:', error);
+      }
+  }
+
+  //updating FRIDAY's answer to hardcoded answer LOL
+  if (userMessage.includes(productId) || finalURL.includes(productId)) {
+    answer =
+      "We see that you're interested in the 70mai A500S Dashcam. Let us know how can we help you";
+  }
+
+  //updating FRIDAY's answer to handle scheduling message
+  if (answer.includes("Flagged as Scheduling Message")) {
+    answer = `To help us serve you better, kindly share the following details with us,\n
+    1) Make & Model of your vehicle:\n
+    2) Postal Code of Installation Location:\n
+    3) Existing camera model? (yes/no)\n
+    4) Are there any existing dashcam battery packs installed?\n
+    \n
+    Thank you, we will be with you shortly 😊`;
+  }
+
   //***NEED TO IMPLEMENT CATCH WHEN FRIDAY IS DOWN OR RATE LIMITED */
   success =
     !answer.includes("[NO ANSWER]") &&
-    !answer.includes("Flagged as") &&
+    !answer.includes("Flagged as Price") &&
     !answer.includes("context");
 
   //Calling our mongoDB
