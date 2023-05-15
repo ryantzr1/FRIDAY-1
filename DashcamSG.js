@@ -2,11 +2,38 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const { createHmac } = require("crypto");
 const axios = require("axios");
+const mongoose = require("mongoose");
+require("dotenv").config();
 
 const app = express();
 
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+// Define the MongoDB schema for storing queries
+const querySchema = new mongoose.Schema({
+  userId: { type: String, required: true },
+  question: { type: String, required: true },
+  answer: { type: String, required: true },
+  success: { type: Boolean, required: true },
+  timestamp: { type: Date, default: Date.now },
+  history: { type: Array, required: true },
+  company: { type: String, required: true },
+});
+const Query = mongoose.model("Query", querySchema);
+
+// Set up the MongoDB connection
+mongoose
+  .connect(process.env.MONGODB_URL, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => {
+    console.log("Connected to MongoDB!");
+  })
+  .catch((error) => {
+    console.error("Error connecting to MongoDB:", error);
+  });
 
 // Respond.io API configuration
 const apiUrl = "https://api.respond.io/v2";
@@ -27,11 +54,11 @@ app.post("/respond.io", async (req, res) => {
     });
   }
 
-  const phoneNumber = req.body.contact.id; //this is the identifier for the respond.io API to use anyways
+  const userId = req.body.contact.id; //this is the identifier for the respond.io API to use anyways
   const messageText = req.body.message.message.text; //message to send to FRIDAY
   const channelId = req.body.message.channelId;
 
-  console.log(`Received message from ${phoneNumber}: ${messageText}`);
+  console.log(`Received message from ${userId}: ${messageText}`);
   console.log("This is the channelId" + " " + channelId);
 
   //asking FRIDAY
@@ -54,15 +81,68 @@ app.post("/respond.io", async (req, res) => {
   const responseAI = await axios.post(url, requestBody);
   let answer = responseAI.data.answer;
   const agent = responseAI.data.agent;
+
+  //Calling our mongoDB
+  let currentHistory = [
+    {
+      role: "user",
+      content: question,
+    },
+    {
+      role: "assistant",
+      content: answer,
+    },
+  ];
+
+  const query = new LayerZero({
+    question: question,
+    answer: answer,
+    userId: userId,
+    success: success,
+    history: currentHistory,
+    company: "LayerZero",
+  });
+
+  await query
+    .save()
+    .then()
+    .catch((e) => console.log(e));
+
   const success =
     !answer.includes("[NO ANSWER]") && !answer.includes("Flagged as");
-  let consecutiveFails = 0;
-  if (!success) {
-    consecutiveFails++;
+
+  async function findQuestion(question) {
+    let processedQuestion = question.trim();
+
+    if (!processedQuestion.endsWith("?")) {
+      processedQuestion += "?"; // add question mark if not already present
+    }
+
+    console.log(processedQuestion);
+
+    const result = await Query.findOne({
+      question: processedQuestion.toString(),
+    });
+    console.log(result);
+    return result.answer;
   }
-  if (!success && consecutiveFails < 2) {
+
+  const user = await findQuestion(question); //want to get the Message Object from MongoDB to check number of failures
+
+  // Update the count of consecutive failed responses for this user
+  if (!success) {
+    user.failureCount++;
+    await user.save();
+  } else {
+    // Reset the count if the response was successful
+    user.failureCount = 0;
+    await user.save();
+  }
+
+  // Decide the response based on the count of consecutive failed responses
+  if (!success && user.failureCount < 2) {
     answer = "Sorry, we didn't understand your question, please try again.";
-  } else if (!success && consecutiveFails >= 2) {
+  } else if (!success && user.failureCount >= 2) {
     answer =
       "We did not get your question, please hold as our team will be with you shortly.";
   }
@@ -70,7 +150,7 @@ app.post("/respond.io", async (req, res) => {
   // Send a reply to the incoming message
   try {
     const response = await axios.post(
-      `${apiUrl}/contact/id:${phoneNumber}/message`,
+      `${apiUrl}/contact/id:${userId}/message`,
       {
         channelId: 138265,
         message: {
@@ -93,7 +173,26 @@ app.post("/respond.io", async (req, res) => {
   } catch (error) {
     console.error("Failed to send reply:", error.response.data);
   }
+
+  //   // Close the conversation if the failure count is less than 2
+  //   if (user.failureCount < 2) {
+  //     await axios.post(
+  //       "https://api.respond.io/v2/contact/" +
+  //         phoneNumber +
+  //         "/conversation/status",
+  //       {
+  //         status: "close",
+  //       },
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`, // Replace with your actual token
+  //         },
+  //       }
+  //     );
+  //   }
+
   // Respond to the request to acknowledge receipt
+
   res.status(200).end();
 });
 
