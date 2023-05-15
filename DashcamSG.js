@@ -5,6 +5,7 @@ const axios = require("axios");
 const mongoose = require("mongoose");
 const { fail } = require("assert");
 require("dotenv").config();
+const request = require("request");
 
 const app = express();
 
@@ -150,11 +151,13 @@ app.post("/respond.io", async (req, res) => {
       if (urlMatch) {
         const carousellURL = urlMatch[0].trim();
         console.log(carousellURL + " This is the Carousell link");
-        const response = await axios.get(
-          "https://carousell.app.link/bAD4ebleSyb"
-        );
-        // This will be the final URL after all redirects
-        finalURL = response.request.res.responseUrl;
+        request({ url, followAllRedirects: true }, (error, response) => {
+          if (error) {
+            console.error(error);
+          } else {
+            finalURL = response.request.href;
+          }
+        });
         console.log(finalURL + " This is the redirected Carousell link");
       }
     } catch (error) {
