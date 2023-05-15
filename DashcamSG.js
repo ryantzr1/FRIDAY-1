@@ -112,25 +112,19 @@ app.post("/respond.io", async (req, res) => {
     .then()
     .catch((e) => console.log(e));
 
-  async function findQuestion(question) {
-    const result = await Query.findOne({
-      question: question.toString(),
-    });
-    console.log(result);
-
-    return result.answer;
-  }
-
-  const user = await findQuestion(question); //want to get the Message Object from MongoDB to check number of failures
+  const mongoCustomer = await Query.findOne({
+    //want to get the Message Object from MongoDB to check number of failures
+    question: question.toString(),
+  });
 
   // Update the count of consecutive failed responses for this user
   if (!success) {
-    user.failureCount++;
+    mongoCustomer.failureCount++;
     await user.save();
   } else {
     // Reset the count if the response was successful
-    user.failureCount = 0;
-    await user.save();
+    mongoCustomer.failureCount = 0;
+    await mongoCustomer.save();
   }
 
   // Decide the response based on the count of consecutive failed responses
