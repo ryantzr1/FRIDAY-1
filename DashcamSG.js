@@ -148,10 +148,11 @@ app.post("/respond.io", async (req, res) => {
 
       const urlMatch = messageText.match(urlRegex);
       const carousellURL = urlMatch[0].trim();
-      console.log(carousellURL + " This is the redirected Carousell link");
+      console.log(carousellURL + " This is the Carousell link");
       const response = await axios.get(carousellURL);
       // This will be the final URL after all redirects
       finalURL = response.request.res.responseUrl;
+      console.log(finalURL + " This is the redirected Carousell link");
     } catch (error) {
       console.error("Error:", error);
     }
