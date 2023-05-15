@@ -129,9 +129,9 @@ app.post("/respond.io", async (req, res) => {
   }
 
   // Decide the response based on the count of consecutive failed responses
-  if (!success && user.failureCount < 2) {
+  if (!success && mongoCustomer.failureCount < 2) {
     answer = "Sorry, we didn't understand your question, please try again.";
-  } else if (!success && user.failureCount >= 2) {
+  } else if (!success && mongoCustomer.failureCount >= 2) {
     answer =
       "We did not get your question, please hold as our team will be with you shortly.";
   }
