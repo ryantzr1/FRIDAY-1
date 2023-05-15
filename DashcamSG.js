@@ -141,10 +141,11 @@ app.post("/respond.io", async (req, res) => {
   // Decide the response based on the count of consecutive failed responses
   if (!success && mongoCustomer.failureCount < 2) {
     answer = "Sorry, we didn't understand your question, please try again.";
-  } else if (!success && mongoCustomer.failureCount >= 2) {
+  } else if (!success && mongoCustomer.failureCount == 2) {
     answer =
       "We did not get your question, please hold as our team will be with you shortly.";
   }
+  //yeah then if more than 2 failures we just leave it open and wait for DashcamSG team to reply
 
   // Send a reply to the incoming message
   try {
@@ -174,21 +175,21 @@ app.post("/respond.io", async (req, res) => {
   }
 
   //   // Close the conversation if the failure count is less than 2
-  //   if (user.failureCount < 2) {
-  //     await axios.post(
-  //       "https://api.respond.io/v2/contact/" +
-  //         phoneNumber +
-  //         "/conversation/status",
-  //       {
-  //         status: "close",
-  //       },
-  //       {
-  //         headers: {
-  //           Authorization: `Bearer ${token}`, // Replace with your actual token
-  //         },
-  //       }
-  //     );
-  //   }
+  if (user.failureCount < 2) {
+    await axios.post(
+      "https://api.respond.io/v2/contact/" +
+        phoneNumber +
+        "/conversation/status",
+      {
+        status: "close",
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`, // Replace with your actual token
+        },
+      }
+    );
+  }
 
   // Respond to the request to acknowledge receipt
 
