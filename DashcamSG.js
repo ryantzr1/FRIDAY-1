@@ -175,7 +175,7 @@ app.post("/respond.io", async (req, res) => {
   }
 
   //   // Close the conversation if the failure count is less than 2
-  if (user.failureCount < 2) {
+  if (mongoCustomer.failureCount < 2) {
     await axios.post(
       "https://api.respond.io/v2/contact/" +
         phoneNumber +
