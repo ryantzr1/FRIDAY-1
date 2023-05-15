@@ -83,6 +83,9 @@ app.post("/respond.io", async (req, res) => {
   let answer = responseAI.data.answer; //FRIDAY's ANSWER
   const agent = responseAI.data.agent;
 
+  const success =
+    !answer.includes("[NO ANSWER]") && !answer.includes("Flagged as");
+
   //Calling our mongoDB
   let currentHistory = [
     {
@@ -108,9 +111,6 @@ app.post("/respond.io", async (req, res) => {
     .save()
     .then()
     .catch((e) => console.log(e));
-
-  const success =
-    !answer.includes("[NO ANSWER]") && !answer.includes("Flagged as");
 
   async function findQuestion(question) {
     let processedQuestion = question.trim();
