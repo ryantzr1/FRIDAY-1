@@ -60,11 +60,8 @@ app.post("/conversationClosed", async (req, res) => {
   }
 
   const userId = req.body.contact.id; //this is the identifier for the respond.io API to use anyways
-  const messageText = req.body.message.message.text; //message to send to FRIDAY
-  const channelId = req.body.message.channelId;
 
-  console.log(`Received message from ${userId}: ${messageText}`);
-  console.log("This is the channelId" + " " + channelId);
+  console.log("Conversation closed for " + userId);
 
   //checking the previous failure count to update the current failure count
   const mongoCustomer = await Query.findOne({ user: userId }).sort({
