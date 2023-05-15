@@ -3,6 +3,7 @@ const bodyParser = require("body-parser");
 const { createHmac } = require("crypto");
 const axios = require("axios");
 const mongoose = require("mongoose");
+const { fail } = require("assert");
 require("dotenv").config();
 
 const app = express();
@@ -201,7 +202,7 @@ app.post("/respond.io", async (req, res) => {
   // Send a reply to the incoming message using Respond.io
   // If more than 2 failures we just leave it open and wait for DashcamSG team to reply
   try {
-    if (failureCount < 3) {
+    if (failureCount < 2) {
       const response = await axios.post(
         `${apiUrl}/contact/id:${userId}/message`,
         {
@@ -223,7 +224,7 @@ app.post("/respond.io", async (req, res) => {
         "Reply sent successfully. Message ID:",
         response.data.messageId
       );
-    } else {
+    } else if (failureCount == 2) {
       // Assign the conversation to jarvis@dashcam.sg (eventually)
       await axios.post(
         `${apiUrl}/contact/id:${userId}/conversation/assignee`,
