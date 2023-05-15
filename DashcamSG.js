@@ -64,9 +64,16 @@ app.post("/conversationClosed", async (req, res) => {
   console.log("Conversation closed for " + userId);
 
   //checking the previous failure count to update the current failure count
-  const mongoCustomer = await Query.findOne({ user: userId }).sort({
-    createdAt: -1,
-  });
+  let mongoCustomer;
+  try {
+    mongoCustomer = await Query.findOne({ userId: userId }).sort({
+      createdAt: -1,
+    });
+  } catch (error) {
+    console.error(
+      `ignore this error it will never happen in real life ${userId}:`
+    );
+  }
 
   mongoCustomer.failureCount = 0;
   await mongoCustomer.save();
@@ -136,9 +143,14 @@ app.post("/respond.io", async (req, res) => {
   ];
 
   //checking the previous failure count to update the current failure count
-  const prevQuery = await Query.findOne({ userId: userId }).sort({
-    createdAt: -1,
-  });
+  let prevQuery;
+  try {
+    prevQuery = await Query.findOne({ userId: userId }).sort({
+      createdAt: -1,
+    });
+  } catch (error) {
+    console.error(`Error fetching previous query for user ${userId}:`);
+  }
 
   let failureCount = 0; // Default value
 
