@@ -1,5 +1,5 @@
-if (process.env.NODE_ENV !== 'production') {
-  require('dotenv').config();
+if (process.env.NODE_ENV !== "production") {
+  require("dotenv").config();
 }
 
 const express = require("express");
@@ -10,7 +10,7 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 
 const port = process.env.PORT || "3000";
-const dbUrl = process.env.DB_URL || 'mongodb://localhost:3000/fridaybackend';
+const dbUrl = process.env.DB_URL || "mongodb://localhost:3000/fridaybackend";
 
 const app = express();
 app.use(cors());
@@ -25,47 +25,47 @@ const querySchema = new mongoose.Schema({
   success: { type: Boolean, required: true },
   timestamp: { type: Date, default: Date.now },
   history: { type: Array, required: true },
-  company: { type: String, required: true }
+  company: { type: String, required: true },
 });
-const Query = mongoose.model('Query', querySchema);
+const Query = mongoose.model("Query", querySchema);
 
 // Set up the MongoDB connection
-mongoose.connect(dbUrl, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-}).then(() => {
-  console.log('Connected to MongoDB!');
-}).catch((error) => {
-  console.error('Error connecting to MongoDB:', error);
-});
+mongoose
+  .connect(dbUrl, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => {
+    console.log("Connected to MongoDB!");
+  })
+  .catch((error) => {
+    console.error("Error connecting to MongoDB:", error);
+  });
 
 // Define the route for handling GET requests
 let counter = 0;
 
 app.get("/", async (req, res) => {
   try {
-
     res.send({
       // answer: query.answer
-      answer: "Wrong Endpoint"
+      answer: "Wrong Endpoint",
     });
-
   } catch (error) {
-    res.status(500)
-       .json({ error: "An error occurred while processing your request." });
+    res
+      .status(500)
+      .json({ error: "An error occurred while processing your request." });
   }
-
 });
 
 app.get("/queries", async (req, res) => {
   try {
+    const apiEndpoint = "http://18.183.218.48/predict";
 
-    const apiEndpoint = 'http://18.183.218.48/predict';
-    
     const question = req.body.question;
 
     let processedQuestion = question.trim();
-    
+
     if (!processedQuestion.endsWith("?")) {
       processedQuestion += "?"; // add question mark if not already present
     }
@@ -74,7 +74,7 @@ app.get("/queries", async (req, res) => {
 
     // Encode the question using encodeURIComponent()
     const encodedQuestion = encodeURIComponent(processedQuestion);
-  
+
     // Construct the URL with the encoded question as a query string parameter
     const url = `${apiEndpoint}?question=${encodedQuestion}`;
 
@@ -85,86 +85,95 @@ app.get("/queries", async (req, res) => {
     let requestBody = {
       chat_history: [],
       company_info: {
-        company_desc: 'DashcamSG, a company that sells car accessories',
-        company_name: 'DashcamSG',
-        product_list: ['A500s'],
-        tools: ['Schedule', 'PriceList', 'VectorDatabase'],
-        usable_tools: ['VectorDatabase'],
+        company_desc: "DashcamSG, a company that sells car accessories",
+        company_name: "DashcamSG",
+        product_list: ["A500s"],
+        tools: ["Schedule", "PriceList", "VectorDatabase"],
+        usable_tools: ["VectorDatabase"],
       },
     };
 
-    const prevConvoArr = await Query.find({userId: userId});
-    
+    const prevConvoArr = await Query.find({ userId: userId });
+
     if (prevConvoArr.length != 0) {
       const previousHistory = prevConvoArr[prevConvoArr.length - 1].history;
       requestBody = {
         chat_history: previousHistory,
-        company_info: requestBody.company_info
-      }
+        company_info: requestBody.company_info,
+      };
     }
 
     console.log(requestBody);
-    
+
     const responseAI = await axios.post(url, requestBody);
-  
+
     const answer = responseAI.data.answer;
 
     const agent = responseAI.data.agent;
-  
-    console.log(answer); 
-  
+
+    console.log(answer);
+
     console.log(agent);
-    
-    const type = agent.includes("vector") ? "[ITEM]"
-      : (agent.includes("schedule") ? "[SCHEDULE]"
-      : "[PRICE]");
-    
+
+    const type = agent.includes("vector")
+      ? "[ITEM]"
+      : agent.includes("schedule")
+      ? "[SCHEDULE]"
+      : "[PRICE]";
+
     console.log(type);
 
     const success = !answer.includes("[NO ANSWER]");
-    
-    let currentHistory = [{
-      role: "user",
-      content: processedQuestion
-    }, {
-      role: "assistant",
-      content: answer
-    }];
-  
+
+    let currentHistory = [
+      {
+        role: "user",
+        content: processedQuestion,
+      },
+      {
+        role: "assistant",
+        content: answer,
+      },
+    ];
+
     if (prevConvoArr.length != 0) {
       previousHistory = prevConvoArr[prevConvoArr.length - 1].history;
       currentHistory = previousHistory.concat(currentHistory);
     }
-  
+
     // Save the query to the MongoDB database
-    const query = new Query({ 
-      question: processedQuestion, 
-      answer: answer, 
-      userId: userId, 
-      success: success, 
-      history: currentHistory, 
-      company: "DashcamSG" 
+    const query = new Query({
+      question: processedQuestion,
+      answer: answer,
+      userId: userId,
+      success: success,
+      history: currentHistory,
+      company: "DashcamSG",
     });
-    
-    await query.save().then().catch(e => console.log(e));
-  
+
+    await query
+      .save()
+      .then()
+      .catch((e) => console.log(e));
+
     res.send({
       answer: query.answer,
-      agent: type
+      agent: type,
     });
-
   } catch (error) {
-    res.status(500)
-       .json({ error: "An error occurred while processing your request." });
+    res
+      .status(500)
+      .json({ error: "An error occurred while processing your request." });
   }
-  
 });
 
-app.get('/queries/log', async (req, res) => {
+app.get("/queries/log", async (req, res) => {
   try {
     const queries = await Query.find().sort({ _id: -1 });
     const totalQueriesCount = await Query.countDocuments();
-    const unansweredQueriesCount = await Query.countDocuments({ success: false });
+    const unansweredQueriesCount = await Query.countDocuments({
+      success: false,
+    });
     res.json({ queries, totalQueriesCount, unansweredQueriesCount });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -183,7 +192,7 @@ app.get("/response", async (req, res) => {
     console.log(result);
     if (result) {
       res.send({
-        answer: result
+        answer: result,
       });
     } else {
       res.status(404).json({ error: "Question not found" });
@@ -195,18 +204,19 @@ app.get("/response", async (req, res) => {
 
 async function findQuestion(question) {
   let processedQuestion = question.trim();
-    
+
   if (!processedQuestion.endsWith("?")) {
     processedQuestion += "?"; // add question mark if not already present
   }
 
   console.log(processedQuestion);
 
-  const result = await Query.findOne({ question: processedQuestion.toString() });
+  const result = await Query.findOne({
+    question: processedQuestion.toString(),
+  });
   console.log(result);
   return result.answer;
 }
-
 
 // app.post("/queries", async (req, res) => {
 //   // console.log(req);
