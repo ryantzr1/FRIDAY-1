@@ -57,16 +57,16 @@ function Home() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const response = getUid() === "lZLIC6fK2WQOvIxyXKECEjx625w1"  || getUid() === "Hoz3NtloWXX7MciVcTn8BNAHIJs1"
-          ? await axios.get('https://friday-backend-server-new.herokuapp.com/queries/log')
-          : null;
-        const { queries, totalQueriesCount, unansweredQueriesCount } = response.data;
-        console.log(queries);
-        console.log(totalQueriesCount);
-        console.log(unansweredQueriesCount);
-        setLogs(queries);
-        setTotalQueries(totalQueriesCount);
-        setUnansweredQueries(unansweredQueriesCount);
+        if (getUid() && (getUid() === "lZLIC6fK2WQOvIxyXKECEjx625w1" || getUid() === "Hoz3NtloWXX7MciVcTn8BNAHIJs1")) {
+          const response = await axios.get('https://friday-backend-server.herokuapp.com/queries/log');
+          const { queries, totalQueriesCount, unansweredQueriesCount } = response.data;
+          console.log(queries);
+          console.log(totalQueriesCount);
+          console.log(unansweredQueriesCount);
+          setLogs(queries);
+          setTotalQueries(totalQueriesCount);
+          setUnansweredQueries(unansweredQueriesCount);
+        }
       } catch (error) {
         console.error(error);
       }
@@ -75,8 +75,8 @@ function Home() {
   }, []);
 
   return (
-    <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <h1 className="text-4xl font-bold py-8">My Dashboard</h1>
+    <main className="max-w-7xl mx-auto pt-8 px-4 sm:px-6 lg:px-8">
+      <h1 className="text-3xl font-bold mb-4">My Dashboard</h1>
       <div className="flex justify-between mb-8">
         <CounterCard value={totalQueries} label="Total Queries" color="text-green-500" />
         <CounterCard value={unansweredQueries} label="Unanswered Queries" color="text-red-500" />

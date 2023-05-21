@@ -3,7 +3,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { RxSketchLogo, RxDashboard, RxPerson } from 'react-icons/rx';
 import { HiOutlineShoppingBag } from 'react-icons/hi';
-import { FiSettings } from 'react-icons/fi';
+import { FiSettings, FiDatabase } from 'react-icons/fi';
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { auth } from "../config/firebase";
@@ -61,13 +61,19 @@ const Sidebar = ({ children }) => {
               <span className='ml-4 text-sm'>Activity Log</span>
             </div>
           </Link>
+          <Link href='/database'>
+            <div className='hover:bg-black hover:text-white transition-colors cursor-pointer my-4 p-3 rounded-lg inline-block'>
+              <FiDatabase size={20} className='inline-block'/>
+              <span className='ml-4 text-sm'>Database</span>
+            </div>
+          </Link>
           <Link href='/analytics'>
             <div className='hover:bg-black hover:text-white transition-colors cursor-pointer my-4 p-3 rounded-lg inline-block'>
               <HiOutlineShoppingBag size={20} className='inline-block'/>
               <span className='ml-4 text-sm'>Analytics</span>
             </div>
           </Link>
-          <Link href='/reports'>
+          <Link href='/settings'>
             <div className='hover:bg-black hover:text-white transition-colors cursor-pointer my-4 p-3 rounded-lg inline-block'>
               <FiSettings size={20} className='inline-block'/>
               <span className='ml-4 text-sm'>Settings</span>
