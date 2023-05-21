@@ -1,23 +1,23 @@
-# # dependencies
-# /node_modules/
+# dependencies
+/node_modules/
 
-# # passwords
-# .env
+# passwords
+.env
 
-# # agents no clue what this 
-# /Agents/
+# agents no clue what this 
+/Agents/
 
-# # ingest data
-# /Ingest\ Data/
+# ingest data
+/Ingest\ Data/
 
-# # Telegram bot 
-# /Telegram\ Bot/
+# Telegram bot 
+/Telegram\ Bot/
 
-# # old website 
-# /Website/
+# old website 
+/Website/
 
-# # FRIDAY API
-# /api/
+# FRIDAY API
+/api/
 
-# # FRIDAY dev
-# /dev/
+# FRIDAY dev
+/dev/
