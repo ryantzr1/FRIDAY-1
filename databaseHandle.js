@@ -14,16 +14,16 @@ db.on("error", console.error.bind(console, "MongoDB connection error:"));
 
 async function trackMessages() {
   try {
-    collections = await db.listCollections().toArray();
+    collections = await mongoose.connection.db.listCollections().toArray();
   } catch (err) {
     console.error(err);
     return;
   }
+
   const changeStreams = [];
-  // const collection = db.collection("queries");
-  // const changeStream = collection.watch();
-  collections.forEach((collection) => {
-    const changeStream = collection.watch();
+  for (const collection of collections) {
+    const collectionObj = mongoose.connection.collection(collection.name);
+    const changeStream = collectionObj.watch();
     changeStreams.push(changeStream);
 
     changeStream.on("change", (next) => {
@@ -40,7 +40,7 @@ async function trackMessages() {
         );
       }
     });
-  });
+  }
 }
 
 module.exports = { db, bot };
