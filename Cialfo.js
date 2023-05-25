@@ -5,7 +5,7 @@ const mongoose = require("mongoose");
 require("dotenv").config();
 const axios = require("axios");
 
-const bot = new TelegramBot(process.env.TELEGRAM_BOT_TOKEN, { polling: true });
+const bot = new TelegramBot(process.env.CIALFO_BOT_TOKEN, { polling: true });
 
 // Define the MongoDB schema for storing items from LayerZero
 const CialfoSchema = new mongoose.Schema({
