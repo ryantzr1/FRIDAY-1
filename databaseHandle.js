@@ -13,7 +13,12 @@ const db = mongoose.connection;
 db.on("error", console.error.bind(console, "MongoDB connection error:"));
 
 async function trackMessages() {
-  const collections = db.listCollections();
+  try {
+    collections = await db.listCollections().toArray();
+  } catch (err) {
+    console.error(err);
+    return;
+  }
   const changeStreams = [];
   // const collection = db.collection("queries");
   // const changeStream = collection.watch();
