@@ -36,7 +36,7 @@ async function trackMessages() {
       for (const userChatId of verifiedChatIds) {
         bot.sendMessage(
           userChatId,
-          `New question added (${collectionName})\nQuestion: ${question}\nAnswer: ${answer}`
+          `New question added (${collectionName})\n\nQuestion: ${question}\nAnswer: ${answer}`
         );
       }
     });
