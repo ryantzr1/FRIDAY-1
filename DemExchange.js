@@ -5,8 +5,8 @@ const mongoose = require("mongoose");
 require("dotenv").config();
 const axios = require("axios");
 
-const bot = new TelegramBot(process.env.CARBON_TEST_TOKEN);
-const port = process.env.PORT || 3000;
+const bot = new TelegramBot(process.env.CARBON_TEST_TOKEN, { polling: true });
+const port = process.env.PORT || 2222;
 
 app.use(express.json());
 
@@ -27,17 +27,17 @@ mongoose.connect(process.env.MONGODB_URL, { useNewUrlParser: true }, () => {
   console.log("Connected to MongoDB");
 });
 
-// Set up webhook for receiving updates from Telegram
-bot.setWebHook(process.env.WEBHOOK_URL);
+// // Set up webhook for receiving updates from Telegram
+// bot.setWebHook(process.env.WEBHOOK_URL);
 
-// Handle incoming messages
-app.post(`/webhook/${process.env.WEBHOOK_PATH}`, (req, res) => {
-  const message = req.body.message;
-  if (message) {
-    onMessage(message);
-  }
-  res.sendStatus(200);
-});
+// // Handle incoming messages
+// app.post(`/webhook/${process.env.WEBHOOK_PATH}`, (req, res) => {
+//   const message = req.body.message;
+//   if (message) {
+//     onMessage(message);
+//   }
+//   res.sendStatus(200);
+// });
 
 // Handle the /start command
 bot.onText(/\/start/, (msg) => {
