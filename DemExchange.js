@@ -5,7 +5,10 @@ const mongoose = require("mongoose");
 require("dotenv").config();
 const axios = require("axios");
 
-const bot = new TelegramBot(process.env.CARBON_TEST_TOKEN, { polling: true });
+const bot = new TelegramBot(process.env.CARBON_TEST_TOKEN);
+const port = process.env.PORT || 3000;
+
+app.use(express.json());
 
 // Define the MongoDB schema for storing items from LayerZero
 const CarbonSchema = new mongoose.Schema({
@@ -20,14 +23,21 @@ const CarbonSchema = new mongoose.Schema({
 
 const Carbon = mongoose.model("Carbon", CarbonSchema);
 
-mongoose.connect(
-  process.env.MONGODB_URL,
-  { useNewUrlParser: true },
-  () => bot.on("message", onMessage) //this is how we can track all incoming messages
-);
+mongoose.connect(process.env.MONGODB_URL, { useNewUrlParser: true }, () => {
+  console.log("Connected to MongoDB");
+});
 
-const db = mongoose.connection;
-db.on("error", console.error.bind(console, "MongoDB connection error:"));
+// Set up webhook for receiving updates from Telegram
+bot.setWebHook(process.env.WEBHOOK_URL);
+
+// Handle incoming messages
+app.post(`/webhook/${process.env.WEBHOOK_PATH}`, (req, res) => {
+  const message = req.body.message;
+  if (message) {
+    onMessage(message);
+  }
+  res.sendStatus(200);
+});
 
 // Handle the /start command
 bot.onText(/\/start/, (msg) => {
@@ -59,7 +69,7 @@ async function onMessage(msg) {
 
   const prevConvoArr = await Carbon.find({ userId: userId });
 
-  if (prevConvoArr.length != 0) {
+  if (prevConvoArr.length !== 0) {
     const previousHistory = prevConvoArr[prevConvoArr.length - 1].history;
     requestBody = {
       chat_history: [],
@@ -84,7 +94,7 @@ async function onMessage(msg) {
     },
   ];
 
-  if (prevConvoArr.length != 0) {
+  if (prevConvoArr.length !== 0) {
     previousHistory = prevConvoArr[prevConvoArr.length - 1].history;
     currentHistory = previousHistory.concat(currentHistory);
   }
@@ -98,10 +108,7 @@ async function onMessage(msg) {
     company: "Carbon",
   });
 
-  await query
-    .save()
-    .then()
-    .catch((e) => console.log(e));
+  await query.save();
 
   let consecutiveFails = 0;
   if (prevConvoArr.length > 0) {
@@ -130,8 +137,7 @@ async function onMessage(msg) {
   }
 }
 
-// Listen to the correct port specified by Heroku
-const PORT = process.env.PORT || 2222;
-app.listen(PORT, () => {
-  console.log(`Server listening on port ${PORT}`);
+// Start the server
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
 });
