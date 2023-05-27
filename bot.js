@@ -9,6 +9,20 @@ let verifiedChatIds = new Set();
 verifiedChatIds.add(-842373692);
 verifiedChatIds.add(293830606);
 
+//Check for Server Alive every 30 minutes
+setInterval(async () => {
+  for (let chatId of verifiedChatIds) {
+    try {
+      const response = await axios.get("http://52.194.232.215/");
+      if (response.data.status !== "Alive") {
+        bot.sendMessage(chatId, "Server is not responding properly.");
+      }
+    } catch (error) {
+      bot.sendMessage(chatId, "Server is not responding.");
+    }
+  }
+}, 30 * 60 * 1000); // 30 minutes in milliseconds
+
 bot.onText(/\/start/, onStart);
 bot.onText(/\/troubleshoot/, onTroubleshoot);
 bot.onText(/\/getpassword/, onGetPassword);
@@ -228,7 +242,7 @@ async function onCheckServer(msg) {
 
   if (verifiedChatIds.has(chatId)) {
     try {
-      const response = await axios.get("http://18.183.218.48/");
+      const response = await axios.get("http://52.194.232.215/");
       if (response.data.status === "Alive") {
         bot.sendMessage(chatId, "Server is running!");
       } else {
