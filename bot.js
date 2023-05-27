@@ -40,6 +40,8 @@ function onStart(msg) {
   const chatId = msg.chat.id;
   const chatType = msg.chat.type;
 
+  console.log(chatId);
+
   if (chatType === "channel") {
     if (msg.text.split(" ")[1] === process.env.FRIDAYMONITORINGTOOL) {
       verifiedChatIds.add(`@${msg.chat.username}`);
