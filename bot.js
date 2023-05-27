@@ -6,8 +6,9 @@ const deleteTest = require("./deleteMongoTest");
 const bot = new TelegramBot(process.env.TELEGRAM_BOT_TOKEN, { polling: true });
 
 let verifiedChatIds = new Set();
-verifiedChatIds.add(-842373692);
-verifiedChatIds.add(293830606);
+verifiedChatIds.add(-842373692); //friday group
+verifiedChatIds.add(293830606); //ryan
+verifiedChatIds.add(1182066321); //ian
 
 //Check for Server Alive every 30 minutes
 setInterval(async () => {
