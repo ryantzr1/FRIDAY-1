@@ -39,7 +39,7 @@ async function onMessage(msg) {
   console.log("Received question:", msg.text); // add this line to log the question
 
   const chatId = msg.chat.id;
-  const apiEndpoint = "http://18.183.218.48/test";
+  const apiEndpoint = "http://35.78.115.170/test";
   const userId = chatId;
 
   const question = msg.text;
@@ -92,13 +92,13 @@ async function onMessage(msg) {
   }
 
   // Save the query to the MongoDB database
-  const query = new Query({
-    question: processedQuestion,
+  const query = new LayerZero({
+    question: question,
     answer: answer,
     userId: userId,
     success: success,
     history: currentHistory,
-    company: "DashcamSG",
+    company: "LayerZero",
   });
 
   await query
