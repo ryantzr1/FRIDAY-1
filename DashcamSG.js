@@ -133,7 +133,7 @@ app.post("/respond.io", async (req, res) => {
     },
   };
 
-  const apiEndpoint = "http://18.183.218.48/predict"; //FRIDAY endpoint
+  const apiEndpoint = "http://52.194.232.215/predict"; //FRIDAY endpoint
   const question = messageText;
 
   const encodedQuestion = encodeURIComponent(question);
