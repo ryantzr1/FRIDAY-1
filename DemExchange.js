@@ -6,7 +6,7 @@ require("dotenv").config();
 const axios = require("axios");
 
 const bot = new TelegramBot(process.env.CARBON_TEST_TOKEN);
-const port = process.env.PORT || 2222;
+const port = process.env.PORT || 80;
 
 app.use(express.json());
 
