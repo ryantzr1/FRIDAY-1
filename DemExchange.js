@@ -7,11 +7,14 @@ const axios = require("axios");
 
 // const bot = new TelegramBot(process.env.CARBON_TEST_TOKEN, { polling: true });
 
-//TRENGO SHIT
+//TRENGO Webhook
 const TRENGO_URL =
   "https://web.trengo.eu/telegram/hook/3AEKr0cYhZdm7R7DM2U7wPBJFaM2ZwEa4JXb9j4KZQ9mtLbzyPNSfeuBmq39E83QbLWIHgtcO9SPiX3gZkl3dskWB0gOlx240WAknQq2OMOqr3vhCHpJy01XIOB4r/1276928";
 
 //BotPenguin
+const BotPenguinWebhook =
+  "https://api.v7.botpenguin.com/telegram/webhook/5803470562:AAEhY3l9og-1xWmMFuRkCBIVSs2FAnlQQ3Q";
+
 const BotPenguin =
   "https://api.v7.botpenguin.com/telegram-automation/messages/v2/send-message";
 const BOT_ID = "647386515148d5acaaad0b68";
@@ -30,9 +33,9 @@ app.post("/bot", async (req, res) => {
 
   // Forward the update to the Trengo server
   try {
-    await axios.post(TRENGO_URL, req.body);
+    await axios.post(BotPenguinWebhook, req.body);
   } catch (error) {
-    console.error("Error forwarding update to Trengo:", error);
+    console.error("Error forwarding update to BotPenguin:", error);
   }
   // Send th  e HTTP 200 status code to indicate a successful HTTP request
   res.sendStatus(200);
@@ -126,11 +129,36 @@ async function onMessage(msg) {
   // bot.sendMessage(chatId, response.trim() + "\n");
 
   //use Trengo to send the message LOL
+  // const sendMessage = async (message) => {
+  //   try {
+  //     const url = "https://app.trengo.com/api/v2/tickets/676598525/messages";
+  //     const authToken =
+  //       "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwianRpIjoiNDlkZGVhZDczYTU1N2FjYmJlMDVkYTM5N2RiODQyNjljMTY5MmUyZGUyNGFkYmU4OGRhZmJhNWIyMmVjNTk1NjI0ZDUxN2QwNzRiNTEyNjAiLCJpYXQiOjE2ODUxMjM4OTguNTQxMjU3LCJuYmYiOjE2ODUxMjM4OTguNTQxMjYsImV4cCI6MTcxNjc0NjI5OC41MzAyODMsInN1YiI6IjY5NTIxNyIsInNjb3BlcyI6W119.IUY2gaTGF7qs3r1f9v58rxc6iy6FU5ZIBZ3uwHrvBIsPMd_054EfNgrGfFg1WPU0sadEbqTl1e081IQ2VneHNA";
+
+  //     const headers = {
+  //       "Content-Type": "application/json",
+  //       Authorization: `Bearer ${authToken}`,
+  //     };
+
+  //     const messageData = {
+  //       message: message.trim() + "\n",
+  //     };
+
+  //     const response = await axios.post(url, messageData, { headers });
+
+  //     console.log(response.data);
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
+
+  //use BotPenguin to send the message LOL
   const sendMessage = async (message) => {
     try {
-      const url = "https://app.trengo.com/api/v2/tickets/676598525/messages";
+      const url =
+        "https://api.v7.botpenguin.com/telegram-automation/messages/v2/send-message";
       const authToken =
-        "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwianRpIjoiNDlkZGVhZDczYTU1N2FjYmJlMDVkYTM5N2RiODQyNjljMTY5MmUyZGUyNGFkYmU4OGRhZmJhNWIyMmVjNTk1NjI0ZDUxN2QwNzRiNTEyNjAiLCJpYXQiOjE2ODUxMjM4OTguNTQxMjU3LCJuYmYiOjE2ODUxMjM4OTguNTQxMjYsImV4cCI6MTcxNjc0NjI5OC41MzAyODMsInN1YiI6IjY5NTIxNyIsInNjb3BlcyI6W119.IUY2gaTGF7qs3r1f9v58rxc6iy6FU5ZIBZ3uwHrvBIsPMd_054EfNgrGfFg1WPU0sadEbqTl1e081IQ2VneHNA";
+        "eyJhbGciOiJSUzUxMiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiUnlhbiA4OCIsIl9wYXJlbnQiOiI1ZmVkMjJhMTUzODNhOWE1MTM1ZTkyNWQiLCJfaWQiOiI2NDcwODRkZWU3NjVlMDM0ZGM0N2IzYjYiLCJ0eXBlIjoiQ1VTVE9NRVIiLCJyb2xlIjoiNWZhOTEzYjA5ZjcwNjg0YWYwMDRkYjEzIiwiaWF0IjoxNjg1MTA4NDI2LCJleHAiOjE2ODc3MDA0MjYsImF1ZCI6ImFwcC5ib3RwZW5ndWluLmNvbSIsImlzcyI6IlJlbGlubnMgVGVjaG5vbG9naWVzIFByaXZhdGUgTGltaXRlZCIsInN1YiI6ImRyZWlzcHJ1bmcxODIxQGdtYWlsLmNvbSIsImp0aSI6IjI1NTM5NDFiLWMzZGQtNGFjNC1iNDI2LTdkZTdlMzI1YjNhOSJ9.AmTDF_MYzgTwtzU7lvvl7h_iYayKqVVdt9OBSt1nka-nTZUjS-5tnUuV-r-waBoEGKV_uDoRkh6jXLxNvVkj1wQzQOUtR2RYrSIUZv222hNKM-Shs0QGCyLeO64OGL_X5vCv1UoxyOFgSz0y2KBLPM86Tx_j8LQ8FOEXoM_6spVu0KITUUAyzGo9BTuAhKuQGHWmhGMJSyllI-Uy8HwcHjyksqePxkbg1WF9_85RFAXFxp1wU2oObWYOJCmVTY1I2eudPCOd-g-PDs2xAVeiNvoMWhMkDXdUP6tv2x7fN0N9kmKuWRnW4I9KqWrTDmoNbt0kUsQwloWNtcxXF0VStA";
 
       const headers = {
         "Content-Type": "application/json",
