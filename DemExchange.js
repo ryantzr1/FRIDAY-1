@@ -180,7 +180,9 @@ async function onMessage(msg) {
   };
 
   // Call the sendMessage function with your payload
-  sendMessage(payload);
+  if (success) {
+    sendMessage(payload);
+  }
 
   // sendMessage(response);
 
