@@ -126,7 +126,7 @@ async function onMessage(msg) {
   // bot.sendMessage(chatId, response.trim() + "\n");
 
   //use Trengo to send the message LOL
-  const sendMessage = async () => {
+  const sendMessage = async (message) => {
     try {
       const url = "https://app.trengo.com/api/v2/tickets/676598525/messages";
       const authToken =
@@ -138,7 +138,7 @@ async function onMessage(msg) {
       };
 
       const messageData = {
-        message: response.trim() + "\n",
+        message: message.trim() + "\n",
       };
 
       const response = await axios.post(url, messageData, { headers });
@@ -149,7 +149,7 @@ async function onMessage(msg) {
     }
   };
 
-  sendMessage();
+  sendMessage(response);
 
   let currentHistory = [
     {
