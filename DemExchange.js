@@ -5,7 +5,7 @@ const mongoose = require("mongoose");
 require("dotenv").config();
 const axios = require("axios");
 
-const bot = new TelegramBot(process.env.CARBON_TEST_TOKEN, { polling: true });
+const bot = new TelegramBot(process.env.CARBON_TEST_TOKEN);
 const port = process.env.PORT || 8443;
 
 app.use(express.json());
@@ -23,26 +23,18 @@ const CarbonSchema = new mongoose.Schema({
 
 const Carbon = mongoose.model("Carbon", CarbonSchema);
 
-mongoose.connect(
-  process.env.MONGODB_URL,
-  { useNewUrlParser: true },
-  () => bot.on("message", onMessage) //this is how we can track all incoming messages
-);
+mongoose.connect(process.env.MONGODB_URL, { useNewUrlParser: true }, () => {
+  console.log("Connected to MongoDB");
+});
 
-// Set up webhook for receiving updates from Telegram
-// bot.setWebHook(
-//   `https://ec2-54-199-193-55.ap-northeast-1.compute.amazonaws.com/webhook`
-// );
-
-// // Handle incoming messages
-// app.post(`/webhook`, (req, res) => {
-//   const message = req.body.message;
-//   console.log(message);
-//   if (message) {
-//     onMessage(message);
-//   }
-//   res.sendStatus(200);
-// });
+// Handle incoming webhook updates
+app.post(`/webhook`, (req, res) => {
+  const { message } = req.body;
+  if (message) {
+    onMessage(message);
+  }
+  res.sendStatus(200);
+});
 
 // Handle the /start command
 bot.onText(/\/start/, (msg) => {
@@ -132,12 +124,12 @@ async function onMessage(msg) {
   if (!success && consecutiveFails < 2) {
     bot.sendMessage(
       chatId,
-      "Sorry, we didn't understand your question, please try again."
+      "Sorry, we didn't understand your question. Please try again."
     );
   } else if (!success && consecutiveFails >= 2) {
     bot.sendMessage(
       chatId,
-      "We did not get your question, please hold as our team will be with you shortly."
+      "We did not get your question. Please hold as our team will be with you shortly."
     );
   } else {
     bot.sendMessage(chatId, answer);
