@@ -27,6 +27,17 @@ mongoose.connect(process.env.MONGODB_URL, { useNewUrlParser: true }, () => {
   console.log("Connected to MongoDB");
 });
 
+bot
+  .getWebhookInfo()
+  .then((webhookInfo) => {
+    console.log("Webhook URL:", webhookInfo.url);
+    console.log("Number of connections:", webhookInfo.pending_update_count);
+    console.log("Last error:", webhookInfo.last_error_message);
+  })
+  .catch((error) => {
+    console.error("Error getting webhook info:", error);
+  });
+
 // Handle incoming webhook updates
 app.post(`/webhook`, (req, res) => {
   const { message } = req.body;
