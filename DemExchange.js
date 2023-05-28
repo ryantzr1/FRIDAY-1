@@ -75,15 +75,19 @@ async function onMessage(msg) {
 
   const success = !answer.includes("[NO ANSWER]");
 
-  let response = "";
-  let paragraphs = answer.split("\n\n"); // Split the answer into paragraphs
+  // Split the text into paragraphs
+  let paragraphs = answer.split("\n\n");
 
-  for (let i = 0; i < paragraphs.length; i++) {
-    response += paragraphs[i].trim(); // Add the paragraph to the response
-    if (i !== paragraphs.length - 1) {
-      response += "\n\n"; // Add line breaks after each paragraph
+  // Remove the extra period at the end of the last paragraph
+  if (paragraphs.length > 0) {
+    const lastParagraph = paragraphs[paragraphs.length - 1];
+    if (lastParagraph.endsWith(".")) {
+      paragraphs[paragraphs.length - 1] = lastParagraph.slice(0, -1);
     }
   }
+
+  // Construct the response with paragraphs
+  let response = paragraphs.join("\n\n");
 
   bot.sendMessage(chatId, response.trim() + "\n");
 
