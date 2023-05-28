@@ -33,6 +33,7 @@ bot.setWebHook(`${process.env.DEMEXCHANGE_WEBHOOK_URL}/webhook`);
 // Handle incoming messages
 app.post(`/webhook`, (req, res) => {
   const message = req.body.message;
+  console.log(message);
   if (message) {
     onMessage(message);
   }
