@@ -9,8 +9,8 @@ const cors = require("cors");
 
 const mongoose = require("mongoose");
 
-const port = process.env.PORT || "3000";
-const dbUrl = process.env.DB_URL || "mongodb://localhost:3000/fridaybackend";
+const port = process.env.PORT || "27027";
+const dbUrl = process.env.DB_URL || "mongodb://localhost:27027/fridaybackend";
 
 const app = express();
 app.use(cors());
@@ -20,8 +20,11 @@ app.use(bodyParser.json());
 // Define the MongoDB schema for storing queries
 const querySchema = new mongoose.Schema({
   userId: { type: String, required: true },
+  name: { type: String, required: true },
+  mobile: { type: Number, required: true },
   question: { type: String, required: true },
   answer: { type: String, required: true },
+  category: { type: String, required: true },
   success: { type: Boolean, required: true },
   timestamp: { type: Date, default: Date.now },
   history: { type: Array, required: true },
@@ -42,9 +45,6 @@ mongoose
     console.error("Error connecting to MongoDB:", error);
   });
 
-// Define the route for handling GET requests
-let counter = 0;
-
 app.get("/", async (req, res) => {
   try {
     res.send({
@@ -58,29 +58,44 @@ app.get("/", async (req, res) => {
   }
 });
 
+// Main Query Endpoint
+
 app.get("/queries", async (req, res) => {
   try {
-    const apiEndpoint = "http://18.183.218.48/predict";
+    const apiEndpoint = "http://52.194.232.215/predict";
+
+    // Question Extraction
 
     const question = req.body.question;
+    // const question = req.query.question;
+
+    // Question Processing
 
     let processedQuestion = question.trim();
 
     if (!processedQuestion.endsWith("?")) {
       processedQuestion += "?"; // add question mark if not already present
     }
+  
+    const encodedQuestion = encodeURIComponent(processedQuestion); // Encode the question using encodeURIComponent()
+
+    // Parameter Extraction
+
+    // const userId = req.query.id;
+    // const name = req.query.name;
+    // const mobile = req.query.mobile;
 
     const userId = req.body.id;
+    const name = req.body.name;
+    const mobile = req.body.phone;
 
-    // Encode the question using encodeURIComponent()
-    const encodedQuestion = encodeURIComponent(processedQuestion);
+    // Category Extraction (For training data)
+    
+    // const category = req.query.category;
 
     // Construct the URL with the encoded question as a query string parameter
+
     const url = `${apiEndpoint}?question=${encodedQuestion}`;
-
-    console.log(url);
-
-    console.log(userId);
 
     let requestBody = {
       chat_history: [],
@@ -103,17 +118,13 @@ app.get("/queries", async (req, res) => {
       };
     }
 
-    console.log(requestBody);
-
     const responseAI = await axios.post(url, requestBody);
 
     const answer = responseAI.data.answer;
 
     const agent = responseAI.data.agent;
 
-    console.log(answer);
-
-    console.log(agent);
+    // Temporary type variable to be sent to client (Legacy)
 
     const type = agent.includes("vector")
       ? "[ITEM]"
@@ -121,7 +132,15 @@ app.get("/queries", async (req, res) => {
       ? "[SCHEDULE]"
       : "[PRICE]";
 
-    console.log(type);
+    // Temporary Category Variable based on AI model (Legacy)
+
+    const category = agent.includes("vector")
+    ? "Product"
+    : agent.includes("schedule")
+    ? "Scheduling"
+    : "Price List";
+
+    // Determine success
 
     const success = !answer.includes("[NO ANSWER]");
 
@@ -141,15 +160,22 @@ app.get("/queries", async (req, res) => {
       currentHistory = previousHistory.concat(currentHistory);
     }
 
+    console.log("Category: " + category);
+    
     // Save the query to the MongoDB database
     const query = new Query({
+      name: name,
+      mobile: mobile,
       question: processedQuestion,
       answer: answer,
+      category: category,
       userId: userId,
       success: success,
       history: currentHistory,
       company: "DashcamSG",
     });
+
+    console.log("Query Saved: " + query);
 
     await query
       .save()
@@ -166,6 +192,8 @@ app.get("/queries", async (req, res) => {
       .json({ error: "An error occurred while processing your request." });
   }
 });
+
+// API Endpoint for MongoDB database
 
 app.get("/queries/log", async (req, res) => {
   try {
@@ -218,7 +246,27 @@ app.get("/response", async (req, res) => {
   }
 });
 
-// API to communicate with database
+app.post("/updateCategory", async (req, res) => {
+  const id = req.body.id;
+  const newCategory = req.body.category;
+
+  try {
+    const updatedItem = await Query.findByIdAndUpdate(
+      id,
+      { category: newCategory },
+      { new: true }
+    );
+
+    console.log("Updated Item:", updatedItem);
+
+    res.send(updatedItem);
+  } catch (error) {
+    console.error("Error updating category:", error.message);
+    res.status(500).send("Error updating category");
+  }
+});
+
+// API endpoints to communicate with PINECONE database
 
 app.get("/retrieve", async (req, res) => {
   const product = req.query.product;
@@ -255,7 +303,6 @@ app.get("/test", async (req, res) => {
 
 app.post('/update', async (req, res) => {
   try {
-
     // Retrieve the body of the post request
     const requestBody = req.body;
     const rootName = 'DashcamSG';

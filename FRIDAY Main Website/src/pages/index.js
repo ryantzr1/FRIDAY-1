@@ -58,7 +58,7 @@ function Home() {
     async function fetchData() {
       try {
         if (getUid() && (getUid() === "lZLIC6fK2WQOvIxyXKECEjx625w1" || getUid() === "Hoz3NtloWXX7MciVcTn8BNAHIJs1")) {
-          const response = await axios.get('https://friday-backend-server.herokuapp.com/queries/log');
+          const response = await axios.get('https://friday-backend-server-new.herokuapp.com/queries/log');
           const { queries, totalQueriesCount, unansweredQueriesCount } = response.data;
           console.log(queries);
           console.log(totalQueriesCount);
