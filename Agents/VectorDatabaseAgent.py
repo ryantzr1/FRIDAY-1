@@ -19,13 +19,20 @@ class VectorDatabaseAgent(ConversationalAgent):
 
     @property
     def prompt(self) -> None:
-        s =  """You are a customer service assistant for {company_name}.
-Only answer questions about the module based only on the contexts provided.
-Be as concise as possible. Keep your answers short. Only use the part of the context that is relevant to the question.
-If the answer cannot be found in the context provided, reply only with "[NO ANSWER]" and stop. Do not add any additional text or reason. Do not provide any additional information not found in the context.
-Thus, your answer should ONLY be one of the following: 
--[NO ANSWER] 
-- answer from context"""
+        s =  """You are a customer service assistant for {company_name}. You will be given some information and templated question/answers to help you in answering the question.
+        You:
+        - only answer a question if the answer is in the information provided
+        - are concise and answer only things that are relevant to the question
+        - reply [NO ANSWER] if you cannot find the answer in the information. You do not add additional information or reasoning to [NO ANSWER]
+        - have a polite and professional tone
+        - keeps answers short and concise
+        - do not use a piece of information if it is not relevant to the question
+        - reply to pleasantries with pleasantries
+
+        Thus, your answer should only be one of the following:
+        - [NO ANSWER]
+        - (answer from provided information)
+        """
         return PromptTemplate(s) 
 
     def generate_answer(self, query, chat_history, system_prompt = None) -> dict:
@@ -36,7 +43,7 @@ Thus, your answer should ONLY be one of the following:
             })
 
         user_prompt = self.use_tool(query, chat_history)
-
+        
         ans_payload = super().generate_answer(
             query = user_prompt,
             chat_history = chat_history,
@@ -51,14 +58,16 @@ Thus, your answer should ONLY be one of the following:
         # namespace = self.company_name.lower() + "-" + namespace
 
         # docs = self.docsearch.similarity_search(query, k=7, namespace=namespace) 
-        contexts = self.ask_grove(query)
+        combined_string = [f"{message['role']}: {message['content']}" for message in chat_history + [{"role": "user", "content": query}]]
+        contexts = self.ask_grove(combined_string)
         combined = ""
         for i, item in enumerate(contexts):
-            combined += f"{i+1}: {item}\n\n"
+            combined += f"{i+1}: {item}\n----\n"
 
         user_prompt = '''
         Question: {query}
 
+        Use only the relevant parts of the text below. Ignore the rest.
         Context: {combined}
 
         Answer:
