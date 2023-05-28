@@ -11,11 +11,12 @@ const axios = require("axios");
 const TRENGO_URL =
   "https://web.trengo.eu/telegram/hook/3AEKr0cYhZdm7R7DM2U7wPBJFaM2ZwEa4JXb9j4KZQ9mtLbzyPNSfeuBmq39E83QbLWIHgtcO9SPiX3gZkl3dskWB0gOlx240WAknQq2OMOqr3vhCHpJy01XIOB4r/1276928";
 
-const TRENGO_SEND_MSG_URL =
+//BotPenguin
+const BotPenguin =
   "https://api.v7.botpenguin.com/telegram-automation/messages/v2/send-message";
 const BOT_ID = "647386515148d5acaaad0b68";
 const SUBSCRIBER_ID = "6473869d5148d5acaaad0b7a";
-//Trengo^^
+//BotPenguin^^
 
 const bot = new TelegramBot(process.env.CARBON_TEST_TOKEN);
 bot.setWebHook("https://3ec9-54-199-193-55.jp.ngrok.io/bot");
@@ -125,21 +126,30 @@ async function onMessage(msg) {
   // bot.sendMessage(chatId, response.trim() + "\n");
 
   //use Trengo to send the message LOL
-  try {
-    const messageData = {
-      _bot: BOT_ID,
-      text: response.trim() + "\n",
-      _subscriber: SUBSCRIBER_ID,
-      type: "text",
-    };
-    const headers = {
-      "Content-Type": "application/json",
-      Authorization: `Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwianRpIjoiNDlkZGVhZDczYTU1N2FjYmJlMDVkYTM5N2RiODQyNjljMTY5MmUyZGUyNGFkYmU4OGRhZmJhNWIyMmVjNTk1NjI0ZDUxN2QwNzRiNTEyNjAiLCJpYXQiOjE2ODUxMjM4OTguNTQxMjU3LCJuYmYiOjE2ODUxMjM4OTguNTQxMjYsImV4cCI6MTcxNjc0NjI5OC41MzAyODMsInN1YiI6IjY5NTIxNyIsInNjb3BlcyI6W119.IUY2gaTGF7qs3r1f9v58rxc6iy6FU5ZIBZ3uwHrvBIsPMd_054EfNgrGfFg1WPU0sadEbqTl1e081IQ2VneHNA`,
-    };
-    await axios.post(TRENGO_SEND_MSG_URL, messageData, { headers });
-  } catch (error) {
-    console.error("Error sending message to Trengo:", error.response || error);
-  }
+  const sendMessage = async () => {
+    try {
+      const url = "https://app.trengo.com/api/v2/tickets/676598525/messages";
+      const authToken =
+        "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwianRpIjoiNDlkZGVhZDczYTU1N2FjYmJlMDVkYTM5N2RiODQyNjljMTY5MmUyZGUyNGFkYmU4OGRhZmJhNWIyMmVjNTk1NjI0ZDUxN2QwNzRiNTEyNjAiLCJpYXQiOjE2ODUxMjM4OTguNTQxMjU3LCJuYmYiOjE2ODUxMjM4OTguNTQxMjYsImV4cCI6MTcxNjc0NjI5OC41MzAyODMsInN1YiI6IjY5NTIxNyIsInNjb3BlcyI6W119.IUY2gaTGF7qs3r1f9v58rxc6iy6FU5ZIBZ3uwHrvBIsPMd_054EfNgrGfFg1WPU0sadEbqTl1e081IQ2VneHNA";
+
+      const headers = {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${authToken}`,
+      };
+
+      const messageData = {
+        message: response.trim() + "\n",
+      };
+
+      const response = await axios.post(url, messageData, { headers });
+
+      console.log(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  sendMessage();
 
   let currentHistory = [
     {
