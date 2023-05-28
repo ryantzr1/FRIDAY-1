@@ -118,12 +118,12 @@ async function onMessage(msg) {
 
   // Forward the outgoing message to the Trengo server
   try {
-    const response = await axios.post(TRENGO_URL, {
-      chat_id: chatId,
-      text: response.trim() + "\n",
-    });
+    await axios.post(TRENGO_URL, req.body);
   } catch (error) {
-    console.error("Error forwarding message to Trengo:", error);
+    console.error(
+      "Error forwarding update to Trengo:",
+      error.response || error
+    );
   }
 
   let currentHistory = [
