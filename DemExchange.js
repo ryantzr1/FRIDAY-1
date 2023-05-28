@@ -91,7 +91,7 @@ async function onMessage(msg) {
     }
   }
   if (currentLine.length > 0) {
-    response += currentLine; // Add the last line to the response without line break
+    response += currentLine.trim(); // Add the last line to the response without line break
   }
 
   bot.sendMessage(chatId, response);
