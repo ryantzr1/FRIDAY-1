@@ -8,7 +8,7 @@ const axios = require("axios");
 // const bot = new TelegramBot(process.env.CARBON_TEST_TOKEN, { polling: true });
 
 const bot = new TelegramBot(process.env.CARBON_TEST_TOKEN);
-bot.setWebHook("https://ea1b-54-199-193-55.jp.ngrok.io/bot");
+bot.setWebHook("https://3ec9-54-199-193-55.jp.ngrok.io/bot");
 
 const port = process.env.PORT || 8443;
 
