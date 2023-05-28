@@ -132,8 +132,11 @@ async function onMessage(msg) {
       _subscriber: SUBSCRIBER_ID,
       type: "text",
     };
-
-    await axios.post(TRENGO_SEND_MSG_URL, messageData);
+    const headers = {
+      "Content-Type": "application/json",
+      Authorization: `Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwianRpIjoiNDlkZGVhZDczYTU1N2FjYmJlMDVkYTM5N2RiODQyNjljMTY5MmUyZGUyNGFkYmU4OGRhZmJhNWIyMmVjNTk1NjI0ZDUxN2QwNzRiNTEyNjAiLCJpYXQiOjE2ODUxMjM4OTguNTQxMjU3LCJuYmYiOjE2ODUxMjM4OTguNTQxMjYsImV4cCI6MTcxNjc0NjI5OC41MzAyODMsInN1YiI6IjY5NTIxNyIsInNjb3BlcyI6W119.IUY2gaTGF7qs3r1f9v58rxc6iy6FU5ZIBZ3uwHrvBIsPMd_054EfNgrGfFg1WPU0sadEbqTl1e081IQ2VneHNA`,
+    };
+    await axios.post(TRENGO_SEND_MSG_URL, messageData, { headers });
   } catch (error) {
     console.error("Error sending message to Trengo:", error.response || error);
   }
