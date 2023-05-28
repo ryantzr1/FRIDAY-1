@@ -23,9 +23,11 @@ const CarbonSchema = new mongoose.Schema({
 
 const Carbon = mongoose.model("Carbon", CarbonSchema);
 
-mongoose.connect(process.env.MONGODB_URL, { useNewUrlParser: true }, () => {
-  console.log("Connected to MongoDB");
-});
+mongoose.connect(
+  process.env.MONGODB_URL,
+  { useNewUrlParser: true },
+  () => bot.on("message", onMessage) //this is how we can track all incoming messages
+);
 
 // Set up webhook for receiving updates from Telegram
 // bot.setWebHook(
