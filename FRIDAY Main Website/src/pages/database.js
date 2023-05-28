@@ -7,6 +7,7 @@ const Database = () => {
   const [selectedOption, setSelectedOption] = useState("");
   const [text, setText] = useState("Select Product Above");
   const [saving, setSaving] = useState(false);
+  const [isLoading, setIsLoading] = useState(false); // New loading state
   const products = [];
 
   if (getUid() === "lZLIC6fK2WQOvIxyXKECEjx625w1" || getUid() === "Hoz3NtloWXX7MciVcTn8BNAHIJs1") {
@@ -18,6 +19,7 @@ const Database = () => {
     async function fetchText() {
       if (selectedOption) {
         try {
+          setIsLoading(true); // Set loading state to true while fetching data
           const response = await fetch(
             `https://friday-backend-server-new.herokuapp.com/retrieve?product=${selectedOption}`
           );
@@ -27,6 +29,8 @@ const Database = () => {
         } catch (error) {
           setText("Select Product Above");
           console.error(error);
+        } finally {
+          setIsLoading(false); // Set loading state to false after data is fetched (or in case of error)
         }
       } else {
         setText("Select Product Above");
@@ -87,11 +91,20 @@ const Database = () => {
             ))}
           </select>
         </div>
-        <textarea
-          className="w-full h-4/6 p-2 border border-gray-300 rounded"
-          value={text}
-          onChange={handleTextChange}
-        />
+        {isLoading ? ( // Render loading spinner if isLoading is true
+          <div className="flex items-center justify-center">
+            <svg className="animate-spin h-8 w-8 text-gray-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+          </div>
+        ) : (
+          <textarea
+            className="w-full h-4/6 p-2 border border-gray-300 rounded"
+            value={text}
+            onChange={handleTextChange}
+          />
+        )}
         <div className="flex justify-center mt-4">
           <button
             className={`px-4 py-2 rounded-lg text-white ${isSaveDisabled ? "bg-gray-500 cursor-default" : "bg-green-500 hover:bg-green-600"}`}
