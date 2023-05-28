@@ -6,7 +6,7 @@ require("dotenv").config();
 const axios = require("axios");
 
 const bot = new TelegramBot(process.env.CARBON_TEST_TOKEN);
-const port = process.env.PORT || 443;
+const port = process.env.PORT || 8443;
 
 app.use(express.json());
 
@@ -28,7 +28,9 @@ mongoose.connect(process.env.MONGODB_URL, { useNewUrlParser: true }, () => {
 });
 
 // Set up webhook for receiving updates from Telegram
-bot.setWebHook(`${process.env.DEMEXCHANGE_WEBHOOK_URL}/webhook`);
+bot.setWebHook(
+  `https://ec2-54-199-193-55.ap-northeast-1.compute.amazonaws.com/webhook`
+);
 
 // Handle incoming messages
 app.post(`/webhook`, (req, res) => {
