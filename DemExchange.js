@@ -80,14 +80,19 @@ async function onMessage(msg) {
   let response = "";
   let currentLine = "";
   const sentences = answer.split(". "); // Split the answer into sentences
-  for (const sentence of sentences) {
-    if (currentLine.length + sentence.length <= maxLineLength) {
-      currentLine += sentence + ". "; // Add the sentence to the current line
+  for (let i = 0; i < sentences.length; i++) {
+    const sentence = sentences[i];
+    if (i === sentences.length - 1) {
+      currentLine += sentence; // Last sentence without a period
     } else {
-      if (currentLine.length > 0) {
-        response += currentLine.trim() + "\n"; // Add the current line to the response with line break
+      if (currentLine.length + sentence.length + 2 <= maxLineLength) {
+        currentLine += sentence + ". "; // Add the sentence to the current line with a period
+      } else {
+        if (currentLine.length > 0) {
+          response += currentLine.trim() + "\n"; // Add the current line to the response with line break
+        }
+        currentLine = sentence + ". "; // Start a new line with the sentence
       }
-      currentLine = sentence + ". "; // Start a new line with the sentence
     }
   }
   if (currentLine.length > 0) {
