@@ -5,10 +5,19 @@ const mongoose = require("mongoose");
 require("dotenv").config();
 const axios = require("axios");
 
-const bot = new TelegramBot(process.env.CARBON_TEST_TOKEN, { polling: true });
+// const bot = new TelegramBot(process.env.CARBON_TEST_TOKEN, { polling: true });
+
+const bot = new TelegramBot(process.env.CARBON_TEST_TOKEN);
+bot.setWebHook("https://20a8-54-199-193-55.jp.ngrok.io/bot");
+
 const port = process.env.PORT || 8443;
 
 app.use(express.json());
+
+app.post("/bot", (req, res) => {
+  bot.processUpdate(req.body);
+  res.sendStatus(200);
+});
 
 // Define the MongoDB schema for storing items from LayerZero
 const CarbonSchema = new mongoose.Schema({
