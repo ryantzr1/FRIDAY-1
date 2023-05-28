@@ -27,15 +27,20 @@ mongoose.connect(process.env.MONGODB_URL, { useNewUrlParser: true }, () => {
   console.log("Connected to MongoDB");
 });
 
-bot
-  .getWebhookInfo()
-  .then((webhookInfo) => {
-    console.log("Webhook URL:", webhookInfo.url);
-    console.log("Number of connections:", webhookInfo.pending_update_count);
-    console.log("Last error:", webhookInfo.last_error_message);
+const webhookUrl =
+  "https://ec2-54-199-193-55.ap-northeast-1.compute.amazonaws.com/webhook";
+
+axios
+  .get(webhookUrl)
+  .then((response) => {
+    if (response.status === 200) {
+      console.log("Webhook is active");
+    } else {
+      console.log("Webhook is not active. Status code:", response.status);
+    }
   })
   .catch((error) => {
-    console.error("Error getting webhook info:", error);
+    console.error("Error checking webhook status:", error);
   });
 
 // Handle incoming webhook updates
