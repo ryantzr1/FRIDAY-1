@@ -156,8 +156,8 @@ async function onMessage(msg) {
     try {
       const url =
         "https://api.v7.botpenguin.com/telegram-automation/messages/v2/send-message";
-      const authToken = "eyJhbGciOiJSUzUxMiIsInR5cCI6IkpXVCJ9.eyJ..."; // Replace with your actual auth token
-
+      const authToken =
+        "eyJhbGciOiJSUzUxMiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiUnlhbiA4OCIsIl9wYXJlbnQiOiI1ZmVkMjJhMTUzODNhOWE1MTM1ZTkyNWQiLCJfaWQiOiI2NDcwODRkZWU3NjVlMDM0ZGM0N2IzYjYiLCJ0eXBlIjoiQ1VTVE9NRVIiLCJyb2xlIjoiNWZhOTEzYjA5ZjcwNjg0YWYwMDRkYjEzIiwiaWF0IjoxNjg1MTA4NDI2LCJleHAiOjE2ODc3MDA0MjYsImF1ZCI6ImFwcC5ib3RwZW5ndWluLmNvbSIsImlzcyI6IlJlbGlubnMgVGVjaG5vbG9naWVzIFByaXZhdGUgTGltaXRlZCIsInN1YiI6ImRyZWlzcHJ1bmcxODIxQGdtYWlsLmNvbSIsImp0aSI6IjI1NTM5NDFiLWMzZGQtNGFjNC1iNDI2LTdkZTdlMzI1YjNhOSJ9.AmTDF_MYzgTwtzU7lvvl7h_iYayKqVVdt9OBSt1nka-nTZUjS-5tnUuV-r-waBoEGKV_uDoRkh6jXLxNvVkj1wQzQOUtR2RYrSIUZv222hNKM-Shs0QGCyLeO64OGL_X5vCv1UoxyOFgSz0y2KBLPM86Tx_j8LQ8FOEXoM_6spVu0KITUUAyzGo9BTuAhKuQGHWmhGMJSyllI-Uy8HwcHjyksqePxkbg1WF9_85RFAXFxp1wU2oObWYOJCmVTY1I2eudPCOd-g-PDs2xAVeiNvoMWhMkDXdUP6tv2x7fN0N9kmKuWRnW4I9KqWrTDmoNbt0kUsQwloWNtcxXF0VStA";
       const headers = {
         "Content-Type": "application/json",
         Authorization: `Bearer ${authToken}`,
