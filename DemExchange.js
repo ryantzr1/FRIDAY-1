@@ -5,7 +5,7 @@ const mongoose = require("mongoose");
 require("dotenv").config();
 const axios = require("axios");
 
-const bot = new TelegramBot(process.env.CARBON_TEST_TOKEN, { polling: true });
+const bot = new TelegramBot(process.env.CARBON_TEST_TOKEN);
 const port = process.env.PORT || 8443;
 
 app.use(express.json());
