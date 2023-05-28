@@ -82,6 +82,7 @@ async function onMessage(msg) {
 
   const responseAI = await axios.post(url, requestBody);
   const answer = responseAI.data.answer;
+  console.log(answer);
   const agent = responseAI.data.agent;
 
   const success = !answer.includes("[NO ANSWER]");
@@ -108,7 +109,7 @@ async function onMessage(msg) {
     userId: userId,
     success: success,
     history: currentHistory,
-    company: "Carbon",
+    company: "Demex",
   });
 
   await query.save();
