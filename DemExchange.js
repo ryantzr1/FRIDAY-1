@@ -59,8 +59,8 @@ async function onMessage(msg) {
   let requestBody = {
     chat_history: [],
     company_info: {
-      company_desc: "Carbon Network is a crypto DeFi platform.",
-      company_name: "Carbon",
+      company_desc: "DemExchange is a crypto DeFi platform.",
+      company_name: "Demex",
       product_list: [""],
       tools: ["VectorDatabase"],
       usable_tools: ["VectorDatabase"],
