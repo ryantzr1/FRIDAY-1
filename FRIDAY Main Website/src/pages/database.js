@@ -10,7 +10,7 @@ const Database = () => {
   const products = [];
 
   if (getUid() === "lZLIC6fK2WQOvIxyXKECEjx625w1" || getUid() === "Hoz3NtloWXX7MciVcTn8BNAHIJs1") {
-    products.push("A500S");
+    products.push("A500S", "A800S");
   }
 
   useEffect(() => {
@@ -19,12 +19,13 @@ const Database = () => {
       if (selectedOption) {
         try {
           const response = await fetch(
-            `https://friday-backend-server.herokuapp.com/retrieve?product=${selectedOption}`
+            `https://friday-backend-server-new.herokuapp.com/retrieve?product=${selectedOption}`
           );
           const data = await response.text();
           const text = JSON.parse(data).data.join("\n\n");
           setText(text);
         } catch (error) {
+          setText("Select Product Above");
           console.error(error);
         }
       } else {
@@ -48,7 +49,7 @@ const Database = () => {
       // Disable the save button and update the UI
       setSaving(true);
 
-      const response = await axios.post("https://friday-backend-server.herokuapp.com/update", {
+      const response = await axios.post("https://friday-backend-server-new.herokuapp.com/update", {
         childName: selectedOption,
         items: text
       });
