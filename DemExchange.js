@@ -92,6 +92,9 @@ async function onMessage(msg) {
   // Construct the response with paragraphs
   let response = paragraphs.join("\n\n");
 
+  // Remove the last period if present
+  response = response.replace(/\.$/, "");
+
   bot.sendMessage(chatId, response.trim() + "\n");
 
   let currentHistory = [
