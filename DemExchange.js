@@ -75,16 +75,19 @@ async function onMessage(msg) {
 
   const success = !answer.includes("[NO ANSWER]");
 
-  // Split the text into paragraphs
-  let paragraphs = answer.split("\n\n");
-
-  // Remove the extra period at the end of the last paragraph
-  if (paragraphs.length > 0) {
-    const lastParagraph = paragraphs[paragraphs.length - 1];
-    if (lastParagraph.endsWith(".")) {
-      paragraphs[paragraphs.length - 1] = lastParagraph.slice(0, -1);
+  // Split the answer into paragraphs while preserving sentence boundaries
+  let paragraphs = [];
+  let currentParagraph = "";
+  const sentences = answer.split(". ");
+  for (const sentence of sentences) {
+    if (currentParagraph.length + sentence.length <= 40) {
+      currentParagraph += sentence + ". ";
+    } else {
+      paragraphs.push(currentParagraph.trim());
+      currentParagraph = sentence + ". ";
     }
   }
+  paragraphs.push(currentParagraph.trim());
 
   // Construct the response with paragraphs
   let response = paragraphs.join("\n\n");
