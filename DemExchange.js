@@ -55,6 +55,7 @@ async function onMessage(msg) {
   const userId = chatId;
 
   const question = msg.text;
+  console.log(question);
 
   const encodedQuestion = encodeURIComponent(question);
   const url = `${apiEndpoint}?question=${encodedQuestion}`;
