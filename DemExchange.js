@@ -6,6 +6,8 @@ require("dotenv").config();
 const axios = require("axios");
 
 // const bot = new TelegramBot(process.env.CARBON_TEST_TOKEN, { polling: true });
+const TRENGO_URL =
+  "https://web.trengo.eu/telegram/hook/3AEKr0cYhZdm7R7DM2U7wPBJFaM2ZwEa4JXb9j4KZQ9mtLbzyPNSfeuBmq39E83QbLWIHgtcO9SPiX3gZkl3dskWB0gOlx240WAknQq2OMOqr3vhCHpJy01XIOB4r/1276928";
 
 const bot = new TelegramBot(process.env.CARBON_TEST_TOKEN);
 bot.setWebHook("https://3ec9-54-199-193-55.jp.ngrok.io/bot");
@@ -14,8 +16,16 @@ const port = process.env.PORT || 8443;
 
 app.use(express.json());
 
-app.post("/bot", (req, res) => {
+app.post("/bot", async (req, res) => {
   bot.processUpdate(req.body);
+
+  // Forward the update to the Trengo server
+  try {
+    await axios.post(TRENGO_URL, req.body);
+  } catch (error) {
+    console.error("Error forwarding update to Trengo:", error);
+  }
+  // Send th  e HTTP 200 status code to indicate a successful HTTP request
   res.sendStatus(200);
 });
 
@@ -105,6 +115,16 @@ async function onMessage(msg) {
   response = response.replace(/\.$/, "");
 
   bot.sendMessage(chatId, response.trim() + "\n");
+
+  // Forward the outgoing message to the Trengo server
+  try {
+    const response = await axios.post(TRENGO_URL, {
+      chat_id: chatId,
+      text: response.trim() + "\n",
+    });
+  } catch (error) {
+    console.error("Error forwarding message to Trengo:", error);
+  }
 
   let currentHistory = [
     {
