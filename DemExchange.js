@@ -28,7 +28,7 @@ mongoose.connect(process.env.MONGODB_URL, { useNewUrlParser: true }, () => {
 });
 
 // Set up webhook for receiving updates from Telegram
-bot.setWebHook(`${process.env.WEBHOOK_URL}/webhook`);
+bot.setWebHook(`${process.env.DEMEXCHANGE_WEBHOOK_URL}/webhook`);
 
 // Handle incoming messages
 app.post(`/webhook`, (req, res) => {
