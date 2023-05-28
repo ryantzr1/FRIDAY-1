@@ -75,26 +75,29 @@ async function onMessage(msg) {
 
   const success = !answer.includes("[NO ANSWER]");
 
-  // Split the answer into lines with a maximum line length
-  const maxLineLength = 80; // Adjust as needed
   let response = "";
-  let currentLine = "";
-  const sentences = answer.split(". "); // Split the answer into sentences
-  for (const sentence of sentences) {
-    if (currentLine.length + sentence.length <= maxLineLength) {
-      currentLine += sentence + ". "; // Add the sentence to the current line
-    } else {
-      if (currentLine.length > 0) {
-        response += currentLine.trim() + "\n"; // Add the current line to the response with line break
+  let paragraphs = answer.split("\n\n"); // Split the answer into paragraphs
+
+  for (let i = 0; i < paragraphs.length; i++) {
+    let paragraph = paragraphs[i].trim(); // Remove leading/trailing whitespace
+
+    if (i === paragraphs.length - 1) {
+      // Remove the final period if present in the last paragraph
+      if (paragraph.endsWith(".")) {
+        paragraph = paragraph.slice(0, -1); // Remove the last character
       }
-      currentLine = sentence + ". "; // Start a new line with the sentence
+    }
+
+    response += paragraph; // Add the modified paragraph to the response
+
+    if (i !== paragraphs.length - 1) {
+      response += "\n\n"; // Add double line breaks after each paragraph
+    } else {
+      response += "\n\n\n"; // Add triple line breaks after the last paragraph
     }
   }
-  if (currentLine.length > 0) {
-    response += currentLine.trim(); // Add the last line to the response without line break
-  }
 
-  bot.sendMessage(chatId, response);
+  bot.sendMessage(chatId, response.trim() + "\n");
 
   let currentHistory = [
     {
