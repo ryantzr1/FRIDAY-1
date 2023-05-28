@@ -26,23 +26,8 @@ const Carbon = mongoose.model("Carbon", CarbonSchema);
 mongoose.connect(
   process.env.MONGODB_URL,
   { useNewUrlParser: true },
-  () => bot.on("message", onMessage) //this is how we can track all incoming messages
+  () => bot.on("message", onMessage) // This is how we can track all incoming messages
 );
-
-// Set up webhook for receiving updates from Telegram
-// bot.setWebHook(
-//   `https://ec2-54-199-193-55.ap-northeast-1.compute.amazonaws.com/webhook`
-// );
-
-// // Handle incoming messages
-// app.post(`/webhook`, (req, res) => {
-//   const message = req.body.message;
-//   console.log(message);
-//   if (message) {
-//     onMessage(message);
-//   }
-//   res.sendStatus(200);
-// });
 
 // Handle the /start command
 bot.onText(/\/start/, (msg) => {
@@ -89,6 +74,27 @@ async function onMessage(msg) {
   const agent = responseAI.data.agent;
 
   const success = !answer.includes("[NO ANSWER]");
+
+  // Split the answer into lines with a maximum line length
+  const maxLineLength = 80; // Adjust as needed
+  let response = "";
+  let currentLine = "";
+  const sentences = answer.split(". "); // Split the answer into sentences
+  for (const sentence of sentences) {
+    if (currentLine.length + sentence.length <= maxLineLength) {
+      currentLine += sentence + ". "; // Add the sentence to the current line
+    } else {
+      if (currentLine.length > 0) {
+        response += currentLine.trim() + "\n"; // Add the current line to the response with line break
+      }
+      currentLine = sentence + ". "; // Start a new line with the sentence
+    }
+  }
+  if (currentLine.length > 0) {
+    response += currentLine.trim(); // Add the last line to the response without line break
+  }
+
+  bot.sendMessage(chatId, response);
 
   let currentHistory = [
     {
@@ -139,8 +145,6 @@ async function onMessage(msg) {
       chatId,
       "We did not get your question, please hold as our team will be with you shortly."
     );
-  } else {
-    bot.sendMessage(chatId, answer);
   }
 }
 
