@@ -35,12 +35,6 @@ bot.onText(/\/start/, (msg) => {
   bot.sendMessage(msg.chat.id, "Hi! How may I assist you?");
 });
 
-//when users do /askFRIDAY in a group chat, we will capture the message and respond
-bot.onText(/\/askFRIDAY (.+)/, (msg, match) => {
-  const resp = match[1]; // the captured "whatever"
-  onMessage(msg, resp);
-});
-
 async function onMessage(msg) {
   if (msg.text.startsWith("/")) return; // Ignore commands
 
