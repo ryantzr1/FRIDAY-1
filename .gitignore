@@ -3,3 +3,6 @@
 
 # #passwords
 # .env //no longer ignoring env variables
+
+#Test files
+/DemExchangeTestOnly.js

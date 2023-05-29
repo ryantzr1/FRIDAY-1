@@ -5,43 +5,14 @@ const mongoose = require("mongoose");
 require("dotenv").config();
 const axios = require("axios");
 
-// const bot = new TelegramBot(process.env.CARBON_TEST_TOKEN, { polling: true });
-
-//TRENGO Webhook
-const TRENGO_URL =
-  "https://web.trengo.eu/telegram/hook/3AEKr0cYhZdm7R7DM2U7wPBJFaM2ZwEa4JXb9j4KZQ9mtLbzyPNSfeuBmq39E83QbLWIHgtcO9SPiX3gZkl3dskWB0gOlx240WAknQq2OMOqr3vhCHpJy01XIOB4r/1276928";
-
-//BotPenguin
-const BotPenguinWebhook =
-  "https://api.v7.botpenguin.com/telegram/webhook/5803470562:AAEhY3l9og-1xWmMFuRkCBIVSs2FAnlQQ3Q";
-
-const BotPenguin =
-  "https://api.v7.botpenguin.com/telegram-automation/messages/v2/send-message";
-
-//BotPenguin^^
-
-const bot = new TelegramBot(process.env.CARBON_TEST_TOKEN);
-bot.setWebHook("https://f50e-54-199-193-55.jp.ngrok.io/bot");
+const bot = new TelegramBot(process.env.DEMEX_TEST_TOKEN, { polling: true });
 
 const port = process.env.PORT || 8443;
 
 app.use(express.json());
 
-app.post("/bot", async (req, res) => {
-  bot.processUpdate(req.body);
-  console.log("receiving stuff from webhook");
-  // Forward the update to the Trengo server
-  try {
-    await axios.post(BotPenguinWebhook, req.body);
-  } catch (error) {
-    console.error("Error forwarding update to BotPenguin:", error);
-  }
-  // Send th  e HTTP 200 status code to indicate a successful HTTP request
-  res.sendStatus(200);
-});
-
-// Define the MongoDB schema for storing items from LayerZero
-const CarbonSchema = new mongoose.Schema({
+// Define the MongoDB schema for storing items from Demex
+const DemexSchema = new mongoose.Schema({
   userId: { type: String, required: true },
   question: { type: String, required: true },
   answer: { type: String, required: true },
@@ -51,7 +22,7 @@ const CarbonSchema = new mongoose.Schema({
   company: { type: String, required: true },
 });
 
-const Carbon = mongoose.model("Carbon", CarbonSchema);
+const Demex = mongoose.model("Demex", DemexSchema);
 
 mongoose.connect(
   process.env.MONGODB_URL,
@@ -64,15 +35,38 @@ bot.onText(/\/start/, (msg) => {
   bot.sendMessage(msg.chat.id, "Hi! How may I assist you?");
 });
 
+//when users do /askFRIDAY in a group chat, we will capture the message and respond
+bot.onText(/\/askFRIDAY (.+)/, (msg, match) => {
+  const resp = match[1]; // the captured "whatever"
+  onMessage(msg, resp);
+});
+
 async function onMessage(msg) {
   if (msg.text.startsWith("/")) return; // Ignore commands
+
+  // Check if the bot is tagged in the message only for group and supergroup chats
+  if (msg.chat.type === "group" || msg.chat.type === "supergroup") {
+    if (msg.entities && msg.entities.length) {
+      for (let i = 0; i < msg.entities.length; i++) {
+        if (
+          msg.entities[i].type === "mention" &&
+          msg.text.includes("@your_bot_username")
+        ) {
+          break;
+        } else if (i === msg.entities.length - 1) {
+          return;
+        }
+      }
+    } else {
+      return;
+    }
+  }
 
   const chatId = msg.chat.id;
   const apiEndpoint = "http://52.194.232.215/test";
   const userId = chatId;
 
   const question = msg.text;
-  console.log(question);
 
   const encodedQuestion = encodeURIComponent(question);
   const url = `${apiEndpoint}?question=${encodedQuestion}`;
@@ -88,7 +82,7 @@ async function onMessage(msg) {
     },
   };
 
-  const prevConvoArr = await Carbon.find({ userId: userId });
+  const prevConvoArr = await Demex.find({ userId: userId });
 
   if (prevConvoArr.length !== 0) {
     const previousHistory = prevConvoArr[prevConvoArr.length - 1].history;
@@ -125,66 +119,9 @@ async function onMessage(msg) {
   // Remove the last period if present
   response = response.replace(/\.$/, "");
 
-  // bot.sendMessage(chatId, response.trim() + "\n");
-
-  //use Trengo to send the message LOL
-  // const sendMessage = async (message) => {
-  //   try {
-  //     const url = "https://app.trengo.com/api/v2/tickets/676598525/messages";
-  //     const authToken =
-  //       "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwianRpIjoiNDlkZGVhZDczYTU1N2FjYmJlMDVkYTM5N2RiODQyNjljMTY5MmUyZGUyNGFkYmU4OGRhZmJhNWIyMmVjNTk1NjI0ZDUxN2QwNzRiNTEyNjAiLCJpYXQiOjE2ODUxMjM4OTguNTQxMjU3LCJuYmYiOjE2ODUxMjM4OTguNTQxMjYsImV4cCI6MTcxNjc0NjI5OC41MzAyODMsInN1YiI6IjY5NTIxNyIsInNjb3BlcyI6W119.IUY2gaTGF7qs3r1f9v58rxc6iy6FU5ZIBZ3uwHrvBIsPMd_054EfNgrGfFg1WPU0sadEbqTl1e081IQ2VneHNA";
-
-  //     const headers = {
-  //       "Content-Type": "application/json",
-  //       Authorization: `Bearer ${authToken}`,
-  //     };
-
-  //     const messageData = {
-  //       message: message.trim() + "\n",
-  //     };
-
-  //     const response = await axios.post(url, messageData, { headers });
-
-  //     console.log(response.data);
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // };
-
-  //use BotPenguin to send the message LOL
-  const sendMessage = async (payload) => {
-    try {
-      const url =
-        "https://api.v7.botpenguin.com/telegram-automation/messages/v2/send-message";
-      const authToken =
-        "eyJhbGciOiJSUzUxMiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiUnlhbiA4OCIsIl9wYXJlbnQiOiI1ZmVkMjJhMTUzODNhOWE1MTM1ZTkyNWQiLCJfaWQiOiI2NDcwODRkZWU3NjVlMDM0ZGM0N2IzYjYiLCJ0eXBlIjoiQ1VTVE9NRVIiLCJyb2xlIjoiNWZhOTEzYjA5ZjcwNjg0YWYwMDRkYjEzIiwiaWF0IjoxNjg1MTA4NDI2LCJleHAiOjE2ODc3MDA0MjYsImF1ZCI6ImFwcC5ib3RwZW5ndWluLmNvbSIsImlzcyI6IlJlbGlubnMgVGVjaG5vbG9naWVzIFByaXZhdGUgTGltaXRlZCIsInN1YiI6ImRyZWlzcHJ1bmcxODIxQGdtYWlsLmNvbSIsImp0aSI6IjI1NTM5NDFiLWMzZGQtNGFjNC1iNDI2LTdkZTdlMzI1YjNhOSJ9.AmTDF_MYzgTwtzU7lvvl7h_iYayKqVVdt9OBSt1nka-nTZUjS-5tnUuV-r-waBoEGKV_uDoRkh6jXLxNvVkj1wQzQOUtR2RYrSIUZv222hNKM-Shs0QGCyLeO64OGL_X5vCv1UoxyOFgSz0y2KBLPM86Tx_j8LQ8FOEXoM_6spVu0KITUUAyzGo9BTuAhKuQGHWmhGMJSyllI-Uy8HwcHjyksqePxkbg1WF9_85RFAXFxp1wU2oObWYOJCmVTY1I2eudPCOd-g-PDs2xAVeiNvoMWhMkDXdUP6tv2x7fN0N9kmKuWRnW4I9KqWrTDmoNbt0kUsQwloWNtcxXF0VStA";
-      const headers = {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${authToken}`,
-      };
-
-      const response = await axios.post(url, payload, { headers });
-
-      console.log(response.data);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  // Example payload
-  const payload = {
-    _bot: "647392cd5148d5acaaad0c07",
-    text: response.trim() + "\n",
-    _subscriber: "6473934d5148d5acaaad0c21",
-    type: "text",
-  };
-
-  // Call the sendMessage function with your payload
   if (success) {
-    sendMessage(payload);
+    bot.sendMessage(chatId, response.trim() + "\n");
   }
-
-  // sendMessage(response);
 
   let currentHistory = [
     {
@@ -202,7 +139,7 @@ async function onMessage(msg) {
     currentHistory = previousHistory.concat(currentHistory);
   }
 
-  const query = new Carbon({
+  const query = new Demex({
     question: question,
     answer: answer,
     userId: userId,
@@ -213,27 +150,14 @@ async function onMessage(msg) {
 
   await query.save();
 
-  let consecutiveFails = 0;
   if (prevConvoArr.length > 0) {
     const lastQuery = prevConvoArr[prevConvoArr.length - 1];
-    if (!lastQuery.success) {
-      consecutiveFails++;
-    }
   }
 
   if (!success) {
-    consecutiveFails++;
-  }
-
-  if (!success && consecutiveFails < 2) {
     bot.sendMessage(
       chatId,
       "Sorry, we didn't understand your question, please try again."
-    );
-  } else if (!success && consecutiveFails >= 2) {
-    bot.sendMessage(
-      chatId,
-      "We did not get your question, please hold as our team will be with you shortly."
     );
   }
 }
