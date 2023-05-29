@@ -50,7 +50,7 @@ async function onMessage(msg) {
       for (let i = 0; i < msg.entities.length; i++) {
         if (
           msg.entities[i].type === "mention" &&
-          msg.text.includes("@your_bot_username")
+          msg.text.includes("@FRIDAYDemexTestingbot")
         ) {
           break;
         } else if (i === msg.entities.length - 1) {
