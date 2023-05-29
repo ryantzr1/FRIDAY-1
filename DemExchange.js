@@ -22,7 +22,7 @@ const DemexSchema = new mongoose.Schema({
   company: { type: String, required: true },
 });
 
-const Demex = mongoose.model("Demex", DemexSchema);
+const Demex = mongoose.model("DemExchange", DemexSchema);
 
 mongoose.connect(
   process.env.MONGODB_URL,
