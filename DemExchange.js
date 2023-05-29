@@ -11,6 +11,12 @@ const port = process.env.PORT || 8443;
 
 app.use(express.json());
 
+bot.deleteWebhook().then((success) => {
+  if (success) {
+    console.log("Webhook has been deleted");
+  }
+});
+
 // Define the MongoDB schema for storing items from Demex
 const DemexSchema = new mongoose.Schema({
   userId: { type: String, required: true },
