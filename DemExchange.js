@@ -158,7 +158,7 @@ async function onMessage(msg) {
   if (!success) {
     bot.sendMessage(
       chatId,
-      "Sorry, we didn't understand your question, please try again."
+      "Sorry, I didn't understand your question. Our team will be with you shortly."
     );
   }
 }
