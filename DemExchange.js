@@ -62,6 +62,11 @@ async function onMessage(msg) {
   const userId = chatId;
 
   const question = msg.text;
+  // Check if the bot is mentioned in the question
+  if (question.includes("@FRIDAYDemexTestingbot")) {
+    // Remove the mention of the bot
+    question = question.replace("@FRIDAYDemexTestingbot", "").trim();
+  }
 
   const encodedQuestion = encodeURIComponent(question);
   const url = `${apiEndpoint}?question=${encodedQuestion}`;
