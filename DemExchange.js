@@ -29,7 +29,7 @@ app.use(express.json());
 
 app.post("/bot", async (req, res) => {
   bot.processUpdate(req.body);
-
+  console.log("receiving stuff from webhook");
   // Forward the update to the Trengo server
   try {
     await axios.post(BotPenguinWebhook, req.body);
