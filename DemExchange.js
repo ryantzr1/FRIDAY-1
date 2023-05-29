@@ -68,11 +68,11 @@ async function onMessage(msg) {
   const apiEndpoint = "http://52.194.232.215/test";
   const userId = chatId;
 
-  const question = msg.text;
+  let question = msg.text;
   // Check if the bot is mentioned in the question
   if (question.includes("@FRIDAYDemexTestingbot")) {
     // Remove the mention of the bot
-    question.replace("@FRIDAYDemexTestingbot", "").trim();
+    question = question.replace("@FRIDAYDemexTestingbot", "").trim();
   }
 
   console.log(question);
