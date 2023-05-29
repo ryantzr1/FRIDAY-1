@@ -75,6 +75,8 @@ async function onMessage(msg) {
     question.replace("@FRIDAYDemexTestingbot", "").trim();
   }
 
+  console.log(question);
+
   const encodedQuestion = encodeURIComponent(question);
   const url = `${apiEndpoint}?question=${encodedQuestion}`;
 
