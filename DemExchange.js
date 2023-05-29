@@ -72,7 +72,7 @@ async function onMessage(msg) {
   // Check if the bot is mentioned in the question
   if (question.includes("@FRIDAYDemexTestingbot")) {
     // Remove the mention of the bot
-    question = question.replace("@FRIDAYDemexTestingbot", "").trim();
+    question.replace("@FRIDAYDemexTestingbot", "").trim();
   }
 
   const encodedQuestion = encodeURIComponent(question);
