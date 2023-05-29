@@ -21,7 +21,7 @@ const BotPenguin =
 //BotPenguin^^
 
 const bot = new TelegramBot(process.env.CARBON_TEST_TOKEN);
-bot.setWebHook("https://3ec9-54-199-193-55.jp.ngrok.io/bot");
+bot.setWebHook("https://f50e-54-199-193-55.jp.ngrok.io/bot");
 
 const port = process.env.PORT || 8443;
 
