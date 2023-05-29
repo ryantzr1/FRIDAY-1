@@ -20,6 +20,7 @@ const DemexSchema = new mongoose.Schema({
   timestamp: { type: Date, default: Date.now },
   history: { type: Array, required: true },
   company: { type: String, required: true },
+  username: { type: String, required: true },
 });
 
 const Demex = mongoose.model("DemExchange", DemexSchema);
@@ -140,6 +141,7 @@ async function onMessage(msg) {
     success: success,
     history: currentHistory,
     company: "Demex",
+    username: msg.from.username || null, //Telegram Username
   });
 
   await query.save();
