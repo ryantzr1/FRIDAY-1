@@ -28,7 +28,14 @@ const Demex = mongoose.model("DemExchange", DemexSchema);
 mongoose.connect(
   process.env.MONGODB_URL,
   { useNewUrlParser: true },
-  () => bot.on("message", onMessage) // This is how we can track all incoming messages
+  () =>
+    bot.on("message", async (msg) => {
+      try {
+        await onMessage(msg);
+      } catch (err) {
+        console.error("Error processing message:", err);
+      }
+    }) // This is how we can track all incoming messages
 );
 
 // Handle the /start command
