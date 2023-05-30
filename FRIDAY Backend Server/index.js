@@ -62,7 +62,7 @@ app.get("/", async (req, res) => {
 
 app.get("/queries", async (req, res) => {
   try {
-    const apiEndpoint = "http://52.194.232.215/predict";
+    const apiEndpoint = "http://43.207.93.240/predict";
 
     // Question Extraction
 
