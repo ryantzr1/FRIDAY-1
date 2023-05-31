@@ -46,7 +46,7 @@ async function onMessage(msg) {
   const userId = msg.author.id;
   const apiEndpoint = "http://43.207.93.240/test"; // Your API endpoint here
   let question = msg.content;
-  console.log(question);
+  question = question.replace(/<@.*?>/g, "").trim();
 
   const encodedQuestion = encodeURIComponent(question);
   const url = `${apiEndpoint}?question=${encodedQuestion}`;
