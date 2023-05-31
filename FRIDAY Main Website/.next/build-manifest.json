@@ -30,11 +30,6 @@
       "static/chunks/main.js",
       "static/chunks/pages/_error.js"
     ],
-    "/database": [
-      "static/chunks/webpack.js",
-      "static/chunks/main.js",
-      "static/chunks/pages/database.js"
-    ],
     "/logs": [
       "static/chunks/webpack.js",
       "static/chunks/main.js",
