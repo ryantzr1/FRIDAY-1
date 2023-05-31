@@ -101,7 +101,7 @@ async function onMessage(msg) {
   response = response.replace(/\.$/, "");
 
   if (success) {
-    msg.reply(chatId, response.trim() + "\n");
+    msg.reply(response.trim() + "\n");
   }
 
   let currentHistory = [
