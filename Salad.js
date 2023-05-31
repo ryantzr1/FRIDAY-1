@@ -29,7 +29,7 @@ bot.on("ready", () => {
 });
 
 bot.on("messageCreate", async (msg) => {
-  if (!msg.content.startsWith("<@1113322148535226448>") || msg.author.bot)
+  if (!msg.content.contains("<@1113322148535226448>") || msg.author.bot)
     //only reply to message that tag the bot
     return;
 
@@ -51,23 +51,12 @@ async function onMessage(msg) {
   const encodedQuestion = encodeURIComponent(question);
   const url = `${apiEndpoint}?question=${encodedQuestion}`;
 
-  // let requestBody = {
-  //   chat_history: [],
-  //   company_info: {
-  //     company_desc:
-  //       "SaladVenture is a blockchain thinktank that develops and backs innovations in the growing gamefi space.",
-  //     company_name: "SaladVentures",
-  //     product_list: [""],
-  //     tools: ["VectorDatabase"],
-  //     usable_tools: ["VectorDatabase"],
-  //   },
-  // };
-
   let requestBody = {
     chat_history: [],
     company_info: {
-      company_desc: "DemExchange is a crypto DeFi platform.",
-      company_name: "Demex",
+      company_desc:
+        "SaladVenture is a blockchain thinktank that develops and backs innovations in the growing gamefi space.",
+      company_name: "SaladVentures",
       product_list: [""],
       tools: ["VectorDatabase"],
       usable_tools: ["VectorDatabase"],
