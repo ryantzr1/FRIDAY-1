@@ -29,7 +29,7 @@ bot.on("ready", () => {
 });
 
 bot.on("messageCreate", async (msg) => {
-  if (!msg.content.contains("<@1113322148535226448>") || msg.author.bot)
+  if (!msg.content.startsWith("<@1113322148535226448>") || msg.author.bot)
     //only reply to message that tag the bot
     return;
 
@@ -47,6 +47,7 @@ async function onMessage(msg) {
   const apiEndpoint = "http://43.207.93.240/test"; // Your API endpoint here
   let question = msg.content;
   question = question.replace(/<@.*?>/g, "").trim();
+  console.log(question);
 
   const encodedQuestion = encodeURIComponent(question);
   const url = `${apiEndpoint}?question=${encodedQuestion}`;
