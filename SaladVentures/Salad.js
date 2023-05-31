@@ -1,18 +1,16 @@
-const express = require("express");
-const app = express();
-const TelegramBot = require("node-telegram-bot-api");
+const { Client, GatewayIntentBits } = require("discord.js");
 const mongoose = require("mongoose");
-require("dotenv").config();
 const axios = require("axios");
-
-const bot = new TelegramBot(process.env.DEMEX_TEST_TOKEN, { polling: true });
-
-const port = process.env.PORT || 8443;
-
-app.use(express.json());
-
-// Define the MongoDB schema for storing items from Demex
-const DemexSchema = new mongoose.Schema({
+require("dotenv").config();
+const bot = new Client({
+  intents: [
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.MessageContent,
+  ],
+});
+// Define the MongoDB schema for storing items from SaladVenture
+const SaladVentureSchema = new mongoose.Schema({
   userId: { type: String, required: true },
   question: { type: String, required: true },
   answer: { type: String, required: true },
@@ -20,65 +18,50 @@ const DemexSchema = new mongoose.Schema({
   timestamp: { type: Date, default: Date.now },
   history: { type: Array, required: true },
   company: { type: String, required: true },
-  username: { type: String, required: true },
 });
 
-const Demex = mongoose.model("DemExchange", DemexSchema);
+const SaladVenture = mongoose.model("SaladVenture", SaladVentureSchema);
 
-mongoose.connect(
-  process.env.MONGODB_URL,
-  { useNewUrlParser: true },
-  () =>
-    bot.on("message", async (msg) => {
-      try {
-        await onMessage(msg);
-      } catch (err) {
-        console.error("Error processing message:", err);
-      }
-    }) // This is how we can track all incoming messages
-);
+mongoose.connect(process.env.MONGODB_URL, { useNewUrlParser: true });
 
-// Handle the /start command
-bot.onText(/\/start/, (msg) => {
-  bot.sendMessage(msg.chat.id, "Hi! How may I assist you?");
+bot.on("ready", () => {
+  console.log(`Bot is running`);
+});
+
+bot.on("messageCreate", async (msg) => {
+  if (!msg.content.startsWith("<@1113322148535226448>") || msg.author.bot)
+    //only reply to message that tag the bot
+    return;
+
+  try {
+    await onMessage(msg);
+  } catch (err) {
+    console.error("Error processing message:", err);
+  }
 });
 
 async function onMessage(msg) {
-  if (msg.text.startsWith("/")) return; // Ignore commands
+  if (msg.content.startsWith("/")) return; // Ignore commands
 
-  // Check if the bot is tagged in the message only for group and supergroup chats
-  if (msg.chat.type === "group" || msg.chat.type === "supergroup") {
-    if (msg.entities && msg.entities.length) {
-      for (let i = 0; i < msg.entities.length; i++) {
-        if (
-          msg.entities[i].type === "mention" &&
-          msg.text.includes("@FRIDAYDemexTestingbot")
-        ) {
-          break;
-        } else if (i === msg.entities.length - 1) {
-          return;
-        }
-      }
-    } else {
-      return;
-    }
-  }
-
-  const chatId = msg.chat.id;
-  const apiEndpoint = "http://43.207.93.240/predict";
-  const userId = chatId;
-
-  let question = msg.text;
-  // Check if the bot is mentioned in the question
-  if (question.includes("@FRIDAYDemexTestingbot")) {
-    // Remove the mention of the bot
-    question = question.replace("@FRIDAYDemexTestingbot", "").trim();
-  }
-
+  const userId = msg.author.id;
+  const apiEndpoint = "http://43.207.93.240/test"; // Your API endpoint here
+  let question = msg.content;
   console.log(question);
 
   const encodedQuestion = encodeURIComponent(question);
   const url = `${apiEndpoint}?question=${encodedQuestion}`;
+
+  // let requestBody = {
+  //   chat_history: [],
+  //   company_info: {
+  //     company_desc:
+  //       "SaladVenture is a blockchain thinktank that develops and backs innovations in the growing gamefi space.",
+  //     company_name: "SaladVentures",
+  //     product_list: [""],
+  //     tools: ["VectorDatabase"],
+  //     usable_tools: ["VectorDatabase"],
+  //   },
+  // };
 
   let requestBody = {
     chat_history: [],
@@ -91,7 +74,7 @@ async function onMessage(msg) {
     },
   };
 
-  const prevConvoArr = await Demex.find({ userId: userId });
+  const prevConvoArr = await SaladVenture.find({ userId: userId });
 
   if (prevConvoArr.length !== 0) {
     const previousHistory = prevConvoArr[prevConvoArr.length - 1].history;
@@ -104,7 +87,6 @@ async function onMessage(msg) {
   const responseAI = await axios.post(url, requestBody);
   const answer = responseAI.data.answer;
   console.log(answer);
-  const agent = responseAI.data.agent;
 
   const success = !answer.includes("[NO ANSWER]");
 
@@ -129,7 +111,7 @@ async function onMessage(msg) {
   response = response.replace(/\.$/, "");
 
   if (success) {
-    bot.sendMessage(chatId, response.trim() + "\n");
+    msg.reply(chatId, response.trim() + "\n");
   }
 
   let currentHistory = [
@@ -148,14 +130,13 @@ async function onMessage(msg) {
     currentHistory = previousHistory.concat(currentHistory);
   }
 
-  const query = new Demex({
+  const query = new SaladVenture({
     question: question,
     answer: answer,
     userId: userId,
     success: success,
     history: currentHistory,
-    company: "Demex",
-    username: msg.from.username || null, //Telegram Username
+    company: "SaladVentures",
   });
 
   await query.save();
@@ -165,14 +146,10 @@ async function onMessage(msg) {
   }
 
   if (!success) {
-    bot.sendMessage(
-      chatId,
+    msg.reply(
       "Sorry, I didn't understand your question. Our team will be with you shortly."
     );
   }
 }
 
-// Start the server
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
-});
+bot.login(process.env.DISCORD_BOT_TOKEN);
