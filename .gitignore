@@ -1,8 +1,8 @@
 # dependencies
-/node_modules
+/node_modules/
 
 # #passwords
-# .env //no longer ignoring env variables
+.env 
 
 #Test files
 /DemExchangeTestOnly.js
