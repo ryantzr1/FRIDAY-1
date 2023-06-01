@@ -2,6 +2,7 @@ if (process.env.NODE_ENV !== "production") {
   require("dotenv").config();
 }
 
+const auth = require("./Authentication");
 const express = require("express");
 const bodyParser = require("body-parser");
 const axios = require("axios");
@@ -59,8 +60,12 @@ app.get("/", async (req, res) => {
 });
 
 // Main Query Endpoint
-
-app.get("/queries", async (req, res) => {
+/** 
+Have your users provide their API keys as a header, like
+curl -H "Authorization: apikey MY_APP_API_KEY" https://myapp.example.com
+To authenticate a user’s API request, look up their API key in the database.
+*/
+app.get("/queries", authenticateRequest, async (req, res) => {
   try {
     const apiEndpoint = "http://52.194.232.215/predict";
 
@@ -70,17 +75,15 @@ app.get("/queries", async (req, res) => {
     // const question = req.query.question;
 
     // Question Processing
-
     let processedQuestion = question.trim();
 
     if (!processedQuestion.endsWith("?")) {
       processedQuestion += "?"; // add question mark if not already present
     }
-  
+
     const encodedQuestion = encodeURIComponent(processedQuestion); // Encode the question using encodeURIComponent()
 
     // Parameter Extraction
-
     // const userId = req.query.id;
     // const name = req.query.name;
     // const mobile = req.query.mobile;
@@ -90,7 +93,7 @@ app.get("/queries", async (req, res) => {
     const mobile = req.body.phone;
 
     // Category Extraction (For training data)
-    
+
     // const category = req.query.category;
 
     // Construct the URL with the encoded question as a query string parameter
@@ -135,10 +138,10 @@ app.get("/queries", async (req, res) => {
     // Temporary Category Variable based on AI model (Legacy)
 
     const category = agent.includes("vector")
-    ? "Product"
-    : agent.includes("schedule")
-    ? "Scheduling"
-    : "Price List";
+      ? "Product"
+      : agent.includes("schedule")
+      ? "Scheduling"
+      : "Price List";
 
     // Determine success
 
@@ -161,7 +164,7 @@ app.get("/queries", async (req, res) => {
     }
 
     console.log("Category: " + category);
-    
+
     // Save the query to the MongoDB database
     const query = new Query({
       name: name,
@@ -301,14 +304,14 @@ app.get("/test", async (req, res) => {
   }
 });
 
-app.post('/update', async (req, res) => {
+app.post("/update", async (req, res) => {
   try {
     // Retrieve the body of the post request
     const requestBody = req.body;
-    const rootName = 'DashcamSG';
+    const rootName = "DashcamSG";
     const childName = requestBody.childName;
     const text = requestBody.items;
-    const items = text.split('\n\n');
+    const items = text.split("\n\n");
     console.log(items);
 
     // Delete the child endpoint
@@ -321,16 +324,18 @@ app.post('/update', async (req, res) => {
       `http://52.192.225.247/create_leaf_child?name=${childName}&root_name=${rootName}`
     );
 
-    // Insert all with the information in the body of the post request  
-    await axios.post(`http://52.192.225.247/insert_all?root_name=${rootName}&loc=${childName}`, {
-      items: items
-    });
+    // Insert all with the information in the body of the post request
+    await axios.post(
+      `http://52.192.225.247/insert_all?root_name=${rootName}&loc=${childName}`,
+      {
+        items: items,
+      }
+    );
 
-    res.status(200).json({ message: 'Update successful' });
-    
+    res.status(200).json({ message: "Update successful" });
   } catch (error) {
-    console.error('Error updating child item:', error.message);
-    res.status(500).json({ error: 'Update failed' });
+    console.error("Error updating child item:", error.message);
+    res.status(500).json({ error: "Update failed" });
   }
 });
 
