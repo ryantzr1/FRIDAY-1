@@ -9,8 +9,8 @@ const cors = require("cors");
 
 const mongoose = require("mongoose");
 
-const port = process.env.PORT || "3000";
-const dbUrl = process.env.DB_URL || "mongodb://localhost:3000/fridaybackend";
+const port = process.env.PORT || "27027";
+const dbUrl = process.env.DB_URL || "mongodb://localhost:27027/fridaybackend";
 
 const app = express();
 app.use(cors());
@@ -20,8 +20,11 @@ app.use(bodyParser.json());
 // Define the MongoDB schema for storing queries
 const querySchema = new mongoose.Schema({
   userId: { type: String, required: true },
+  name: { type: String, required: true },
+  mobile: { type: Number, required: true },
   question: { type: String, required: true },
   answer: { type: String, required: true },
+  category: { type: String, required: true },
   success: { type: Boolean, required: true },
   timestamp: { type: Date, default: Date.now },
   history: { type: Array, required: true },
@@ -42,9 +45,6 @@ mongoose
     console.error("Error connecting to MongoDB:", error);
   });
 
-// Define the route for handling GET requests
-let counter = 0;
-
 app.get("/", async (req, res) => {
   try {
     res.send({
@@ -58,29 +58,44 @@ app.get("/", async (req, res) => {
   }
 });
 
+// Main Query Endpoint
+
 app.get("/queries", async (req, res) => {
   try {
-    const apiEndpoint = "http://18.183.218.48/predict";
+    const apiEndpoint = "http://52.194.232.215/predict";
+
+    // Question Extraction
 
     const question = req.body.question;
+    // const question = req.query.question;
+
+    // Question Processing
 
     let processedQuestion = question.trim();
 
     if (!processedQuestion.endsWith("?")) {
       processedQuestion += "?"; // add question mark if not already present
     }
+  
+    const encodedQuestion = encodeURIComponent(processedQuestion); // Encode the question using encodeURIComponent()
+
+    // Parameter Extraction
+
+    // const userId = req.query.id;
+    // const name = req.query.name;
+    // const mobile = req.query.mobile;
 
     const userId = req.body.id;
+    const name = req.body.name;
+    const mobile = req.body.phone;
 
-    // Encode the question using encodeURIComponent()
-    const encodedQuestion = encodeURIComponent(processedQuestion);
+    // Category Extraction (For training data)
+    
+    // const category = req.query.category;
 
     // Construct the URL with the encoded question as a query string parameter
+
     const url = `${apiEndpoint}?question=${encodedQuestion}`;
-
-    console.log(url);
-
-    console.log(userId);
 
     let requestBody = {
       chat_history: [],
@@ -103,17 +118,13 @@ app.get("/queries", async (req, res) => {
       };
     }
 
-    console.log(requestBody);
-
     const responseAI = await axios.post(url, requestBody);
 
     const answer = responseAI.data.answer;
 
     const agent = responseAI.data.agent;
 
-    console.log(answer);
-
-    console.log(agent);
+    // Temporary type variable to be sent to client (Legacy)
 
     const type = agent.includes("vector")
       ? "[ITEM]"
@@ -121,7 +132,15 @@ app.get("/queries", async (req, res) => {
       ? "[SCHEDULE]"
       : "[PRICE]";
 
-    console.log(type);
+    // Temporary Category Variable based on AI model (Legacy)
+
+    const category = agent.includes("vector")
+    ? "Product"
+    : agent.includes("schedule")
+    ? "Scheduling"
+    : "Price List";
+
+    // Determine success
 
     const success = !answer.includes("[NO ANSWER]");
 
@@ -141,15 +160,22 @@ app.get("/queries", async (req, res) => {
       currentHistory = previousHistory.concat(currentHistory);
     }
 
+    console.log("Category: " + category);
+    
     // Save the query to the MongoDB database
     const query = new Query({
+      name: name,
+      mobile: mobile,
       question: processedQuestion,
       answer: answer,
+      category: category,
       userId: userId,
       success: success,
       history: currentHistory,
       company: "DashcamSG",
     });
+
+    console.log("Query Saved: " + query);
 
     await query
       .save()
@@ -167,6 +193,8 @@ app.get("/queries", async (req, res) => {
   }
 });
 
+// API Endpoint for MongoDB database
+
 app.get("/queries/log", async (req, res) => {
   try {
     const queries = await Query.find().sort({ _id: -1 });
@@ -179,6 +207,22 @@ app.get("/queries/log", async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
+
+async function findQuestion(question) {
+  let processedQuestion = question.trim();
+
+  if (!processedQuestion.endsWith("?")) {
+    processedQuestion += "?"; // add question mark if not already present
+  }
+
+  console.log(processedQuestion);
+
+  const result = await Query.findOne({
+    question: processedQuestion.toString(),
+  });
+  console.log(result);
+  return result.answer;
+}
 
 app.get("/response", async (req, res) => {
   const question = req.body.question;
@@ -202,61 +246,93 @@ app.get("/response", async (req, res) => {
   }
 });
 
-async function findQuestion(question) {
-  let processedQuestion = question.trim();
+app.post("/updateCategory", async (req, res) => {
+  const id = req.body.id;
+  const newCategory = req.body.category;
 
-  if (!processedQuestion.endsWith("?")) {
-    processedQuestion += "?"; // add question mark if not already present
+  try {
+    const updatedItem = await Query.findByIdAndUpdate(
+      id,
+      { category: newCategory },
+      { new: true }
+    );
+
+    console.log("Updated Item:", updatedItem);
+
+    res.send(updatedItem);
+  } catch (error) {
+    console.error("Error updating category:", error.message);
+    res.status(500).send("Error updating category");
   }
+});
 
-  console.log(processedQuestion);
+// API endpoints to communicate with PINECONE database
 
-  const result = await Query.findOne({
-    question: processedQuestion.toString(),
-  });
-  console.log(result);
-  return result.answer;
-}
+app.get("/retrieve", async (req, res) => {
+  const product = req.query.product;
+  const url = "http://52.192.225.247/get_all_items";
+  const params = {
+    root_name: "DashcamSG",
+    loc: product,
+  };
 
-// app.post("/queries", async (req, res) => {
-//   // console.log(req);
-//   try {
-//     const question = req.body.text;
-//     const token = req.body.token;
-//     console.log(question);
-//     console.log(token);
+  try {
+    const response = await axios.get(url, { params });
+    const data = response.data.items;
+    res.send({ data });
+  } catch (error) {
+    console.error("Error retrieving items:", error.message);
+  }
+});
 
-//     if (token !== TOKEN) {
-//       return res.status(401).json({ error: "Invalid token." }); // Return an error if the token is invalid
-//     }
+app.get("/test", async (req, res) => {
+  const url = "http://52.192.225.247/get_all_items";
+  const params = {
+    root_name: "DashcamSG",
+    loc: "A500S",
+  };
 
-//     counter++; // Increase the counter if the token is valid
+  try {
+    const response = await axios.get(url, { params });
+    const data = response.data.items;
+    res.send({ data });
+  } catch (error) {
+    console.error("Error retrieving items:", error.message);
+  }
+});
 
-//     // Call the machine learning API to get the answer
-//     const response = await axios.get("http://54.238.198.35/predict", {
-//       params: {
-//         question: question,
-//       },
-//     });
+app.post('/update', async (req, res) => {
+  try {
+    // Retrieve the body of the post request
+    const requestBody = req.body;
+    const rootName = 'DashcamSG';
+    const childName = requestBody.childName;
+    const text = requestBody.items;
+    const items = text.split('\n\n');
+    console.log(items);
 
-//     // Extract the answer from the API response
-//     const answer = response.data.answer;
+    // Delete the child endpoint
+    await axios.post(
+      `http://52.192.225.247/delete_child?root_name=${rootName}&loc=${childName}`
+    );
 
-//     console.log(answer);
+    // Create a new child endpoint
+    await axios.post(
+      `http://52.192.225.247/create_leaf_child?name=${childName}&root_name=${rootName}`
+    );
 
-//     // Save the query to the MongoDB database
-//     // const query = new Query({ question: question, answer: answer });
-//     // await query.save();
+    // Insert all with the information in the body of the post request  
+    await axios.post(`http://52.192.225.247/insert_all?root_name=${rootName}&loc=${childName}`, {
+      items: items
+    });
 
-//     // Send the response back to the client
-//     res.json({ question: question, answer: answer });
-//   } catch (error) {
-//     console.error("Error processing request:", error);
-//     res
-//       .status(500)
-//       .json({ error: "An error occurred while processing your request." });
-//   }
-// });
+    res.status(200).json({ message: 'Update successful' });
+    
+  } catch (error) {
+    console.error('Error updating child item:', error.message);
+    res.status(500).json({ error: 'Update failed' });
+  }
+});
 
 // Start the server
 app.listen(port, () => {

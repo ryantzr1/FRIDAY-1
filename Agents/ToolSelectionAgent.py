@@ -61,7 +61,7 @@ class ToolSelectionAgent(Agent):
             tools_master = json.load(f)
 
         if len(self.tools) == 1:
-            return {"answer": f"ANSWER: {self.tools[0]}"} # If there is only one tool, just use that tool
+            return f"ANSWER: {self.tools[0]}", {} # If there is only one tool, just use that tool
         
         if self.tools == []:
             self.tools = tools_master.keys()
@@ -83,17 +83,17 @@ class ToolSelectionAgent(Agent):
         temperature=0,
         # max_tokens=5,
         )
-        return ans
+        return ans["choices"][0]["message"]["content"], ans["usage"]
     
     def route(self, query: str, chat_history: list) -> tuple:
         '''
         Route a query to the right tool
         '''
-        ans_payload = self.generate_answer(query, chat_history)
-        chosen = ans_payload["choices"][0]["message"]["content"]
+        ans, usage = self.generate_answer(query, chat_history)
+        chosen = ans
         if "ANSWER:" in chosen:
             chosen = chosen.split("ANSWER: ")[1].replace(".", "").strip()
         else:
             chosen = chosen.replace(".", "").strip() 
-        return self.agents[chosen + "Agent"](company_info = self.company_info), ans_payload["usage"]
+        return self.agents[chosen + "Agent"](company_info = self.company_info), usage
         
