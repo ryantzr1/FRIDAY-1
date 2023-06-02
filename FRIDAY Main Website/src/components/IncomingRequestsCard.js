@@ -47,8 +47,8 @@ function IncomingRequestsCard({ logs }) {
   };
 
   return (
-    <div className={`bg-white rounded-lg shadow overflow-y-scroll`} style={{ maxHeight: "550px" }}>
-      <header className="sticky top-0 bg-gray-700">
+    <div className={`bg-white rounded-xs shadow overflow-y-scroll`} style={{ maxHeight: "550px" }}>
+      <header className="sticky top-0 bg-gray-900">
         <div className="flex justify-between container mx-auto">
           <div className="text-sm p-6 text-white uppercase tracking-wide">
             Incoming Requests
@@ -63,7 +63,7 @@ function IncomingRequestsCard({ logs }) {
               {showSuccessfulQueries ? "Unsuccessful" : "All"}
             </button>
             <button
-              className="bg-blue-500 text-white text-sm m-4 rounded-full font-medium py-2 px-4 ml-2"
+              className="bg-green-500 text-black text-sm m-4 rounded-full font-medium py-2 px-4 ml-2"
               onClick={handleSaveButtonClick}
             >
               Save

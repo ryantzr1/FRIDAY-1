@@ -20,3 +20,11 @@ body {
   color: rgb(var(--foreground-rgb));
   background: rgb(var(--background-start-rgb));
 }
+
+.spotlight-bg {
+  background: radial-gradient(circle at top center, rgba(167, 243, 208, 0.8), transparent);
+}
+
+.gradient-bg {
+  background: linear-gradient(to bottom, #a7f3d0, #6ee7b7);
+}
