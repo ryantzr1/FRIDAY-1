@@ -31,12 +31,13 @@ async function trackMessages() {
       const collectionName = collection.name;
       const question = next.fullDocument.question;
       const answer = next.fullDocument.answer;
+      const customerName = next.fullDocument.name || next.fullDocument.username;
 
       // Notify all verified users of the new object
       for (const userChatId of verifiedChatIds) {
         bot.sendMessage(
           userChatId,
-          `New question added (${collectionName})\n\nQuestion: ${question}\nAnswer: ${answer}`
+          `New question added (${collectionName})\n\nName: ${customerName}\nQuestion: ${question}\nAnswer: ${answer}`
         );
       }
     });

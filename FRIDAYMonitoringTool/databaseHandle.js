@@ -13,22 +13,35 @@ const db = mongoose.connection;
 db.on("error", console.error.bind(console, "MongoDB connection error:"));
 
 async function trackMessages() {
-  const collection = db.collection("queries");
-  const changeStream = collection.watch();
+  try {
+    collections = await mongoose.connection.db.listCollections().toArray();
+  } catch (err) {
+    console.error(err);
+    return;
+  }
 
-  changeStream.on("change", (next) => {
-    // Perform actions when a new object is inserted into the collection
-    const question = next.fullDocument.question;
-    const answer = next.fullDocument.answer;
+  const changeStreams = [];
+  for (const collection of collections) {
+    const collectionObj = mongoose.connection.collection(collection.name);
+    const changeStream = collectionObj.watch();
+    changeStreams.push(changeStream);
 
-    // Notify all verified users of the new object
-    for (const userChatId of verifiedChatIds) {
-      bot.sendMessage(
-        userChatId,
-        `New question added:\n\nQuestion: ${question}\nAnswer: ${answer}`
-      );
-    }
-  });
+    changeStream.on("change", (next) => {
+      // Perform actions when a new object is inserted into the collection
+      const collectionName = collection.name;
+      const question = next.fullDocument.question;
+      const answer = next.fullDocument.answer;
+      const customerName = next.fullDocument.name || next.fullDocument.username;
+
+      // Notify all verified users of the new object
+      for (const userChatId of verifiedChatIds) {
+        bot.sendMessage(
+          userChatId,
+          `New question added (${collectionName})\n\nName: ${customerName}\nQuestion: ${question}\nAnswer: ${answer}`
+        );
+      }
+    });
+  }
 }
 
 module.exports = { db, bot };
