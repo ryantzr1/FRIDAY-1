@@ -55,6 +55,7 @@ Have your users provide their API keys as a header, like
 curl -H "Authorization: apikey MY_APP_API_KEY" https://myapp.example.com
 To authenticate a user’s API request, look up their API key in the database.
 */
+
 app.get("/queries", async (req, res) => {
   try {
     const apiEndpoint = "http://43.207.93.240/predict";
