@@ -4,22 +4,22 @@ import { useAuth } from "../context/AuthContext";
 
 function CounterCard({ value, label, color }) {
   return (
-    <div className={`bg-white rounded-lg shadow p-8 flex-grow-0 flex-shrink-0 w-1/2 mr-4`}>
+    <div className={`bg-white rounded-xs shadow-md p-8 flex-grow-0 flex-shrink-0 w-1/2 mr-4 border border-gray-200`}>
       <div className={`text-3xl font-bold ${color} mb-2`}>
         {value}
       </div>
-      <div className="text-sm text-gray-500 uppercase tracking-wide">
+      <div className="text-sm text-gray-700 uppercase tracking-wide">
         {label}
       </div>
     </div>
-  )
+  );
 }
 
 function IncomingRequestsCard({ logs }) {
   const unsuccessful = logs.filter((log) => !log.success).slice(0, 3);
   return (
-    <div className={`bg-white rounded-lg shadow p-8 overflow-y-scroll`} style={{ maxHeight: '400px' }}>
-      <div className="text-sm text-gray-500 uppercase tracking-wide mb-4">
+    <div className={`bg-white rounded-xs shadow-xs p-8 ml-2 overflow-y-scroll border border-gray-200`} style={{ maxHeight: '400px' }}>
+      <div className="text-sm text-gray-700 uppercase tracking-wide mb-4">
         Latest Unsuccessful Requests
       </div>
       <div className="text-gray-800">
@@ -33,16 +33,18 @@ function IncomingRequestsCard({ logs }) {
 
 function RequestContainer({ log }) {
   const { question, answer, success } = log;
-  const successColor = success ? "text-green-500" : "text-red-500";
+  const successColor = success ? 'text-green-500' : 'text-red-500';
 
   return (
-    <div className="border border-gray-200 rounded-lg p-4 flex items-center justify-between mb-4">
+    <div className="border border-green-500 rounded-md p-4 flex items-center justify-between mb-4 shadow-sm">
       <div>
-        <div className="font-bold">Question: {question}</div>
-        <div className="font-bold">Answer: <span className={`text-sm ${successColor}`}>{answer}</span></div>
+        <div className="font-bold">Question:</div>
+        <div className="text-gray-700">{question}</div>
+        <div className="font-bold mt-4">Answer:</div>
+        <div className={`text-sm font-bold ${successColor}`}>{answer}</div>
       </div>
       <div className={`bg-gray-200 rounded-full px-2 py-1 ${successColor}`}>
-        {success ? "Answered" : "Unanswered"}
+        {success ? 'Answered' : 'Unanswered'}
       </div>
     </div>
   );
@@ -58,7 +60,7 @@ function Home() {
   useEffect(() => {
     async function fetchData() {
       try {
-        if (getUid() && (getUid() === "lZLIC6fK2WQOvIxyXKECEjx625w1" || getUid() === "Hoz3NtloWXX7MciVcTn8BNAHIJs1")) {
+        if (getUid() && (getUid() === 'lZLIC6fK2WQOvIxyXKECEjx625w1' || getUid() === 'Hoz3NtloWXX7MciVcTn8BNAHIJs1')) {
           const response = await axios.get('https://friday-backend-server-new.herokuapp.com/queries/log');
           const { queries, totalQueriesCount, unansweredQueriesCount } = response.data;
           setLogs(queries);
@@ -75,13 +77,13 @@ function Home() {
   }, []);
 
   return (
-    <main className="max-w-7xl mx-auto pt-8 px-4 sm:px-6 lg:px-8">
-      <h1 className="text-3xl font-bold mb-4">My Dashboard</h1>
+    <main className="pt-8 px-4 sm:px-6 lg:px-8 mr-2">
+      <h1 className="text-3xl font-bold mb-4 text-green-900">My Dashboard</h1>
       <div className="flex justify-between mb-8">
         <CounterCard value={totalQueries} label="Total Queries" color="text-green-500" />
         <CounterCard value={unansweredQueries} label="Unanswered Queries" color="text-red-500" />
       </div>
-      {isLoading ? ( // Render loading spinner if isLoading is true
+      {isLoading ? (
         <div className="flex items-center justify-center">
           <svg className="animate-spin h-8 w-8 text-gray-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
