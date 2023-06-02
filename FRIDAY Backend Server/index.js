@@ -2,8 +2,11 @@ if (process.env.NODE_ENV !== "production") {
   require("dotenv").config();
 }
 
+
 const { Query } = require("./models/query");
 const { User } = require("./models/user");
+
+const auth = require("./Authentication");
 
 const express = require("express");
 const bodyParser = require("body-parser");
@@ -47,8 +50,12 @@ app.get("/", async (req, res) => {
 });
 
 // Main Query Endpoint
-
-app.get("/queries", async (req, res) => {
+/** 
+Have your users provide their API keys as a header, like
+curl -H "Authorization: apikey MY_APP_API_KEY" https://myapp.example.com
+To authenticate a user’s API request, look up their API key in the database.
+*/
+app.get("/queries", authenticateRequest, async (req, res) => {
   try {
     const apiEndpoint = "http://43.207.93.240/predict";
 
@@ -58,7 +65,6 @@ app.get("/queries", async (req, res) => {
     // const question = req.query.question;
 
     // Question Processing
-
     let processedQuestion = question.trim();
 
     if (!processedQuestion.endsWith("?")) {
@@ -68,7 +74,6 @@ app.get("/queries", async (req, res) => {
     const encodedQuestion = encodeURIComponent(processedQuestion); // Encode the question using encodeURIComponent()
 
     // Parameter Extraction
-
     // const userId = req.query.id;
     // const name = req.query.name;
     // const mobile = req.query.mobile;
@@ -397,7 +402,7 @@ app.post("/update", async (req, res) => {
         items: items,
       }
     );
-
+    
     res.status(200).json({ message: "Update successful" });
   } catch (error) {
     console.error("Error updating child item:", error.message);

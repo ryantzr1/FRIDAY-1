@@ -5,7 +5,7 @@ const mongoose = require("mongoose");
 require("dotenv").config();
 const axios = require("axios");
 
-const bot = new TelegramBot(process.env.TELEGRAM_BOT_TOKEN, { polling: true });
+const bot = new TelegramBot(process.env.LAYERZEROTELEGRAM, { polling: true });
 
 // Define the MongoDB schema for storing items from LayerZero
 const layerZeroSchema = new mongoose.Schema({
@@ -36,9 +36,10 @@ bot.onText(/\/start/, (msg) => {
 
 async function onMessage(msg) {
   if (msg.text.startsWith("/")) return; // Ignore commands
+  console.log("Received question:", msg.text); // add this line to log the question
 
   const chatId = msg.chat.id;
-  const apiEndpoint = "http://18.183.218.48/test";
+  const apiEndpoint = "http://43.207.93.240/test";
   const userId = chatId;
 
   const question = msg.text;
@@ -53,7 +54,7 @@ async function onMessage(msg) {
         "LayerZero enables messages to be sent between blockchains.",
       company_name: "LayerZero",
       product_list: [""],
-      tools: ["Schedule", "PriceList", "VectorDatabase"],
+      tools: ["VectorDatabase"],
       usable_tools: ["VectorDatabase"],
     },
   };
@@ -71,8 +72,8 @@ async function onMessage(msg) {
   const responseAI = await axios.post(url, requestBody);
   const answer = responseAI.data.answer;
   const agent = responseAI.data.agent;
-
-  const success = !answer.includes("[NO ANSWER]");
+  const success =
+    !answer.includes("[NO ANSWER]") && !answer.includes("Flagged as");
 
   let currentHistory = [
     {
@@ -90,6 +91,7 @@ async function onMessage(msg) {
     currentHistory = previousHistory.concat(currentHistory);
   }
 
+  // Save the query to the MongoDB database
   const query = new LayerZero({
     question: question,
     answer: answer,
