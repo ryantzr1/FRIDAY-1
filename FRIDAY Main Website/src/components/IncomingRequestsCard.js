@@ -47,7 +47,7 @@ function IncomingRequestsCard({ logs }) {
   };
 
   return (
-    <div className={`bg-white rounded-xs shadow overflow-y-scroll`} style={{ maxHeight: "550px" }}>
+    <div className={`bg-white rounded-xs shadow-2xl overflow-y-scroll border border-gray-400`} style={{ maxHeight: "550px" }}>
       <header className="sticky top-0 bg-gray-900">
         <div className="flex justify-between container mx-auto">
           <div className="text-sm p-6 text-white uppercase tracking-wide">

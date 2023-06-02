@@ -4,7 +4,7 @@ import { useAuth } from "../context/AuthContext";
 
 function CounterCard({ value, label, color }) {
   return (
-    <div className={`bg-white rounded-xs shadow-md p-8 flex-grow-0 flex-shrink-0 w-1/2 mr-4 border border-gray-200`}>
+    <div className={`bg-white rounded-xs shadow-2xl p-8 flex-grow-0 flex-shrink-0 w-1/2 mr-4 border border-gray-400`}>
       <div className={`text-3xl font-bold ${color} mb-2`}>
         {value}
       </div>
@@ -18,7 +18,7 @@ function CounterCard({ value, label, color }) {
 function IncomingRequestsCard({ logs }) {
   const unsuccessful = logs.filter((log) => !log.success).slice(0, 3);
   return (
-    <div className={`bg-white rounded-xs shadow-xs p-8 ml-2 overflow-y-scroll border border-gray-200`} style={{ maxHeight: '400px' }}>
+    <div className={`bg-white rounded-xs shadow-2xl p-8 ml-2 overflow-y-scroll border border-gray-400`} style={{ maxHeight: '400px' }}>
       <div className="text-sm text-gray-700 uppercase tracking-wide mb-4">
         Latest Unsuccessful Requests
       </div>
