@@ -2,12 +2,25 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { useAuth } from "../context/AuthContext";
 
-function CounterCard({ value, limit, label, color }) {
+function LimitCounterCard({ value, limit, label, color }) {
   return (
-    <div
-      className={`bg-white rounded-xs shadow-2xl p-8 flex-grow-0 flex-shrink-0 w-1/2 mr-4 border border-gray-400`}
-    >
-      <div className={`text-3xl font-bold ${color} mb-2`}>{value} {limit && <span className="text-black">/ {limit}</span>}</div>
+    <div className="bg-white rounded-xs shadow-2xl p-8 flex-grow-0 flex-shrink-0 w-1/2 mr-4 border border-gray-400">
+      <div className={`text-3xl font-bold ${color} mb-2`}>
+        {value} <span className="text-black">/ {limit}</span>
+      </div>
+      <div className="text-sm text-gray-700 uppercase tracking-wide">
+        {label}
+      </div>
+    </div>
+  );
+}
+
+function CounterCard({ value, label, color }) {
+  return (
+    <div className="bg-white rounded-xs shadow-2xl p-8 flex-grow-0 flex-shrink-0 w-1/2 mr-4 border border-gray-400">
+      <div className={`text-3xl font-bold ${color} mb-2`}>
+        {value}
+      </div>
       <div className="text-sm text-gray-700 uppercase tracking-wide">
         {label}
       </div>
@@ -104,7 +117,7 @@ function Home() {
     <main className="pt-8 px-4 sm:px-6 lg:px-8 mr-2">
       <h1 className="text-3xl font-bold mb-4 text-green-900">My Dashboard</h1>
       <div className="flex justify-between mb-8">
-        <CounterCard
+        <LimitCounterCard
           value={`${totalQueries}`}
           limit={limit}
           label="Total Queries / Limit"
