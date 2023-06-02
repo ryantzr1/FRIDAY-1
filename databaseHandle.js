@@ -13,34 +13,23 @@ const db = mongoose.connection;
 db.on("error", console.error.bind(console, "MongoDB connection error:"));
 
 async function trackMessages() {
-  try {
-    collections = await mongoose.connection.db.listCollections().toArray();
-  } catch (err) {
-    console.error(err);
-    return;
-  }
+  const collection = db.collection("queries");
+  const changeStream = collection.watch();
 
-  const changeStreams = [];
-  for (const collection of collections) {
-    const collectionObj = mongoose.connection.collection(collection.name);
-    const changeStream = collectionObj.watch();
-    changeStreams.push(changeStream);
+  changeStream.on("change", (next) => {
+    // Perform actions when a new object is inserted into the collection
+    const question = next.fullDocument.question;
+    const answer = next.fullDocument.answer;
+    const customerName = next.fullDocument.name || next.fullDocument.username; //username is for Telegram
 
-    changeStream.on("change", (next) => {
-      // Perform actions when a new object is inserted into the collection
-      const collectionName = collection.name;
-      const question = next.fullDocument.question;
-      const answer = next.fullDocument.answer;
-
-      // Notify all verified users of the new object
-      for (const userChatId of verifiedChatIds) {
-        bot.sendMessage(
-          userChatId,
-          `New question added (${collectionName})\n\nQuestion: ${question}\nAnswer: ${answer}`
-        );
-      }
-    });
-  }
+    // Notify all verified users of the new object
+    for (const userChatId of verifiedChatIds) {
+      bot.sendMessage(
+        userChatId,
+        `New question added:\n\nName: ${customerName}\nQuestion: ${question}\nAnswer: ${answer}`
+      );
+    }
+  });
 }
 
 module.exports = { db, bot };
