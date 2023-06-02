@@ -48,14 +48,14 @@ function SettingsPage() {
   return (
     <div className="pt-4 px-4 h-screen">
       <div className="w-full max-w-screen-2xl">
-        <div className="border border-gray-300 rounded-lg p-4">
+        <div className="rounded-lg p-4">
           <div className="flex items-center justify-between mb-4">
             <h1 className="text-3xl font-bold text-green-900">Settings</h1>
           </div>
-          <div className="border-t border-gray-300 pt-4">
+          <div className="pt-4">
             <div className="mb-4">
               <button
-                className="w-full flex items-center justify-between bg-white text-gray-800 font-medium py-2 px-4 rounded-lg focus:outline-none"
+                className="w-full border border-gray-400 flex items-center justify-between bg-white text-gray-800 font-medium py-2 px-4 rounded-lg focus:outline-none"
                 onClick={handlePasswordAccordionToggle}
               >
                 <span>Reset Password</span>
@@ -88,7 +88,7 @@ function SettingsPage() {
             </div>
             <div className="mb-4">
               <button
-                className="w-full flex items-center justify-between bg-white text-gray-800 font-medium py-2 px-4 rounded-lg focus:outline-none"
+                className="w-full border border-gray-400 flex items-center justify-between bg-white text-gray-800 font-medium py-2 px-4 rounded-lg focus:outline-none"
                 onClick={handleAPIKeyAccordionToggle}
               >
                 <span>Access API Key</span>
@@ -115,14 +115,14 @@ function SettingsPage() {
                       type="text"
                       value={apiKey}
                       readOnly
-                      className="w-1/2 lg:w-5/6 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5 mr-5"
+                      className="w-1/2 lg:w-5/6 border border-gray-400 text-gray-900 text-sm rounded-lg p-2.5 mr-5"
                     />
                   ) : (
                     <input
                       type="text"
                       value={getHiddenAPIKey()}
                       readOnly
-                      className="w-1/2 lg:w-5/6 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5 mr-5"
+                      className="w-1/2 lg:w-5/6 border border-gray-400 text-gray-900 text-sm rounded-lg p-2.5 mr-5"
                     />
                   )}
                   <button
