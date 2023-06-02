@@ -12,30 +12,34 @@ function RequestContainer({ log, onCategoryChange }) {
   };
 
   return (
-    <div className="border border-gray-200 rounded-lg p-4 flex items-center justify-between mb-4">
+    <div className="border border-green-500 rounded-lg p-4 flex items-center justify-between mb-4 shadow-sm">
       <div>
-        <div>
-          <span className="font-bold">Name: </span>
-          {name}
+        <div className="mb-2">
+          <span className="font-bold mr-2">Name:</span>
+          <span>{name}</span>
         </div>
-        {/* <div>
-          <span className="font-bold">Mobile Number: </span>
-          {mobile}
-        </div> */}
-        <div>
-          <span className="font-bold">Question: </span>
-          {question}
+        <div className="mb-2">
+          <span className="font-bold mr-2">Mobile Number:</span>
+          <span>{mobile}</span>
         </div>
-        <div className="font-bold">
-          Answer: <span className={`text-sm ${successColor}`}>{answer}</span>
+        <div className="mb-2">
+          <span className="font-bold mr-2">Question:</span>
+          <span>{question}</span>
+        </div>
+        <div className="mb-2">
+          <span className="font-bold mr-2">Answer:</span>
+          <span className={`font-bold ${successColor}`}>{answer}</span>
         </div>
         <div>
-          <label htmlFor={`category-${_id}`} className="mb-2 font-bold text-gray-900 dark:text-white">
-            Category:{" "}
+          <label
+            htmlFor={`category-${_id}`}
+            className="font-bold mr-2 text-gray-900 dark:text-white"
+          >
+            Category:
           </label>
           <select
             id={`category-${_id}`}
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5 m-2 w-fit dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            className="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5 mr-2 dark:border-gray-600 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
             value={selectedCategory}
             onChange={handleCategoryChange}
           >
