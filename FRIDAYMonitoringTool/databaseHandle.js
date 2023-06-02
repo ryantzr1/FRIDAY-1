@@ -20,12 +20,13 @@ async function trackMessages() {
     // Perform actions when a new object is inserted into the collection
     const question = next.fullDocument.question;
     const answer = next.fullDocument.answer;
+    const customerName = next.fullDocument.name || next.fullDocument.username; //username is for Telegram
 
     // Notify all verified users of the new object
     for (const userChatId of verifiedChatIds) {
       bot.sendMessage(
         userChatId,
-        `New question added:\n\nQuestion: ${question}\nAnswer: ${answer}`
+        `New question added:\n\nName: ${customerName}\nQuestion: ${question}\nAnswer: ${answer}`
       );
     }
   });
