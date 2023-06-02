@@ -55,7 +55,8 @@ Have your users provide their API keys as a header, like
 curl -H "Authorization: apikey MY_APP_API_KEY" https://myapp.example.com
 To authenticate a user’s API request, look up their API key in the database.
 */
-app.get("/queries", authenticateRequest, async (req, res) => {
+
+app.get("/queries", async (req, res) => {
   try {
     const apiEndpoint = "http://43.207.93.240/predict";
 
@@ -280,9 +281,14 @@ app.post("/updateCategory", async (req, res) => {
 });
 
 app.get("/userInfo", async (req, res) => {
-  const UID = req.query.uid;
-  const user = await User.findOne({ UID: UID });
-  res.send(user);
+  try {
+    const UID = req.query.uid;
+    const user = await User.findOne({ UID: UID });
+    res.send(user);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal Server Error");
+  }
 });
 
 app.post("/userUpdate", async (req, res) => {
