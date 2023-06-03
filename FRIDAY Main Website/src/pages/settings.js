@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { auth } from "../config/firebase";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useAuth } from "../context/AuthContext";
 
 function SettingsPage() {
   const [isPasswordAccordionOpen, setPasswordAccordionOpen] = useState(false);
@@ -31,10 +32,20 @@ function SettingsPage() {
         });
     }
   };
+  const { user } = useAuth();
 
   const handleAPIKeyReveal = () => {
-    setAPIKey("YOUR_API_KEY");
-    setShowAPIKey(true);
+    fetch("/api/generateAPIKeys?uid=" + user.uid, {
+      method: "GET",
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        setAPIKey(data.user); // Assuming the API returns an object with an `apiKey` field
+        setShowAPIKey(true);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
   };
 
   const hideAPIKey = () => {
