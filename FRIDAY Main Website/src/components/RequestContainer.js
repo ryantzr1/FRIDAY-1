@@ -18,10 +18,10 @@ function RequestContainer({ log, onCategoryChange }) {
           <span className="font-bold mr-2">Name:</span>
           <span>{name}</span>
         </div>
-        <div className="mb-2">
+        {/* <div className="mb-2">
           <span className="font-bold mr-2">Mobile Number:</span>
           <span>{mobile}</span>
-        </div>
+        </div> */}
         <div className="mb-2">
           <span className="font-bold mr-2">Question:</span>
           <span>{question}</span>

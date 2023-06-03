@@ -2,6 +2,10 @@ import React, { useState } from "react";
 import { useRouter } from "next/router";
 import { useAuth } from "../context/AuthContext";
 
+import backgroundImage from "../../public/loginPageBg.jpg";
+
+import Image from "next/image";
+
 const Signup = () => {
   const { user, signup } = useAuth();
   console.log(user);
@@ -27,13 +31,29 @@ const Signup = () => {
   };
 
   return (
-    <div className="bg-gray-200 h-screen">
+    <div
+      className="bg-gray-200 h-screen"
+      style={{
+        backgroundImage: `url(${backgroundImage.src})`,
+        backgroundRepeat: "no-repeat",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        opacity: 0.9,
+      }}
+    >
       <div className="flex justify-center items-center h-screen">
         <div className="bg-gray-800 w-full max-w-md rounded-lg shadow-lg">
-          <div className="py-8 px-8 rounded-lg">
-            <h1 className="text-3xl font-bold mb-8 text-green-500 text-center">
-              Create Account
-            </h1>
+          <div className="pb-8 px-8 rounded-lg">
+            <div className="flex justify-center items-center">
+              <Image
+                src="/logo2.svg"
+                alt="FRIDAY Logo"
+                style={{ filter: "invert(100%)" }}
+                width={150}
+                height={150}
+                priority
+              />
+            </div>
             <form onSubmit={handleSignup}>
               <div className="mb-3">
                 <label
