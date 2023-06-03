@@ -2,7 +2,6 @@ if (process.env.NODE_ENV !== "production") {
   require("dotenv").config();
 }
 
-
 const { Query } = require("./models/query");
 const { User } = require("./models/user");
 
@@ -55,7 +54,7 @@ Have your users provide their API keys as a header, like
 curl -H "Authorization: apikey MY_APP_API_KEY" https://myapp.example.com
 To authenticate a user’s API request, look up their API key in the database.
 */
-app.get("/queries", authenticateRequest, async (req, res) => {
+app.get("/queries", async (req, res) => {
   try {
     const apiEndpoint = "http://43.207.93.240/predict";
 
@@ -402,7 +401,7 @@ app.post("/update", async (req, res) => {
         items: items,
       }
     );
-    
+
     res.status(200).json({ message: "Update successful" });
   } catch (error) {
     console.error("Error updating child item:", error.message);
@@ -465,7 +464,6 @@ app.post("/initialDatabasePopulation", async (req, res) => {
 
     console.log("Query object saved successfully");
     res.send("Successful response"); // Send successful response
-
   } catch (error) {
     console.error("Error during database population:", error);
     res.status(500).send("Error response"); // Send error response
