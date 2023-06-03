@@ -2,6 +2,10 @@ import React, { useState } from "react";
 import { useRouter } from "next/router";
 import { useAuth } from "../context/AuthContext";
 
+import backgroundImage from '../../public/loginPageBg.jpg';
+
+import Image from "next/image";
+
 const SignIn = () => {
   const router = useRouter();
   const { user, login } = useAuth();
@@ -12,26 +16,42 @@ const SignIn = () => {
   const [error, setError] = useState("");
 
   const handleLogin = async (e) => {
-      e.preventDefault();
+    e.preventDefault();
 
-      console.log(user);
-      try {
-        await login(data.email, data.password);
-        router.push("/");
-      } catch (err) {
-        setError("Invalid Email or Password");
-        console.log(err);
-      }
+    console.log(user);
+    try {
+      await login(data.email, data.password);
+      router.push("/");
+    } catch (err) {
+      setError("Invalid Email or Password");
+      console.log(err);
+    }
   };
 
   return (
-    <div className="bg-gray-200 h-screen">
+    <div
+      className="bg-gray-200 h-screen"
+      style={{
+        backgroundImage: `url(${backgroundImage.src})`,
+        backgroundRepeat: "no-repeat",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        opacity: 0.9,
+      }}
+    >
       <div className="flex justify-center items-center h-screen">
         <div className="bg-gray-800 w-full max-w-md rounded-lg shadow-lg">
-          <div className="py-8 px-8 rounded-lg">
-            <h1 className="text-3xl font-bold mb-8 text-green-500 text-center">
-              Welcome back!
-            </h1>
+          <div className="pb-8 px-8 rounded-lg">
+            <div className="flex justify-center items-center">
+              <Image
+                src="/logo2.svg"
+                alt="FRIDAY Logo"
+                style={{ filter: "invert(100%)" }}
+                width={150}
+                height={150}
+                priority
+              />
+            </div>
             <form onSubmit={handleLogin}>
               <div className="mb-4">
                 <label
@@ -53,7 +73,7 @@ const SignIn = () => {
                   className="appearance-none border rounded w-full py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline"
                 />
               </div>
-              
+
               <div className="mb-4">
                 <label
                   htmlFor="password"

@@ -77,7 +77,7 @@ const Database = () => {
         <div className="flex mb-4">
           <select
             id="product-dropdown"
-            className="w-full p-2 border border-gray-300 rounded"
+            className="w-full p-2 border border-gray-400 rounded"
             onChange={handleSelectChange}
             value={selectedOption}
           >
@@ -102,7 +102,7 @@ const Database = () => {
               </div>
             ) : null}
             <textarea
-              className="w-full h-4/6 p-2 border border-gray-300 rounded"
+              className="w-full h-4/6 p-2 border border-gray-400 rounded"
               value={text}
               onChange={handleTextChange}
               disabled={!selectedOption}
