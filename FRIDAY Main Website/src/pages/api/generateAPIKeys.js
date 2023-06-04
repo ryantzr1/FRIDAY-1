@@ -1,25 +1,50 @@
 import crypto from "crypto";
 const mongoose = require("mongoose");
 const axios = require("axios");
-const {
-  User,
-} = require("/Users/ryantzr/Desktop/FridayMonitoringTool/FRIDAY Backend Server/models/user.js");
+require("dotenv").config();
 
-mongoose.connect(
-  "mongodb+srv://fridaytech:VEWWMEMOpTUDzbQQ@fridaybackend.wjnsjbv.mongodb.net/FridayDatabase?retryWrites=true&w=majority",
-  { useNewUrlParser: true }
-);
+mongoose.connect(process.env.MONGODB_URL, { useNewUrlParser: true });
 
+//Generate API Key for customers
 function generateKey(size = 32, format = "base64") {
   const buffer = crypto.randomBytes(size);
   return buffer.toString(format);
 }
 
-function generateSecretHash(key) {
-  const salt = crypto.randomBytes(8).toString("hex");
-  const buffer = crypto.scryptSync(key, salt, 64);
-  return `${buffer.toString("hex")}.${salt}`;
+//Generate Secret Hash that we store in our MongoDB
+function generateHash(key) {
+  return crypto.createHash("sha256").update(key).digest("hex");
 }
+
+// function encryptKey(key) {
+//   const iv = crypto.randomBytes(16);
+//   const cipher = crypto.createCipheriv(
+//     algorithm,
+//     Buffer.from(ENCRYPTION_KEY, "hex"),
+//     iv
+//   );
+//   const encrypted = Buffer.concat([cipher.update(key), cipher.final()]);
+
+//   return {
+//     iv: iv.toString("hex"),
+//     encryptedData: encrypted.toString("hex"),
+//   };
+// }
+
+// function decryptKey(encryptedKey) {
+//   const decipher = crypto.createDecipheriv(
+//     algorithm,
+//     Buffer.from(ENCRYPTION_KEY, "hex"),
+//     Buffer.from(encryptedKey.iv, "hex")
+//   );
+//   const decrypted = Buffer.concat([
+//     decipher.update(Buffer.from(encryptedKey.encryptedData, "hex")),
+//     decipher.final(),
+//   ]);
+
+//   return decrypted.toString();
+// }
+
 export default async function handler(req, res) {
   // Extract uid from the query parameters
   const { uid } = req.query;
@@ -35,44 +60,24 @@ export default async function handler(req, res) {
 
     const user = await getUserInfo(uid);
 
-    // if APIKey already present, return without generating a new one
-    if (user && user.APIKey) {
-      return res.status(200).json({ apiKey: user.APIKey });
+    // //if APIKey already present, return without generating a new one
+    if (user && user.name == "DashcamSG") {
+      console.log("Just for DashcamSG hardcode LOL");
+      return res
+        .status(200)
+        .json({ apiKey: "Okf7jdFrPTPtEUwL7eeeaggt2noUhq1GmSbQyRGbkp8=" });
     }
 
     const apiKey = generateKey();
-    const hashedSecret = generateSecretHash(apiKey);
-
-    // try {
-    //   // Find the user by UID and update the information
-    //   const updatedUser = await User.findOneAndUpdate(
-    //     { name: "FRIDAY" },
-    //     { APIKey: hashedSecret },
-    //     { new: true }
-    //   );
-
-    //   if (!updatedUser) {
-    //     return res.status(404).json({ error: "User not found" });
-    //   }
-
-    //   res.status(200).json({
-    //     message: "User information updated",
-    //     user: apiKey, //send the user the apiKey we keep the hashedSecret
-    //   });
-    // } catch (error) {
-    //   console.error("Error updating user information:", error);
-    //   res.status(500).json({ error: "Internal server error" });
-    // }
+    const encryptedSecret = generateHash(apiKey);
 
     const userUpdate = `https://friday-backend-server.herokuapp.com/userUpdate?uid=${uid}`;
 
     await axios
       .post(userUpdate, {
-        APIKey: hashedSecret,
+        APIKey: encryptedSecret,
       })
-      .then(function (response) {
-        console.log(response);
-      })
+      .then(function (response) {})
       .catch(function (error) {
         console.log(error);
       });
