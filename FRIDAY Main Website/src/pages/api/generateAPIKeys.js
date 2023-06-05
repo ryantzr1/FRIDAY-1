@@ -61,7 +61,7 @@ export default async function handler(req, res) {
     const user = await getUserInfo(uid);
 
     // //if APIKey already present, return without generating a new one
-    if (user && user.name == "FRIDAY") {
+    if (user && user.name == "DashcamSG") {
       console.log("Just for DashcamSG hardcode LOL");
       return res
         .status(200)
