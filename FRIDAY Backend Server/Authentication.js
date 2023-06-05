@@ -10,6 +10,8 @@ function generateHash(key) {
 module.exports.authenticateRequest = async function (req, res, next) {
   const authHeader = req.headers.authorization;
 
+  console.log("Calling Auth Function");
+
   if (!authHeader) {
     return res.status(401).json({ error: "No authorization header provided" });
   }
