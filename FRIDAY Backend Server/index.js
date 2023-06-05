@@ -2,11 +2,10 @@ if (process.env.NODE_ENV !== "production") {
   require("dotenv").config();
 }
 
-
 const { Query } = require("./models/query");
 const { User } = require("./models/user");
 
-const auth = require("./Authentication");
+const { authenticateRequest } = require("./Authentication");
 
 const express = require("express");
 const bodyParser = require("body-parser");
@@ -16,7 +15,8 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 
 const port = process.env.PORT || "27027";
-const dbUrl = process.env.DB_URL || "mongodb://localhost:27027/fridaybackend";
+const dbUrl = process.env.DB_URL;
+// || "mongodb://localhost:27027/fridaybackend";
 
 const app = express();
 app.use(cors());
@@ -56,23 +56,24 @@ curl -H "Authorization: apikey MY_APP_API_KEY" https://myapp.example.com
 To authenticate a user’s API request, look up their API key in the database.
 */
 
-app.get("/queries", async (req, res) => {
+app.get("/queries", authenticateRequest, async (req, res) => {
   try {
     const apiEndpoint = "http://43.207.93.240/predict";
 
     // Question Extraction
-
     const question = req.body.question;
+
+    console.log(question);
     // const question = req.query.question;
 
     // Question Processing
-    let processedQuestion = question.trim();
+    // let processedQuestion = question.trim();
 
-    if (!processedQuestion.endsWith("?")) {
-      processedQuestion += "?"; // add question mark if not already present
-    }
+    // if (!processedQuestion.endsWith("?")) {
+    //   processedQuestion += "?"; // add question mark if not already present
+    // }
 
-    const encodedQuestion = encodeURIComponent(processedQuestion); // Encode the question using encodeURIComponent()
+    const encodedQuestion = encodeURIComponent(question); // Encode the question using encodeURIComponent()
 
     // Parameter Extraction
     // const userId = req.query.id;
@@ -81,7 +82,7 @@ app.get("/queries", async (req, res) => {
 
     const userId = req.body.id;
     const name = req.body.name;
-    const mobile = req.body.phone;
+    // const mobile = req.body.phone;
 
     // Category Extraction (For training data)
 
@@ -176,7 +177,6 @@ app.get("/queries", async (req, res) => {
     // Save the query to the MongoDB database
     const query = new Query({
       name: name,
-      mobile: mobile,
       question: processedQuestion,
       answer: answer,
       category: category,
@@ -186,7 +186,7 @@ app.get("/queries", async (req, res) => {
       company: "DashcamSG",
     });
 
-    // console.log("Query Saved: " + query);
+    console.log("Query Saved: " + query);
 
     await query
       .save()
@@ -408,7 +408,7 @@ app.post("/update", async (req, res) => {
         items: items,
       }
     );
-    
+
     res.status(200).json({ message: "Update successful" });
   } catch (error) {
     console.error("Error updating child item:", error.message);
@@ -471,7 +471,6 @@ app.post("/initialDatabasePopulation", async (req, res) => {
 
     console.log("Query object saved successfully");
     res.send("Successful response"); // Send successful response
-
   } catch (error) {
     console.error("Error during database population:", error);
     res.status(500).send("Error response"); // Send error response

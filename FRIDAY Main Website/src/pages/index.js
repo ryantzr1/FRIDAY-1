@@ -18,9 +18,7 @@ function LimitCounterCard({ value, limit, label, color }) {
 function CounterCard({ value, label, color }) {
   return (
     <div className="bg-white rounded-xs shadow-2xl p-8 flex-grow-0 flex-shrink-0 w-1/2 mr-4 border border-gray-400">
-      <div className={`text-3xl font-bold ${color} mb-2`}>
-        {value}
-      </div>
+      <div className={`text-3xl font-bold ${color} mb-2`}>{value}</div>
       <div className="text-sm text-gray-700 uppercase tracking-wide">
         {label}
       </div>
