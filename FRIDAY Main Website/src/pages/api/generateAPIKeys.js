@@ -6,10 +6,10 @@ require("dotenv").config();
 mongoose.connect(process.env.MONGODB_URL, { useNewUrlParser: true });
 
 //Generate API Key for customers
-function generateKey(size = 32, format = "base64") {
-  const buffer = crypto.randomBytes(size);
-  return buffer.toString(format);
-}
+// function generateKey(size = 32, format = "base64") {
+//   const buffer = crypto.randomBytes(size);
+//   return buffer.toString(format);
+// }
 
 //Generate Secret Hash that we store in our MongoDB
 function generateHash(key) {
@@ -61,13 +61,12 @@ export default async function handler(req, res) {
     const user = await getUserInfo(uid);
 
     // //if APIKey already present, return without generating a new one
-    if (user && user.name == "DashcamSG") {
+    if (user && user.name == "FRIDAY") {
       console.log("Just for DashcamSG hardcode LOL");
       return res
         .status(200)
         .json({ apiKey: "Okf7jdFrPTPtEUwL7eeeaggt2noUhq1GmSbQyRGbkp8=" });
     }
-
     const apiKey = generateKey();
     const encryptedSecret = generateHash(apiKey);
 
