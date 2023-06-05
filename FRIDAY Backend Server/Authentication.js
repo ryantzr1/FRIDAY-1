@@ -25,7 +25,6 @@ module.exports.authenticateRequest = async function (req, res, next) {
   const apiKey = Buffer.from(authParts[1], "base64").toString();
 
   console.log(apiKey);
-
   console.log(generateHash(apiKey));
   // Find the customer by their API key
   const customer = await User.findOne({ APIKey: generateHash(apiKey) });

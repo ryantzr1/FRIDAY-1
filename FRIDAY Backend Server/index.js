@@ -67,13 +67,13 @@ app.get("/queries", authenticateRequest, async (req, res) => {
     // const question = req.query.question;
 
     // Question Processing
-    let processedQuestion = question.trim();
+    // let processedQuestion = question.trim();
 
-    if (!processedQuestion.endsWith("?")) {
-      processedQuestion += "?"; // add question mark if not already present
-    }
+    // if (!processedQuestion.endsWith("?")) {
+    //   processedQuestion += "?"; // add question mark if not already present
+    // }
 
-    const encodedQuestion = encodeURIComponent(processedQuestion); // Encode the question using encodeURIComponent()
+    const encodedQuestion = encodeURIComponent(question); // Encode the question using encodeURIComponent()
 
     // Parameter Extraction
     // const userId = req.query.id;
