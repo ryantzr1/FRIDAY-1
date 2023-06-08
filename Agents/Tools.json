@@ -1,8 +1,0 @@
-{
-    "VectorDatabase": "VectorDatabase: VectorDatabase used to query specific information and product details about the shop and its product/services. Use this tool when you need to query specific information and product details about the shop and its product/services. For example, ask me about product features or services offered.",
-    "Schedule": "Schedule: Agent to interface with calender when customer wants to make an appointment. It can interface with a calendar but has no knowledge of any information about the products/services",
-    "GoogleSearch" : "GoogleSearch: Use to search the web for information. Used for queries that is not specific to the shop and thus cannot be answered by the VectorDatabase.",
-    "PriceList": "PriceList: Use to get price of a product/service and any promotions or packages. Has no knowledge of any information about the products and services, only the prices. Only use this if the customer wants to know how much is an item",
-    "DeliveryQuery": "DeliveryQuery: Use to get information about delivery status of an order.",
-    "StockQuery": "StockQuery: Use to get information about the availability of a product/service, to check if a product or service is available. Has no knowledge of any information about the products and services, only the numerical information about the number of items remaining"
-}
