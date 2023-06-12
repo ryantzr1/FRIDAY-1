@@ -44,7 +44,7 @@ async function onMessage(msg) {
   if (msg.content.startsWith("/")) return; // Ignore commands
 
   const userId = msg.author.id;
-  const apiEndpoint = "http://43.206.109.246/test"; // Your API endpoint here
+  const apiEndpoint = "http://43.207.93.240/test"; // Your API endpoint here
   let question = msg.content;
   question = question.replace(/<@.*?>/g, "").trim();
   console.log(question);

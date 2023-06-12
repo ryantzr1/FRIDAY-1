@@ -1,0 +1,10 @@
+.MainDash{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+}
+
+.MainDash > h1 {
+    color: black;
+    height: 10px
+}
