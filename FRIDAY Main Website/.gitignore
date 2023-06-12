@@ -8,7 +8,7 @@ node_modules/
 build/
 
 # Ignore build output
-.next/cache
+.next/
 
 # Ignore log files
 *.log
