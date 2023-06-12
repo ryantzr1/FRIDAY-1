@@ -1,0 +1,22 @@
+{
+  "name": "friday-telegram-bot",
+  "version": "1.0.3",
+  "description": "Friday Telegram Bot",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js",
+    "switch_to_dev": "export $(cat .env | xargs) && wget --spider https://api.telegram.org/bot$TOKEN/setWebhook?url= --delete-after && node index.js"
+  },
+  "author": "Gerald",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.15.0",
+    "child_process": "^1.0.2",
+    "dotenv": "^4.0.0",
+    "express": "^4.13.4",
+    "mongoose": "^6.8.4",
+    "node-telegram-bot-api": "^0.30.0",
+    "telegraf": "^4.11.2"
+  }
+}
