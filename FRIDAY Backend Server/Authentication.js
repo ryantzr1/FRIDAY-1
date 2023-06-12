@@ -1,31 +1,16 @@
 //Authenticate API requests from customers
 const crypto = require("crypto");
+const mongoose = require("mongoose");
+const User = mongoose.model("User");
 
-function generateKey(size = 32, format = "base64") {
-  const buffer = crypto.randomBytes(size);
-  return buffer.toString(format);
+function generateHash(key) {
+  return crypto.createHash("sha256").update(key).digest("hex");
 }
 
-function generateSecretHash(key) {
-  const salt = crypto.randomBytes(8).toString("hex");
-  const buffer = crypto.scryptSync(key, salt, 64);
-  return `${buffer.toString("hex")}.${salt}`;
-}
-
-// use the previous function
-const key = generateKey();
-const secretHash = generateSecretHash(key);
-
-function compareKeys(storedKey, suppliedKey) {
-  const [hashedPassword, salt] = storedKey.split(".");
-
-  const buffer = crypto.scryptSync(suppliedKey, salt, 64);
-  return crypto.timingSafeEqual(Buffer.from(hashedPassword, "hex"), buffer);
-}
-
-//authenticate the request
-function authenticateRequest(req, res, next) {
+module.exports.authenticateRequest = async function (req, res, next) {
   const authHeader = req.headers.authorization;
+
+  console.log("Calling Auth Function");
 
   if (!authHeader) {
     return res.status(401).json({ error: "No authorization header provided" });
@@ -39,20 +24,16 @@ function authenticateRequest(req, res, next) {
       .json({ error: "Invalid authorization header format" });
   }
 
-  const [username, password] = Buffer.from(authParts[1], "base64")
-    .toString()
-    .split(":");
+  const apiKey = Buffer.from(authParts[1], "base64").toString();
 
-  if (username !== "apikey") {
-    return res.status(401).json({ error: "Invalid username" });
-  }
+  console.log(apiKey);
+  console.log(generateHash(apiKey));
+  // Find the customer by their API key
+  const customer = await User.findOne({ APIKey: generateHash(apiKey) });
 
-  const isValid = compareKeys(secretHash, password);
-
-  if (!isValid) {
+  if (!customer) {
     return res.status(401).json({ error: "Invalid API key" });
   }
 
-  // If we reach this point, the API key is valid. Continue processing the request...
   next();
-}
+};

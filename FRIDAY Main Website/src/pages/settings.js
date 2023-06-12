@@ -40,7 +40,7 @@ function SettingsPage() {
     })
       .then((response) => response.json())
       .then((data) => {
-        setAPIKey(data.user); // Assuming the API returns an object with an `apiKey` field
+        setAPIKey(data.apiKey); // Assuming the API returns an object with an `apiKey` field
         setShowAPIKey(true);
       })
       .catch((error) => {
