@@ -87,7 +87,6 @@ app.get("/queries", authenticateRequest, async (req, res) => {
     // Category Extraction (For training data)
 
     // const category = req.query.category;
-
     // Construct the URL with the encoded question as a query string parameter
 
     const url = `${apiEndpoint}?question=${encodedQuestion}`;
@@ -137,6 +136,8 @@ app.get("/queries", authenticateRequest, async (req, res) => {
 
     const answer = responseAI.data.answer;
 
+    console.log(answer + " This is the answer");
+
     const agent = responseAI.data.agent;
 
     // Temporary type variable to be sent to client (Legacy)
@@ -162,7 +163,7 @@ app.get("/queries", authenticateRequest, async (req, res) => {
     let addToHistory = [
       {
         role: "user",
-        content: processedQuestion,
+        content: question,
       },
       {
         role: "assistant",
@@ -177,7 +178,7 @@ app.get("/queries", authenticateRequest, async (req, res) => {
     // Save the query to the MongoDB database
     const query = new Query({
       name: name,
-      question: processedQuestion,
+      question: question,
       answer: answer,
       category: category,
       userId: userId,
@@ -220,13 +221,13 @@ app.get("/queries/log", async (req, res) => {
 });
 
 async function findQuestion(question) {
-  let processedQuestion = question.trim();
+  let processedQuestion = question;
 
-  if (!processedQuestion.endsWith("?")) {
-    processedQuestion += "?"; // add question mark if not already present
-  }
+  // if (!processedQuestion.endsWith("?")) {
+  //   processedQuestion += "?"; // add question mark if not already present
+  // }
 
-  console.log(processedQuestion);
+  // console.log(processedQuestion);
 
   const questionArray = await Query.find({
     question: processedQuestion.toString(),
