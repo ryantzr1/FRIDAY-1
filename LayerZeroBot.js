@@ -39,7 +39,7 @@ async function onMessage(msg) {
   console.log("Received question:", msg.text); // add this line to log the question
 
   const chatId = msg.chat.id;
-  const apiEndpoint = "http://43.206.109.246/test";
+  const apiEndpoint = "http://43.207.57.87/test";
   const userId = chatId;
 
   const question = msg.text;

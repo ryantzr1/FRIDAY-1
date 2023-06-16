@@ -14,7 +14,7 @@ verifiedChatIds.add(1182066321); //ian
 setInterval(async () => {
   for (let chatId of verifiedChatIds) {
     try {
-      const response = await axios.get("http://43.206.109.246/");
+      const response = await axios.get("http://43.207.57.87/");
       if (response.data.status !== "alive") {
         bot.sendMessage(chatId, "Server is not responding properly.");
       }
@@ -245,7 +245,7 @@ async function onCheckServer(msg) {
 
   if (verifiedChatIds.has(chatId)) {
     try {
-      const response = await axios.get("http://43.207.93.240/");
+      const response = await axios.get("http://43.207.57.87/");
       if (response.data.status === "alive") {
         bot.sendMessage(chatId, "Server is running!");
       } else {

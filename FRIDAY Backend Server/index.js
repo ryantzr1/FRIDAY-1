@@ -58,7 +58,7 @@ To authenticate a user’s API request, look up their API key in the database.
 
 app.get("/queries", authenticateRequest, async (req, res) => {
   try {
-    const apiEndpoint = "http://43.206.109.246/predict";
+    const apiEndpoint = "http://43.207.57.87/predict";
 
     // Question Extraction
     const question = req.body.question;

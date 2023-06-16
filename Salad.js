@@ -7,11 +7,12 @@ const bot = new Client({
     GatewayIntentBits.Guilds,
     GatewayIntentBits.GuildMessages,
     GatewayIntentBits.MessageContent,
+    GatewayIntentBits.GuildMembers, // Add this intent to listen for new members joining
   ],
 });
 // Define the MongoDB schema for storing items from SaladVenture
 const SaladVentureSchema = new mongoose.Schema({
-  userId: { type: String, required: true },
+  username: { type: String, required: true },
   question: { type: String, required: true },
   answer: { type: String, required: true },
   success: { type: Boolean, required: true },
@@ -24,14 +25,41 @@ const SaladVenture = mongoose.model("SaladVenture", SaladVentureSchema);
 
 mongoose.connect(process.env.MONGODB_URL, { useNewUrlParser: true });
 
+// const approvedServerIDs = ["your-server-id"]; // Replace with your server ID(s)
+
+// bot.on("guildCreate", (guild) => {
+//   if (!approvedServerIDs.includes(guild.id)) {
+//     console.log(
+//       `I have been added to a server that is not approved: ${guild.name} (id: ${guild.id}). Leaving...`
+//     );
+//     guild.leave();
+//   }
+// });
+
 bot.on("ready", () => {
   console.log(`Bot is running`);
+
+  // Send a message every 10 minutes
+  setInterval(() => {
+    const currentHour = moment().tz("Asia/Singapore").hours();
+    if (currentHour >= 0 && currentHour < 7) {
+      // Check if current time is between 12am and 7am
+      bot.channels.cache
+        .get("1118201772524191826")
+        .send(
+          "Hi I am FRIDAY, your AI assistant. Tag me if you have any questions"
+        );
+    }
+  }, 600000); //60000 milliseconds = 10 minutes
 });
 
 bot.on("messageCreate", async (msg) => {
-  if (!msg.content.startsWith("<@1113322148535226448>") || msg.author.bot)
+  const currentHour = moment().tz("Asia/Singapore").hours();
+  if (currentHour < 12 || currentHour >= 18) return; // Ignore messages if current time is not between 12am and 6am
+  if (!msg.content.startsWith("<@1118202260732780634>") || msg.author.bot) {
     //only reply to message that tag the bot
     return;
+  }
 
   try {
     await onMessage(msg);
@@ -40,11 +68,22 @@ bot.on("messageCreate", async (msg) => {
   }
 });
 
+// Greet new users when they join the Discord channel
+bot.on("guildMemberAdd", (member) => {
+  const channel = member.guild.channels.cache.find(
+    (channel) => channel.name === "general"
+  ); // Send message to 'general' channel
+  if (!channel) return; // If the channel was not found, do nothing
+  channel.send(
+    `Hi, <@${member.user.id}>, welcome to our Discord server! I'm FRIDAY, your AI assistant. Please tag me if you have any questions.`
+  );
+});
+
 async function onMessage(msg) {
   if (msg.content.startsWith("/")) return; // Ignore commands
 
-  const userId = msg.author.id;
-  const apiEndpoint = "http://43.206.109.246/test"; // Your API endpoint here
+  const username = msg.author.username;
+  const apiEndpoint = "http://43.207.57.87/test"; // Your API endpoint here
   let question = msg.content;
   question = question.replace(/<@.*?>/g, "").trim();
   console.log(question);
@@ -64,7 +103,7 @@ async function onMessage(msg) {
     },
   };
 
-  const prevConvoArr = await SaladVenture.find({ userId: userId });
+  const prevConvoArr = await SaladVenture.find({ username: username });
 
   if (prevConvoArr.length !== 0) {
     const previousHistory = prevConvoArr[prevConvoArr.length - 1].history;
@@ -78,13 +117,24 @@ async function onMessage(msg) {
   const answer = responseAI.data.answer;
   console.log(answer);
 
-  const success = !answer.includes("[NO ANSWER]");
+  const nonAnswerPhrases = ["answer", "context", "[NO ANSWER]"];
+
+  let success = true;
+  for (const phrase of nonAnswerPhrases) {
+    if (answer.includes(phrase)) {
+      success = false;
+    }
+  }
 
   // Split the answer into paragraphs while preserving sentence boundaries
   let paragraphs = [];
   let currentParagraph = "";
   const sentences = answer.split(". ");
   for (const sentence of sentences) {
+    if (sentence.toLowerCase().includes("information")) {
+      continue; // Skip the sentence if it contains the word "information"
+    }
+
     if (currentParagraph.length + sentence.length <= 40) {
       currentParagraph += sentence + ". ";
     } else {
@@ -123,7 +173,7 @@ async function onMessage(msg) {
   const query = new SaladVenture({
     question: question,
     answer: answer,
-    userId: userId,
+    username: username,
     success: success,
     history: currentHistory,
     company: "SaladVentures",
@@ -136,8 +186,10 @@ async function onMessage(msg) {
   }
 
   if (!success) {
+    //916170162024108062 this is The support Ticket channel id ( we will switch)
+    const supportTicketChannelId = "1113323169399451763"; // Replace with your support ticket channel ID
     msg.reply(
-      "Sorry, I didn't understand your question. Our team will be with you shortly."
+      `Sorry, I didn't understand your question. Please open a support ticket here <#${supportTicketChannelId}>.`
     );
   }
 }

@@ -65,7 +65,7 @@ async function onMessage(msg) {
   }
 
   const chatId = msg.chat.id;
-  const apiEndpoint = "http://43.206.109.246/predict";
+  const apiEndpoint = "http://43.207.57.87/predict";
   const userId = chatId;
 
   let question = msg.text;

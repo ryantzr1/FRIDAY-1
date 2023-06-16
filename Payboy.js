@@ -49,7 +49,7 @@ async function onMessage(msg) {
   if (msg.text.startsWith("/")) return; // Ignore commands
 
   const chatId = msg.chat.id;
-  const apiEndpoint = "http://43.206.109.246/predict";
+  const apiEndpoint = "http://43.207.57.87/predict";
   const userId = chatId;
 
   let question = msg.text;
