@@ -75,30 +75,59 @@ function Home() {
   useEffect(() => {
     async function fetchData() {
       try {
-        if (
-          getUid() &&
-          (getUid() === "lZLIC6fK2WQOvIxyXKECEjx625w1" ||
-            getUid() === "Hoz3NtloWXX7MciVcTn8BNAHIJs1")
-        ) {
-          const response = await axios.get(
-            "https://friday-backend-server-new.herokuapp.com/queries/log"
-          );
-          const { queries, totalQueriesCount, unansweredQueriesCount } =
-            response.data;
-          setLogs(queries);
-          setTotalQueries(totalQueriesCount);
-          setUnansweredQueries(unansweredQueriesCount);
-        }
+        // if (
+        //   getUid() &&
+        //   (getUid() === "lZLIC6fK2WQOvIxyXKECEjx625w1" ||
+        //     getUid() === "Hoz3NtloWXX7MciVcTn8BNAHIJs1")
+        // ) {
+        //   const response = await axios.get(
+        //     "https://friday-backend-server-new.herokuapp.com/queries/log"
+        //   );
+        //   const { queries, totalQueriesCount, unansweredQueriesCount } =
+        //     response.data;
+        //   setLogs(queries);
+        //   setTotalQueries(totalQueriesCount);
+        //   setUnansweredQueries(unansweredQueriesCount);
 
         const userInfoResponse = await axios.get(
-          "https://friday-backend-server.herokuapp.com/userInfo",
+          "https://friday-backend-beta-fd0f1e9f6d88.herokuapp.com/userInfo",
           {
             params: {
               uid: getUid(),
             },
           }
         );
+
         console.log(userInfoResponse);
+
+        let queryName = userInfoResponse.data.name.toLowerCase();
+
+        console.log(queryName);
+
+        if (queryName == "friday") {
+          queryName = "dashcamsg";
+        }
+
+        const response = await axios.get(
+          `https://friday-backend-beta-fd0f1e9f6d88.herokuapp.com/${queryName}/log`
+        );
+
+        const { queries, totalQueriesCount, unansweredQueriesCount } =
+          response.data;
+          console.log(queries);
+        setLogs(queries);
+        setTotalQueries(totalQueriesCount);
+        setUnansweredQueries(unansweredQueriesCount);
+
+        // const userInfoResponse = await axios.get(
+        //   "http://localhost:27027/userInfo",
+        //   {
+        //     params: {
+        //       uid: getUid(),
+        //     },
+        //   }
+        // );
+        // console.log(userInfoResponse);
         const userLimit = userInfoResponse.data.limit;
         console.log(userLimit);
         setLimit(userLimit);
