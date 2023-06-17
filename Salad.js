@@ -25,16 +25,16 @@ const SaladVenture = mongoose.model("SaladVenture", SaladVentureSchema);
 
 mongoose.connect(process.env.MONGODB_URL, { useNewUrlParser: true });
 
-// const approvedServerIDs = ["your-server-id"]; // Replace with your server ID(s)
+const approvedServerIDs = ["912340670411341875", "1113323169399451760"]; // Replace with your server ID(s)
 
-// bot.on("guildCreate", (guild) => {
-//   if (!approvedServerIDs.includes(guild.id)) {
-//     console.log(
-//       `I have been added to a server that is not approved: ${guild.name} (id: ${guild.id}). Leaving...`
-//     );
-//     guild.leave();
-//   }
-// });
+bot.on("guildCreate", (guild) => {
+  if (!approvedServerIDs.includes(guild.id)) {
+    console.log(
+      `I have been added to a server that is not approved: ${guild.name} (id: ${guild.id}). Leaving...`
+    );
+    guild.leave();
+  }
+});
 
 bot.on("ready", () => {
   console.log(`Bot is running`);
@@ -45,7 +45,7 @@ bot.on("ready", () => {
     if (currentHour >= 0 && currentHour < 7) {
       // Check if current time is between 12am and 7am
       bot.channels.cache
-        .get("1118201772524191826")
+        .get("915989137151127572") //need to change to Salad's general channel
         .send(
           "Hi I am FRIDAY, your AI assistant. Tag me if you have any questions"
         );
@@ -55,7 +55,7 @@ bot.on("ready", () => {
 
 bot.on("messageCreate", async (msg) => {
   const currentHour = moment().tz("Asia/Singapore").hours();
-  if (currentHour < 12 || currentHour >= 18) return; // Ignore messages if current time is not between 12am and 6am
+  if (currentHour < 0 || currentHour >= 7) return; // Ignore messages if current time is not between 12am and 7am
   if (!msg.content.startsWith("<@1118202260732780634>") || msg.author.bot) {
     //only reply to message that tag the bot
     return;
@@ -70,9 +70,8 @@ bot.on("messageCreate", async (msg) => {
 
 // Greet new users when they join the Discord channel
 bot.on("guildMemberAdd", (member) => {
-  const channel = member.guild.channels.cache.find(
-    (channel) => channel.name === "general"
-  ); // Send message to 'general' channel
+  const channelID = "915989137151127572";
+  const channel = member.guild.channels.cache.get(channelID);
   if (!channel) return; // If the channel was not found, do nothing
   channel.send(
     `Hi, <@${member.user.id}>, welcome to our Discord server! I'm FRIDAY, your AI assistant. Please tag me if you have any questions.`
@@ -187,11 +186,12 @@ async function onMessage(msg) {
 
   if (!success) {
     //916170162024108062 this is The support Ticket channel id ( we will switch)
-    const supportTicketChannelId = "1113323169399451763"; // Replace with your support ticket channel ID
+    const supportTicketChannelId = "916170162024108062"; // Replace with Salad Ventures Support Ticket Channel ID
     msg.reply(
       `Sorry, I didn't understand your question. Please open a support ticket here <#${supportTicketChannelId}>.`
     );
   }
 }
+915989137151127572;
 
 bot.login(process.env.DISCORD_BOT_TOKEN);
