@@ -73,9 +73,13 @@ bot.on("guildMemberAdd", (member) => {
   const channelID = "915989137151127572";
   const channel = member.guild.channels.cache.get(channelID);
   if (!channel) return; // If the channel was not found, do nothing
-  channel.send(
-    `Hi, <@${member.user.id}>, welcome to our Discord server! I'm FRIDAY, your AI assistant. Please tag me if you have any questions.`
-  );
+
+  const currentHour = moment().tz("Asia/Singapore").hours();
+  if (currentHour >= 0 && currentHour < 7) {
+    channel.send(
+      `Hi, <@${member.user.id}>, welcome to our Discord server! I'm FRIDAY, your AI assistant. Please tag me if you have any questions.`
+    );
+  }
 });
 
 async function onMessage(msg) {
