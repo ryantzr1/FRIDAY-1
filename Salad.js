@@ -56,7 +56,7 @@ bot.on("ready", () => {
 bot.on("messageCreate", async (msg) => {
   const currentHour = moment().tz("Asia/Singapore").hours();
   if (currentHour < 0 || currentHour >= 7) return; // Ignore messages if current time is not between 12am and 7am
-  if (!msg.content.startsWith("<@1118202260732780634>") || msg.author.bot) {
+  if (!msg.content.includes("<@1118202260732780634>") || msg.author.bot) {
     //only reply to message that tag the bot
     return;
   }
@@ -70,7 +70,7 @@ bot.on("messageCreate", async (msg) => {
 
 // Greet new users when they join the Discord channel
 bot.on("guildMemberAdd", (member) => {
-  const channelID = "915989137151127572";
+  const channelID = "915989137151127572"; //SaladVentures channel id for General-chat
   const channel = member.guild.channels.cache.get(channelID);
   if (!channel) return; // If the channel was not found, do nothing
 
