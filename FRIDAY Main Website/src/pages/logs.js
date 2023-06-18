@@ -8,6 +8,7 @@ function LogsPage() {
   const [logs, setLogs] = useState([]);
   const [isLoading, setIsLoading] = useState(true); // New loading state
   const { getUid } = useAuth();
+  const [userInfo, setUserInfo] = useState({});
 
   useEffect(() => {
     const fetchData = async () => {
@@ -20,6 +21,8 @@ function LogsPage() {
             },
           }
         );
+
+        setUserInfo(userInfoResponse.data);
 
         console.log(userInfoResponse);
 
@@ -77,7 +80,7 @@ function LogsPage() {
             </svg>
           </div>
         ) : (
-          <IncomingRequestsCard logs={logs} />
+          <IncomingRequestsCard logs={logs} userInfo={userInfo} />
         )}
       </div>
     </div>
