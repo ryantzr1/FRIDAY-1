@@ -1,9 +1,10 @@
 import { useState } from "react";
 
-function RequestContainer({ log, onCategoryChange }) {
+function RequestContainer({ log, onCategoryChange, userInfo }) {
   const { _id, question, answer, success, name, mobile, category } = log;
   const successColor = success ? "text-green-500" : "text-red-500";
   const [selectedCategory, setSelectedCategory] = useState(category);
+  const categoryList = userInfo.questionCategories;
 
   const handleCategoryChange = (event) => {
     const newCategory = event.target.value;
@@ -43,9 +44,11 @@ function RequestContainer({ log, onCategoryChange }) {
             value={selectedCategory}
             onChange={handleCategoryChange}
           >
-            <option value="Product">Product</option>
-            <option value="Scheduling">Scheduling</option>
-            <option value="Price List">Price List</option>
+            {categoryList.map((categoryOption) => (
+              <option key={categoryOption} value={categoryOption}>
+                {categoryOption}
+              </option>
+            ))}
           </select>
         </div>
       </div>

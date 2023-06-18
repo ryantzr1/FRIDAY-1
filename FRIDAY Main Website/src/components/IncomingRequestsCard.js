@@ -2,7 +2,7 @@ import { useState } from "react";
 import RequestContainer from "./RequestContainer";
 import axios from "axios";
 
-function IncomingRequestsCard({ logs }) {
+function IncomingRequestsCard({ logs, userInfo }) {
   const [showSuccessfulQueries, setShowSuccessfulQueries] = useState(false);
   const [saveStatus, setSaveStatus] = useState(null);
   const [updatedCategories, setUpdatedCategories] = useState({});
@@ -73,7 +73,7 @@ function IncomingRequestsCard({ logs }) {
       </header>
       <div className="text-gray-800 m-8">
         {filteredLogs.map((log, index) => (
-          <RequestContainer key={index} log={log} onCategoryChange={handleCategoryUpdate} />
+          <RequestContainer key={index} log={log} onCategoryChange={handleCategoryUpdate} userInfo={userInfo} />
         ))}
       </div>
       {showModal && (

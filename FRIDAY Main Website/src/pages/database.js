@@ -12,6 +12,8 @@ const Database = () => {
 
   if (getUid() === "lZLIC6fK2WQOvIxyXKECEjx625w1" || getUid() === "Hoz3NtloWXX7MciVcTn8BNAHIJs1") {
     products.push("A500S", "A800S");
+  } else if (getUid() === "15rPKiOu5mPUxMkFRKTqAKhN2jd2") {
+    products.push("Whitepaper");
   }
 
   useEffect(() => {
@@ -19,8 +21,28 @@ const Database = () => {
       if (selectedOption) {
         try {
           setIsLoading(true);
+
+          const userInfoResponse = await axios.get(
+            "https://friday-backend-beta-fd0f1e9f6d88.herokuapp.com/userInfo",
+            {
+              params: {
+                uid: getUid(),
+              },
+            }
+          );
+  
+          console.log(userInfoResponse);
+  
+          let company = userInfoResponse.data.name;
+  
+          console.log(company);
+  
+          if (company == "FRIDAY") {
+            company = "DashcamSG";
+          }
+
           const response = await fetch(
-            `https://friday-backend-server-new.herokuapp.com/retrieve?product=${selectedOption}`
+            `https://friday-backend-beta-fd0f1e9f6d88.herokuapp.com/retrieve?product=${selectedOption}&company=${company}`
           );
           const data = await response.text();
           const text = JSON.parse(data).data.join("\n\n");
@@ -50,7 +72,27 @@ const Database = () => {
     try {
       setSaving(true);
 
-      const response = await axios.post("https://friday-backend-server-new.herokuapp.com/update", {
+      const userInfoResponse = await axios.get(
+        "https://friday-backend-beta-fd0f1e9f6d88.herokuapp.com/userInfo",
+        {
+          params: {
+            uid: getUid(),
+          },
+        }
+      );
+
+      console.log(userInfoResponse);
+
+      let company = userInfoResponse.data.name;
+
+      console.log(company);
+
+      if (company == "FRIDAY") {
+        company = "DashcamSG";
+      }
+
+      const response = await axios.post("https://friday-backend-beta-fd0f1e9f6d88.herokuapp.com/update", {
+        rootName: company,
         childName: selectedOption,
         items: text
       });

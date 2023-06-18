@@ -8,19 +8,44 @@ function LogsPage() {
   const [logs, setLogs] = useState([]);
   const [isLoading, setIsLoading] = useState(true); // New loading state
   const { getUid } = useAuth();
+  const [userInfo, setUserInfo] = useState({});
 
   useEffect(() => {
     const fetchData = async () => {
-      if (getUid() && (getUid() === "lZLIC6fK2WQOvIxyXKECEjx625w1" || getUid() === "Hoz3NtloWXX7MciVcTn8BNAHIJs1")) {
-        try {
-          const response = await axios.get("https://friday-backend-server-new.herokuapp.com/queries/log");
-          const { queries } = response.data;
-          setLogs(queries);
-        } catch (error) {
-          console.error("Error fetching logs:", error);
-        } finally {
-          setIsLoading(false); // Set loading state to false after data is fetched (or in case of error)
+      try {
+        const userInfoResponse = await axios.get(
+          "https://friday-backend-beta-fd0f1e9f6d88.herokuapp.com/userInfo",
+          {
+            params: {
+              uid: getUid(),
+            },
+          }
+        );
+
+        setUserInfo(userInfoResponse.data);
+
+        console.log(userInfoResponse);
+
+        let queryName = userInfoResponse.data.name.toLowerCase();
+
+        console.log(queryName);
+
+        if (queryName == "friday") {
+          queryName = "dashcamsg";
         }
+
+        const response = await axios.get(
+          `https://friday-backend-beta-fd0f1e9f6d88.herokuapp.com/${queryName}/log`
+        );
+
+        const { queries } =
+          response.data;
+        console.log(queries);
+        setLogs(queries);
+      } catch (error) {
+        console.error("Error fetching logs:", error);
+      } finally {
+        setIsLoading(false); // Set loading state to false after data is fetched (or in case of error)
       }
     };
 
@@ -33,13 +58,29 @@ function LogsPage() {
       <div>
         {isLoading ? ( // Render loading spinner if isLoading is true
           <div className="flex items-center justify-center">
-            <svg className="animate-spin h-8 w-8 text-gray-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            <svg
+              className="animate-spin h-8 w-8 text-gray-600"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                className="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="4"
+              ></circle>
+              <path
+                className="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              ></path>
             </svg>
           </div>
         ) : (
-          <IncomingRequestsCard logs={logs} />
+          <IncomingRequestsCard logs={logs} userInfo={userInfo} />
         )}
       </div>
     </div>

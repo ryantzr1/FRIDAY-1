@@ -6,10 +6,10 @@ require("dotenv").config();
 mongoose.connect(process.env.MONGODB_URL, { useNewUrlParser: true });
 
 //Generate API Key for customers
-// function generateKey(size = 32, format = "base64") {
-//   const buffer = crypto.randomBytes(size);
-//   return buffer.toString(format);
-// }
+function generateKey(size = 32, format = "base64") {
+  const buffer = crypto.randomBytes(size);
+  return buffer.toString(format);
+}
 
 //Generate Secret Hash that we store in our MongoDB
 function generateHash(key) {
@@ -52,9 +52,10 @@ export default async function handler(req, res) {
   try {
     async function getUserInfo(uid) {
       const response = await axios.get(
-        `https://friday-backend-server.herokuapp.com/userInfo?uid=${uid}`
+        `https://friday-backend-alpha.herokuapp.com/userInfo?uid=${uid}`
       );
       const user = response.data;
+
       return user;
     }
 
@@ -70,7 +71,7 @@ export default async function handler(req, res) {
     const apiKey = generateKey();
     const encryptedSecret = generateHash(apiKey);
 
-    const userUpdate = `https://friday-backend-server.herokuapp.com/userUpdate?uid=${uid}`;
+    const userUpdate = `https://friday-backend-alpha.herokuapp.com/userUpdate?uid=${uid}`;
 
     await axios
       .post(userUpdate, {
@@ -80,7 +81,7 @@ export default async function handler(req, res) {
       .catch(function (error) {
         console.log(error);
       });
-
+    console.log("API Key saved successfully");
     res.status(200).json({ apiKey });
   } catch (error) {
     console.error("Error retrieving items:", error.message);

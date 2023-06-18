@@ -37,10 +37,11 @@ bot.on("message", async (msg) => {
       }
     });
     bot.sendMessage(msg.chat.id, answer).then(() => {});
-
   } catch (e) {
     console.log(e.message);
-    bot.sendMessage(msg.chat.id, "Sorry. We are unable to process your query.").then(() => {});
+    bot
+      .sendMessage(msg.chat.id, "Sorry. We are unable to process your query.")
+      .then(() => {});
   }
 });
 

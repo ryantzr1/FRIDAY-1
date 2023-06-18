@@ -55,7 +55,7 @@ bot.on("ready", () => {
 
 bot.on("messageCreate", async (msg) => {
   const currentHour = moment().tz("Asia/Singapore").hours();
-  if (currentHour < 0 || currentHour >= 7) return; // Ignore messages if current time is not between 12am and 7am
+  if (currentHour < 12 || currentHour >= 18) return; // Ignore messages if current time is not between 12am and 6am
   if (!msg.content.includes("<@1118202260732780634>") || msg.author.bot) {
     //only reply to message that tag the bot
     return;
