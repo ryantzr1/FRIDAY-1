@@ -4,6 +4,7 @@ if (process.env.NODE_ENV !== "production") {
 
 const { Query } = require("./models/query");
 const { User } = require("./models/user");
+const { SaladVenture } = require("./models/saladventure");
 
 const { authenticateRequest } = require("./Authentication");
 
@@ -58,7 +59,7 @@ To authenticate a user’s API request, look up their API key in the database.
 
 app.get("/queries", authenticateRequest, async (req, res) => {
   try {
-    const apiEndpoint = "http://43.207.57.87/predict";
+    const apiEndpoint = "http://43.206.109.246/predict";
 
     // Question Extraction
     const question = req.body.question;
@@ -87,6 +88,7 @@ app.get("/queries", authenticateRequest, async (req, res) => {
     // Category Extraction (For training data)
 
     // const category = req.query.category;
+
     // Construct the URL with the encoded question as a query string parameter
 
     const url = `${apiEndpoint}?question=${encodedQuestion}`;
@@ -136,8 +138,6 @@ app.get("/queries", authenticateRequest, async (req, res) => {
 
     const answer = responseAI.data.answer;
 
-    console.log(answer + " This is the answer");
-
     const agent = responseAI.data.agent;
 
     // Temporary type variable to be sent to client (Legacy)
@@ -163,7 +163,7 @@ app.get("/queries", authenticateRequest, async (req, res) => {
     let addToHistory = [
       {
         role: "user",
-        content: question,
+        content: processedQuestion,
       },
       {
         role: "assistant",
@@ -178,7 +178,7 @@ app.get("/queries", authenticateRequest, async (req, res) => {
     // Save the query to the MongoDB database
     const query = new Query({
       name: name,
-      question: question,
+      question: processedQuestion,
       answer: answer,
       category: category,
       userId: userId,
@@ -207,13 +207,55 @@ app.get("/queries", authenticateRequest, async (req, res) => {
 
 // API Endpoint for MongoDB database
 
-app.get("/queries/log", async (req, res) => {
+app.get("/dashcamsg/log", async (req, res) => {
   try {
-    const queries = await Query.find().sort({ _id: -1 });
-    const totalQueriesCount = await Query.countDocuments();
+    // Get the current month and year
+    const currentDate = new Date();
+    const currentYear = currentDate.getFullYear();
+    const currentMonth = currentDate.getMonth();
+
+    // Set the start and end dates for the desired range (first day of the month to last day of the month)
+    const startDate = new Date(currentYear, currentMonth, 1);
+    const endDate = new Date(currentYear, currentMonth + 1, 0);
+
+    // Count the documents within the specified date range
+    const totalQueriesCount = await Query.countDocuments({
+      timestamp: { $gte: startDate, $lte: endDate },
+    });
+
+    // Count the unanswered queries within the specified date range
     const unansweredQueriesCount = await Query.countDocuments({
+      timestamp: { $gte: startDate, $lte: endDate },
       success: false,
     });
+    const queries = await Query.find().sort({ _id: -1 });
+    res.json({ queries, totalQueriesCount, unansweredQueriesCount });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+app.get("/saladventures/log", async (req, res) => {
+  try {
+    const currentDate = new Date();
+    const currentYear = currentDate.getFullYear();
+    const currentMonth = currentDate.getMonth();
+
+    // Set the start and end dates for the desired range (first day of the month to last day of the month)
+    const startDate = new Date(currentYear, currentMonth, 1);
+    const endDate = new Date(currentYear, currentMonth + 1, 0);
+
+    // Count the documents within the specified date range
+    const totalQueriesCount = await Query.countDocuments({
+      timestamp: { $gte: startDate, $lte: endDate },
+    });
+
+    // Count the unanswered queries within the specified date range
+    const unansweredQueriesCount = await Query.countDocuments({
+      timestamp: { $gte: startDate, $lte: endDate },
+      success: false,
+    });
+    const queries = await SaladVenture.find().sort({ _id: -1 });
     res.json({ queries, totalQueriesCount, unansweredQueriesCount });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -221,13 +263,13 @@ app.get("/queries/log", async (req, res) => {
 });
 
 async function findQuestion(question) {
-  let processedQuestion = question;
+  let processedQuestion = question.trim();
 
-  // if (!processedQuestion.endsWith("?")) {
-  //   processedQuestion += "?"; // add question mark if not already present
-  // }
+  if (!processedQuestion.endsWith("?")) {
+    processedQuestion += "?"; // add question mark if not already present
+  }
 
-  // console.log(processedQuestion);
+  console.log(processedQuestion);
 
   const questionArray = await Query.find({
     question: processedQuestion.toString(),
@@ -345,15 +387,37 @@ app.get("/userCreate", async (req, res) => {
   }
 });
 
+app.get("/userDelete", async (req, res) => {
+  const { UID } = req.query; // Assuming the UID of the user to be deleted is passed as a query parameter 'uid'
+
+  try {
+    // Find the user by UID and delete it
+    const deletedUser = await User.findOneAndDelete({ UID: UID });
+
+    if (!deletedUser) {
+      // If no user is found with the provided UID
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    res.json({ message: "User deleted", user: deletedUser });
+  } catch (error) {
+    console.error("Error deleting user:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // API endpoints to communicate with PINECONE database
 
 app.get("/retrieve", async (req, res) => {
   const product = req.query.product;
+  const company = req.query.company;
   const url = "http://52.192.225.247/get_all_items";
+  console.log(product);
+  console.log(company);
   const params = {
-    root_name: "DashcamSG",
+    root_name: company,
     loc: product,
   };
 
@@ -386,8 +450,10 @@ app.post("/update", async (req, res) => {
   try {
     // Retrieve the body of the post request
     const requestBody = req.body;
-    const rootName = "DashcamSG";
+    const rootName = requestBody.rootName;
     const childName = requestBody.childName;
+    console.log("rootName: " + rootName);
+    console.log("childName: " + childName);
     const text = requestBody.items;
     const items = text.split("\n\n");
     console.log(items);

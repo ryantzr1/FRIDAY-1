@@ -118,18 +118,7 @@ function Home() {
         setLogs(queries);
         setTotalQueries(totalQueriesCount);
         setUnansweredQueries(unansweredQueriesCount);
-
-        // const userInfoResponse = await axios.get(
-        //   "http://localhost:27027/userInfo",
-        //   {
-        //     params: {
-        //       uid: getUid(),
-        //     },
-        //   }
-        // );
-        // console.log(userInfoResponse);
         const userLimit = userInfoResponse.data.limit;
-        console.log(userLimit);
         setLimit(userLimit);
       } catch (error) {
         console.error(error);

@@ -37,7 +37,7 @@ const Database = () => {
   
           console.log(company);
   
-          if (company == "Friday") {
+          if (company == "FRIDAY") {
             company = "DashcamSG";
           }
 
@@ -87,7 +87,7 @@ const Database = () => {
 
       console.log(company);
 
-      if (company == "Friday") {
+      if (company == "FRIDAY") {
         company = "DashcamSG";
       }
 
